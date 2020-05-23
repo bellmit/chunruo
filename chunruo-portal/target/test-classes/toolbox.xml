@@ -258,7 +258,6 @@
         <scope>application</scope>
         <class>com.chunruo.portal.tag.UserInfoTag</class>
     </tool>
-    <!-- 商品分类列表-->
     <tool>
         <key>productCategoryV2ListTag</key>
         <scope>request</scope>
@@ -298,5 +297,10 @@
         <key>withdrawalListTag</key>
         <scope>request</scope>
         <class>com.chunruo.portal.tag.WithdrawalListTag</class>
+    </tool>
+     <tool>
+        <key>inviteTag</key>
+        <scope>request</scope>
+        <class>com.chunruo.portal.tag.InviteHistoryTag</class>
     </tool>
 </toolbox>

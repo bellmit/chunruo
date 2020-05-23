@@ -90,8 +90,6 @@ public class UserController extends BaseController {
 			if(count != null && count.longValue() > 0L){
 				userList = this.userInfoManager.getHqlPages(paramMap, start, limit, sortMap.get("sort"), sortMap.get("dir"));
 				if(userList != null && userList.size() > 0){
-					//检查当前entity是否为托管状态（Managed），若为托管态，需要转变为游离态，这样entity的数据发生改变时，就不会自动同步到数据库中
-					//游离态的entity需要调用merge方法转为托管态。
 					this.userInfoManager.detach(userList);
 
 					for(UserInfo userInfo : userList){
@@ -99,9 +97,7 @@ public class UserController extends BaseController {
 						userInfo.setStoreMobile(StringUtil.mobileFormat(userInfo.getStoreMobile()));
 						userInfo.setTopMobile(StringUtil.mobileFormat(userInfo.getTopMobile()));
 					}
-					// 补全用户地址信息
 					userList = this.userInfoManager.addAddress(userList);
-					// 补全上级店铺信息
 					userList = this.userInfoManager.addTopStoreInfo(userList);
 				}
 			}
@@ -135,9 +131,6 @@ public class UserController extends BaseController {
 					userInfo.setTopMobile(StringUtil.mobileFormat(userInfo.getTopMobile()));
 				}
 				
-				if(StringUtil.isNull(userInfo.getV1ExpireEndDate())) {
-					userInfo.setV1ExpireEndDate(userInfo.getExpireEndDate());
-				}
 				resultMap.put("user", userInfo);
 			}
 		}catch (Exception e){

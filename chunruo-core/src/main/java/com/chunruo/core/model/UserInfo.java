@@ -12,7 +12,7 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 /**
- * 用户列表
+ * 用户表
  * @author chunruo
  */
 @Entity
@@ -113,12 +113,7 @@ public class UserInfo implements Cloneable, Serializable{
 	private Integer paymentUserLevel;       //用户实时等级
 	private Integer loginType;				//用户登录类型
 	private String loginPcIp;				//PC登陆IP地址
-	private Boolean isAdviserFriend;        //是否bd好友
-	private Long adviserUserId;             //顾问id
-	private String adviserUserName;         //顾问名称
-	private String v1ExpireEndDate;         //v1到期时间
-	private String v2ExpireEndDate;         //v2到期时间
-	private String v3ExpireEndDate;         //v3到期时间
+	private String logo;                    
 	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -826,59 +821,14 @@ public class UserInfo implements Cloneable, Serializable{
 	}
 
 	@Transient
-	public Boolean getIsAdviserFriend() {
-		return isAdviserFriend;
+	public String getLogo() {
+		return logo;
 	}
 
-	public void setIsAdviserFriend(Boolean isAdviserFriend) {
-		this.isAdviserFriend = isAdviserFriend;
+	public void setLogo(String logo) {
+		this.logo = logo;
 	}
 
-	@Transient
-	public Long getAdviserUserId() {
-		return adviserUserId;
-	}
-
-	public void setAdviserUserId(Long adviserUserId) {
-		this.adviserUserId = adviserUserId;
-	}
-
-	@Transient
-	public String getAdviserUserName() {
-		return adviserUserName;
-	}
-
-	public void setAdviserUserName(String adviserUserName) {
-		this.adviserUserName = adviserUserName;
-	}
-
-	@Transient
-	public String getV1ExpireEndDate() {
-		return v1ExpireEndDate;
-	}
-
-	public void setV1ExpireEndDate(String v1ExpireEndDate) {
-		this.v1ExpireEndDate = v1ExpireEndDate;
-	}
-
-	@Transient
-	public String getV2ExpireEndDate() {
-		return v2ExpireEndDate;
-	}
-
-	public void setV2ExpireEndDate(String v2ExpireEndDate) {
-		this.v2ExpireEndDate = v2ExpireEndDate;
-	}
-
-	@Transient
-	public String getV3ExpireEndDate() {
-		return v3ExpireEndDate;
-	}
-
-	public void setV3ExpireEndDate(String v3ExpireEndDate) {
-		this.v3ExpireEndDate = v3ExpireEndDate;
-	}
-	
 	@Override
 	public UserInfo clone(){
 		//浅拷贝

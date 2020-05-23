@@ -6,26 +6,18 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import com.chunruo.cache.portal.impl.UserInfoByIdCacheManager;
 import com.chunruo.cache.portal.impl.UserInfoListByTopUserIdCacheManager;
-import com.chunruo.cache.portal.impl.UserProfitByUserIdCacheManager;
-import com.chunruo.cache.portal.impl.UserTeamListByTopUserIdCacheManager;
 import com.chunruo.core.Constants;
 import com.chunruo.core.Constants.UserLevel;
 import com.chunruo.core.model.UserInfo;
-import com.chunruo.core.model.UserProfitRecord;
-import com.chunruo.core.model.UserTeam;
 import com.chunruo.core.util.ListPageUtil;
 import com.chunruo.core.util.StringUtil;
 import com.chunruo.core.util.vo.ListPageVo;
 import com.chunruo.portal.PortalConstants;
 import com.chunruo.portal.util.PortalUtil;
-import com.chunruo.portal.util.RequestUtil;
 import com.chunruo.portal.vo.TagModel;
 
-public class MyTeamTag extends BaseTag {
+public class InviteHistoryTag extends BaseTag {
 
 	public TagModel<Map<String, Object>> getData(Object pageidx_1, Object pagesize_1, Object lastId_1) {
 		Integer pageidx = StringUtil.nullToInteger(pageidx_1);
@@ -34,7 +26,7 @@ public class MyTeamTag extends BaseTag {
 
 		// 设置分页
 		if (pagesize == null || pagesize < 1)
-			pagesize = PortalConstants.PAGE_LIST_SIZE * 2;
+			pagesize = PortalConstants.NEW_PAGE_LIST_SIZE;
 		if (pageidx == null || pageidx <= 0)
 			pageidx = 1;
 
@@ -48,11 +40,7 @@ public class MyTeamTag extends BaseTag {
 				return tagModel;
 			}
 			
-			UserInfoByIdCacheManager userInfoByIdCacheManager = Constants.ctx.getBean(UserInfoByIdCacheManager.class);
-			UserProfitByUserIdCacheManager userProfitByUserIdCacheManager = Constants.ctx.getBean(UserProfitByUserIdCacheManager.class);
-			UserTeamListByTopUserIdCacheManager userTeamListByTopUserIdCacheManager = Constants.ctx.getBean(UserTeamListByTopUserIdCacheManager.class);
 			UserInfoListByTopUserIdCacheManager userInfoListByTopUserIdCacheManager = Constants.ctx.getBean(UserInfoListByTopUserIdCacheManager.class);
-			
 			Map<String, Object> resultMap = new HashMap<String, Object>();
 			List<UserInfo> userInfoList = userInfoListByTopUserIdCacheManager.getSession(StringUtil.nullToLong(userInfo.getUserId()));
 			if(userInfoList != null && !userInfoList.isEmpty()) {
@@ -86,39 +74,32 @@ public class MyTeamTag extends BaseTag {
 						if(downUser != null && downUser.getUserId() != null){
 							//用户头像处理
 							String logo = StringUtil.null2Str(downUser.getHeaderImage());
-//							downUser.setLogo(UserInfoTag.getUserHeaderImage(logo, request));
+							downUser.setLogo(UserInfoTag.getUserHeaderImage(logo, request));
 						}
 						return downUser;
 					}
 				};
 
-//				/**
-//				 * 返回自动分页结果
-//				 */
-//				ListPageVo<List<UserTeam>> listPageVo = pageUtil.getPageList(resultList, lastId, pageidx, pagesize);
-//				if (StringUtil.nullToBoolean(listPageVo.getIsNextPageURL())) {
-//					StringBuffer urls = new StringBuffer(this.getRequestURL(request) + "&");
-//					urls.append("pageidx=" + (++pageidx) + "&");
-//					urls.append("pagesize=" + pagesize + "&");
-//					urls.append("lastId=" + listPageVo.getLastId());
-//					tagModel.setNextPageURL(urls.toString());
-//				}
-				
+				/**
+				 * 返回自动分页结果
+				 */
+				ListPageVo<List<UserInfo>> listPageVo = pageUtil.getPageList(userIdList, lastId, pageidx, pagesize);
+				if (StringUtil.nullToBoolean(listPageVo.getIsNextPageURL())) {
+					StringBuffer urls = new StringBuffer(this.getRequestURL(request) + "&");
+					urls.append("pageidx=" + (++pageidx) + "&");
+					urls.append("pagesize=" + pagesize + "&");
+					urls.append("lastId=" + listPageVo.getLastId());
+					tagModel.setNextPageURL(urls.toString());
+				}
+				resultMap.put("dataList", listPageVo.getDataList());
 			}
-			
-			
-			
-			
-			
 			tagModel.setData(resultMap);
-			tagModel.setCode(PortalConstants.CODE_SUCCESS);
-			return tagModel;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		tagModel.setMsg("服务器错误");
-		tagModel.setCode(PortalConstants.CODE_ERROR);
+		tagModel.setCode(PortalConstants.CODE_SUCCESS);
 		return tagModel;
 	}
 
