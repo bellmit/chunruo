@@ -1,0 +1,85 @@
+##会员礼包
+
+#set($addressId = ${StringUtil.null2Str($request.getParameter('addressId'))})
+
+${memberGiftListTag.setRequest($request)}
+#set($tagModel = ${memberGiftListTag.getData( $addressId)})
+{
+    "code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime": "$!systemTime",
+	"isClosedWechatPay":"0",
+    "list": [
+   	#if($tagModel.data && $tagModel.data.size() > 0)
+   		#foreach($templte in $tagModel.data)
+		{
+			"templateId": "$!templte.templateId",
+            "yearsNumber": "${StringUtil.null2Str($!templte.yearsNumber)}",
+            "yearsName": "${HtmlDecodeTag.get($!templte.yearsName)}",
+            "price":"${StringUtil.nullToDoubleFormatStr($!templte.price)}",
+            "accountAmount":"${StringUtil.nullToDoubleFormatStr($!templte.accountAmount)}",
+            "payAccountAmount":"${StringUtil.nullToDoubleFormatStr($!templte.payAccountAmount)}",
+            "payAmount":"${StringUtil.nullToDoubleFormatStr($!templte.payAmount)}",
+            "realPayAmount":"${StringUtil.nullToDoubleFormatStr($!templte.realPayAmount)}",
+            "tag": "${HtmlDecodeTag.get($!templte.tag)}",
+            "unitPrice": "${HtmlDecodeTag.get($!templte.unitPrice)}",
+            "isFreeTemplate": "${StringUtil.booleanToInt($!templte.isFreeTemplate)}",
+            "isTimeout": "${StringUtil.booleanToInt($!templte.isTimeout)}",
+            "isNeedSendCode": "${StringUtil.booleanToInt($!templte.isNeedSendCode)}",
+            "endTime": "${StringUtil.nullToLong($!templte.endTime)}",
+            "giftList": [
+           	#if($templte.memberGiftList && $templte.memberGiftList.size() > 0)
+            	#foreach($gift in $templte.memberGiftList)
+            	#set($imageVo = ${imageRateTag.getImageRate($gift.imagePath, "1200", "upload/")})
+            	{
+            	 	"giftId": "$!gift.giftId",
+            	 	"templateId": "$!gift.templateId",
+            	 	"type": "$!gift.type",
+                    "name": "${HtmlDecodeTag.get($!gift.name)}",
+                    "originPrice":"${StringUtil.nullToDoubleFormatStr($!gift.price)}",
+                    "productType": "${StringUtil.nullToInteger($!gift.productType)}",
+                    "price":"0元",
+                    "imageUrl": "$!imageVo.filePath",
+				    "width": "$!imageVo.width",
+				    "height": "$!imageVo.height",
+				    "imageUrlList":[
+			           	   #if($gift.detailImagePathList && $!gift.detailImagePathList.size() > 0)
+			            	   #foreach($image in $gift.detailImagePathList)
+			            	   #set($detailImageVo = ${imageRateTag.getImageRate($image, "1200","upload/")})
+			            	   {
+			            	    	"imageUrl": "$!detailImageVo.filePath",
+			            	    	"width": "$!detailImageVo.width",
+				    	            "height": "$!detailImageVo.height"
+			            	   }#if($velocityCount < $gift.detailImagePathList.size()),#end
+			            	   #end
+			          	 #end
+  				]
+            	}#if($velocityCount < $templte.memberGiftList.size()),#end
+				#end
+			#end
+           ]
+		}#if($velocityCount < $tagModel.data.size()),#end
+		#end
+	#end
+    ],
+    "addressInfo":{
+		"addressId": "$!tagModel.dataMap.get("addressId")",
+		"name": "${HtmlDecodeTag.get($!tagModel.dataMap.get("name"))}",
+		"address": "${HtmlDecodeTag.get($!tagModel.dataMap.get("address"))}",
+		"msg": "${HtmlDecodeTag.get($!tagModel.dataMap.get("msg"))}",
+		"mobile": "${HtmlDecodeTag.get($!tagModel.dataMap.get("mobile"))}",
+		"isEmpty": "$!tagModel.dataMap.get("isEmpty")",
+		"identityNo": "${HtmlDecodeTag.get($!tagModel.dataMap.get("identityNo"))}",
+		"realName": "${HtmlDecodeTag.get($!tagModel.dataMap.get("realName"))}",
+		"isValidIdentity": "$!tagModel.dataMap.get("isValidIdentity")"
+	},
+	"authenticationList":[
+	#if($tagModel.dataMap.get("authenticationList") && $!tagModel.dataMap.get("authenticationList").size() > 0)
+	#foreach($content in $tagModel.dataMap.get("authenticationList"))
+	{
+	    "content":"${HtmlDecodeTag.get($!content)}"
+	}#if($velocityCount < $tagModel.dataMap.get("authenticationList").size()),#end
+	#end
+	#end
+	]
+}

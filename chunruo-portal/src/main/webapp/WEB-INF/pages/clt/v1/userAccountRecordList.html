@@ -1,0 +1,33 @@
+##用户账户充值记录
+
+#set($pageidx = $request.getParameter('pageidx'))
+#set($pagesize = $request.getParameter('pagesize'))
+#set($lastId = $request.getParameter('lastId'))
+#set($type = $request.getParameter('type'))
+${userAccountRecordListTag.setRequest($request)}
+#set($tagModel= ${userAccountRecordListTag.getData($pageidx, $pagesize, $lastId, $type)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"isAuthSucc": "${StringUtil.booleanToInt($!tagModel.dataMap.get("isAuthSucc"))}",
+    "balance": "${NumberUtil.amountConversion($!tagModel.dataMap.get("balance"))}",
+    "totalBalance": "${StringUtil.null2Str($!tagModel.dataMap.get("balance"))}",
+	"accountAmount": "${NumberUtil.amountConversion($!tagModel.dataMap.get("accountAmount"))}",
+    "dataList":[
+	#if($tagModel.data && $tagModel.data.size() > 0)
+		#foreach($record in $tagModel.data)
+		{
+			"recordId": "${StringUtil.nullToLong($!record.recordId)}",
+			"createTime":"${DateUtil.getSeconds($!record.createTime)}",
+			"tradeName": "${HtmlDecodeTag.get($!record.tradeName)}",
+			"amount": "${StringUtil.nullToDoubleFormat($!record.realAmount)}",
+			"giftName": "${HtmlDecodeTag.get($!record.giftName)}",
+			"tradeType": "${StringUtil.nullToInteger($!record.tradeType)}"
+		}#if($velocityCount < $tagModel.data.size()),#end
+	 	#end
+	#end
+   ]
+  	
+}

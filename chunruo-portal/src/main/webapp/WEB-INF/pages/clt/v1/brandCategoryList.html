@@ -1,0 +1,36 @@
+
+## 通过分类获取品牌
+#set($firstCategoryId = $request.getParameter('firstCategoryId'))
+#set($brandId = $request.getParameter('brandId'))
+
+${brandCategoryListTag.setRequest($request)}
+#set($tagModel = ${brandCategoryListTag.getData($firstCategoryId, $brandId)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime": "$!systemTime",
+    "allBrandList": [
+        #if($tagModel.data && $tagModel.data.size() > 0)
+           	#foreach($productBrand in $tagModel.data)
+           	#set($imageURL = ${imageRateTag.getData($productBrand.image, "1200", "upload/")})
+           	{
+           	 	"brandId": "$!productBrand.brandId",
+	            "brandName": "${HtmlDecodeTag.get($!productBrand.name)}",
+	            "initial": "${HtmlDecodeTag.get($!productBrand.initial)}",
+	            "brandPic": "$!imageURL",
+	            "typeNumber": "$!productBrand.typeNumber"
+           	}#if($velocityCount < $tagModel.data.size()),#end
+			#end
+		#end
+    ],
+    "allCategoryList": [
+        #if($tagModel.dataList && $tagModel.dataList.size() > 0)
+           	#foreach($productCategory in $tagModel.dataList)
+           	{
+           	 	"catId": "$!productCategory.categoryId",
+	            "catName": "${HtmlDecodeTag.get($!productCategory.name)}"
+           	}#if($velocityCount < $tagModel.dataList.size()),#end
+			#end
+		#end
+    ]
+}

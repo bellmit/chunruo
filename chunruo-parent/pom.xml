@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.chunruo</groupId>
+	<artifactId>chunruo-parent</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.15.RELEASE</version>
+	</parent>
+	
+	<properties>
+		<maven.test.args>-Dmode=dev -DdisableCommonConf</maven.test.args>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>1.8</java.version>
+		<chunruo-core.version>1.0.0</chunruo-core.version>
+		<chunruo-util.version>1.0.0</chunruo-util.version>
+		<chunruo-cache.version>1.0.0</chunruo-cache.version>
+		<chunruo-security.version>1.0.0</chunruo-security.version>
+	</properties>
+	
+	<!-- multiple Module -->
+	<modules>
+		<module>../chunruo-util</module>
+		<module>../chunruo-core</module>
+		<module>../chunruo-cache</module>
+		<module>../chunruo-security</module>
+	</modules>
+	
+	<repositories>
+	    <repository>
+	        <id>spring-snapshots</id>
+	        <name>Spring Snapshots</name>
+	        <url>https://repo.spring.io/libs-snapshot</url>
+	        <snapshots>
+	            <enabled>true</enabled>
+	        </snapshots>
+	    </repository>
+	</repositories>
+</project>

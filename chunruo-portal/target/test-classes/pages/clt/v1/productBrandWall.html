@@ -1,0 +1,43 @@
+##品牌墙
+
+#set($imageUrlHeader= "http://www.jikeduo.com.cn/")
+
+#set($tagModel = ${productBrandWallTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime": "$!systemTime",
+    "brandMap": [
+    #if($tagModel.data && $tagModel.data.size() > 0)
+   		#foreach($entry in $tagModel.data)
+   		#set($category = $entry.key)
+   		#set($brandList = $entry.value)
+    	{
+    	    
+            "categoryId": "${StringUtil.nullToLong($!category.categoryId)}",
+            "categoryName": "${HtmlDecodeTag.get($!category.name)}",
+            "brandList": [
+           	#if($brandList && $brandList.size() > 0)
+            	#foreach($productBrand in $brandList)
+            	#set($imageURL = ${imageRateTag.getData($productBrand.image, "1200", "upload/")})
+            	#set($adImageURL = ${imageRateTag.getData($productBrand.adImage, "1200", "upload/")})
+            	#set($countryImageURL = ${imageRateTag.getData($productBrand.countryImage, "1200", "upload/")})
+            	
+            	{
+            	 	"brandId": "$!productBrand.brandId",
+		            "brandName": "${HtmlDecodeTag.get($!productBrand.shortName)}",
+		            "initial": "${HtmlDecodeTag.get($!productBrand.initial)}",
+		            "imageUrl": "$!imageURL",
+		            "adImageUrl": "$!adImageURL",
+		            "countryImageURL": "$!countryImageURL",
+		            "isHot": "${StringUtil.booleanToInt($!productBrand.isHot)}",
+		            "intro": "${HtmlDecodeTag.get($!productBrand.intro)}"
+            	}#if($velocityCount < $brandList.size()),#end
+				#end
+			#end
+           ]
+		}#if($velocityCount < $tagModel.data.size()),#end
+		#end
+	#end
+    ]
+}

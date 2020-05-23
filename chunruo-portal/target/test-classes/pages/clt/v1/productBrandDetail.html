@@ -1,0 +1,40 @@
+##品牌详情
+
+#set($brandId = $request.getParameter('brandId'))
+
+${productBrandDetailTag.setRequest($request)}
+#set($tagModel= ${productBrandDetailTag.getData($brandId)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"lastTime": "$!tagModel.objectId",
+	"data":{
+		   #if($tagModel.data)
+		   	"brandId":"${StringUtil.nullToLong($!tagModel.data.brandId)}",
+			"name": "${HtmlDecodeTag.get($!tagModel.data.name)}",
+			"shortName": "${HtmlDecodeTag.get($!tagModel.data.shortName)}",
+			"brandDesc": "${HtmlDecodeTag.get($!tagModel.data.brandDesc)}",
+			"intro": "${HtmlDecodeTag.get($!tagModel.data.intro)}",
+			"productNumber": "${StringUtil.nullToLong($!tagModel.data.productNumber)}",
+			#set($countryImageVo = ${imageRateTag.getImageRate($tagModel.data.countryImage, "1200","upload/")})
+		    "countryImage":{
+	        	"imageUrl":"$!countryImageVo.filePath",
+	          	"width": "$!countryImageVo.width",
+	            "height": "$!countryImageVo.height"
+	        },
+	        #set($backgroundImageVo = ${imageRateTag.getImageRate($tagModel.data.backgroundImage, "1200","upload/")})
+		    "backgroundImage":{
+	        	"imageUrl":"$!backgroundImageVo.filePath",
+	          	"width": "$!backgroundImageVo.width",
+	            "height": "$!backgroundImageVo.height"
+	        },
+	        #set($imageVo = ${imageRateTag.getImageRate($tagModel.data.image, "1200","upload/")})
+		    "logo":{
+	        	"imageUrl":"$!imageVo.filePath",
+	          	"width": "$!imageVo.width",
+	            "height": "$!imageVo.height"
+	        }
+		#end 
+	  }
+}

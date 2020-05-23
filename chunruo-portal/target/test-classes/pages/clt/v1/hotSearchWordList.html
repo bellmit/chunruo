@@ -1,0 +1,19 @@
+## 热搜词列表
+
+${hotSearchWordListTag.setRequest($request)}
+#set($map = ${hotSearchWordListTag.getData()})
+{
+	"code":"$!map.get("code")",
+	"msg":"${HtmlDecodeTag.get($!map.get("msg"))}",
+	"systemTime":"$!map.get("systemTime")",
+	"dataList":[
+		#if($map.get("hotWordList") && $map.get("hotWordList").size() > 0)
+	 		#foreach($tagModel in $map.get("hotWordList"))
+	 		{
+	 			"tagId":"$!tagModel.tagId",
+				"name":"${HtmlDecodeTag.get($!tagModel.name)}"
+			}#if($velocityCount < $map.get("hotWordList").size()),#end
+		 	#end
+		#end
+	]
+}

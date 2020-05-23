@@ -1,0 +1,24 @@
+## 签到
+
+#set($height = $request.getParameter('height'))
+#set($width = $request.getParameter('width'))
+#set($phoneType = $request.getParameter('phoneType'))
+${noviceGuideTag.setRequest($request)}
+#set($tagModel = ${noviceGuideTag.getData($phoneType, $height, $width)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"data":[
+     #if($tagModel.data.imagePathList && $tagModel.data.imagePathList.size() > 0)
+	    #foreach($path in $tagModel.data.imagePathList)
+	       #set($imageRateVo = ${imageRateTag.getImageRate($path, "1200", "upload/")})
+			{
+				"width": "$!imageRateVo.width",
+				"height": "$!imageRateVo.height",
+				"imageUrl": "$!imageRateVo.filePath"
+			}#if($velocityCount < $tagModel.data.imagePathList.size()),#end
+		 	#end
+	 #end
+	]
+}

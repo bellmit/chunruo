@@ -1,0 +1,26 @@
+## 奖励记录
+
+#set($pageidx = ${StringUtil.null2Str($request.getParameter('pageidx'))})
+#set($pagesize = ${StringUtil.null2Str($request.getParameter('pagesize'))})
+#set($lastId = ${StringUtil.null2Str($request.getParameter('lastId'))})
+#set($status = ${StringUtil.null2Str($request.getParameter('status'))})
+${userRechargeListTag.setRequest($request)}
+#set($tagModel = ${userRechargeListTag.getData($pageidx, $pagesize, $lastId,$status)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"reward": "${NumberUtil.amountConversion($!tagModel.dataMap.get("reward"))}",
+	"dataList":[
+		#if($tagModel.data && $tagModel.data.size() > 0)
+	 		#foreach($record in $tagModel.data)
+	 		{
+	 			"rewardName":"${HtmlDecodeTag.get($!record.name)}",
+	 			"createTime":"${DateUtil.getSeconds($!record.completeTime)}",
+	 			"amount":"${StringUtil.nullToDoubleFormatStr($!record.amount)}"
+	 		}#if($velocityCount < $tagModel.data.size()),#end
+		 	#end
+		#end
+	]
+}

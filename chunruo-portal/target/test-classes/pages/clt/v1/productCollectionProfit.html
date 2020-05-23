@@ -1,0 +1,45 @@
+#set($productId = $request.getParameter('productId'))
+
+${productCollectionProfitTag.setRequest($request)}
+#set($tagModel= ${productCollectionProfitTag.getData($productId)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	#set($imageVo = ${imageRateTag.getImageRate($tagModel.dataMap.get("imageUrl"), "1200","upload/")})
+	#set($productType =${StringUtil.nullToInteger($tagModel.dataMap.get("productType"))})
+	#set($isFreeTax = ${StringUtil.nullToInteger($tagModel.dataMap.get("isFreeTax"))})
+	"data":{
+			 #if($!isFreeTax == "0" && $!productType == "2")
+			 "taxRate" : "0.091",
+			 "taxDesc" : "售价=成本价+利润,税费=售价*9.10%",
+			 "taxInfo" : "您的用户页面显示的商品价格将包含税费",
+			 #else
+			 "taxRate" : "0",
+			 "taxDesc" : "售价=成本价+利润",
+			 "taxInfo" : "",
+			 #end
+	         "productId":"${StringUtil.nullToLong($tagModel.dataMap.get("productId"))}",
+	         "productName":"${HtmlDecodeTag.get($tagModel.dataMap.get("productName"))}",
+	         "isSpecProduct":"${StringUtil.nullToInteger($tagModel.dataMap.get("isSpecProduct"))}",
+	         "imageUrl":"$!imageVo.filePath",
+		     "width": "$!imageVo.width",
+		     "height": "$!imageVo.height",
+	         "collectionProfitList":[
+               	#if($tagModel.data && $tagModel.data.size() > 0)
+	            #foreach($collectionProfit in $tagModel.data)
+				{
+				 	"productSpecId": "$!collectionProfit.productSpecId",
+					"productTags": "${HtmlDecodeTag.get($!collectionProfit.productTags)}",
+					"profit": "${StringUtil.nullToDoubleFormatStr($!collectionProfit.profit)}",
+					"minProfit": "${StringUtil.nullToDoubleFormatStr($!collectionProfit.minProfit)}",
+					"priceWholesale": "${StringUtil.nullToDoubleFormatStr($!collectionProfit.priceWholesale)}",
+					"sellPrice": "${StringUtil.nullToDoubleFormatStr($!collectionProfit.sellPrice)}",
+					"tax": "${StringUtil.nullToDoubleFormatStr($!collectionProfit.tax)}"
+				}#if($velocityCount < $tagModel.data.size()),#end
+				#end
+			#end
+			]
+  	     }
+}

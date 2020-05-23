@@ -1,0 +1,62 @@
+#set($pageidx = $request.getParameter('pageidx'))
+#set($pagesize = $request.getParameter('pagesize'))
+#set($lastId = $request.getParameter('lastId'))
+#set($keyword = $request.getParameter('keyword'))
+
+${productCollectionListTag.setRequest($request)}
+#set($tagModel= ${productCollectionListTag.getData($keyword, $pageidx, $pagesize, $lastId)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"total":"$!tagModel.total",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"dataList":[
+	 #if($tagModel.data && $tagModel.data.size() > 0)
+	 	#foreach($productCollection in $tagModel.data)
+	 	#set($isSeckillProduct =${StringUtil.booleanToInt($!productCollection.product.isSeckillProduct)})
+	 	#set($level =${StringUtil.nullToInteger($!tagModel.dataMap.get("level"))})
+	 	#set($imageVo = ${imageRateTag.getImageRate($productCollection.product.image, "1200", "upload/")})
+		{
+		 	"collectionId": "$!productCollection.collectionId",
+		 	"productId": "$!productCollection.productId",
+			"productName": "${HtmlDecodeTag.get($!productCollection.product.name)}",
+			"imageUrl": "$!imageVo.filePath",
+			"width": "$!imageVo.width",
+			"height": "$!imageVo.height",
+			"isSoldOut": "${StringUtil.booleanToInt($!productCollection.product.isPaymentSoldout)}",
+			 "price": "${StringUtil.nullToDoubleFormatStr($!productCollection.product.price)}",
+			 #if($!level == "1")
+			 "productProfit": "赚${StringUtil.nullToInteger($!productCollection.product.productProfit)}",
+			 #else
+			 "productProfit": "赚${StringUtil.nullToInteger($!productCollection.product.productProfit)}",
+			 #end
+			"priceRecommend": "${StringUtil.nullToDoubleFormatStr($!productCollection.product.priceRecommend)}",
+		    "priceWholesale": "${StringUtil.nullToDoubleFormatStr($!productCollection.product.priceWholesale)}",
+		    "v2Price": "${StringUtil.nullToDoubleFormatStr($!productCollection.product.v2Price)}",
+		    "v3Price": "${StringUtil.nullToDoubleFormatStr($!productCollection.product.v3Price)}",
+			"isGroupProduct": "${StringUtil.booleanToInt($!productCollection.product.isGroupProduct)}",
+			"isSeckillProduct": "${StringUtil.booleanToInt($!productCollection.product.isSeckillProduct)}",
+			"isOpenV2Price": "${StringUtil.booleanToInt($!productCollection.product.isOpenV2Price)}",
+		    "isOpenV3Price": "${StringUtil.booleanToInt($!productCollection.product.isOpenV3Price)}",
+		    "isShowV2Price": "${StringUtil.booleanToInt($!productCollection.product.isShowV2Price)}",
+		    "isShowV3Price": "${StringUtil.booleanToInt($!productCollection.product.isShowV3Price)}",
+			"isProxy": "${StringUtil.booleanToInt($!productCollection.status)}",
+			"seckillPrice": "${StringUtil.nullToDoubleFormatStr($!productCollection.product.seckillPrice)}",
+			"isTaskProduct":"${StringUtil.booleanToInt($!productCollection.product.isTaskProduct)}",
+		    "isOpenPriceRecommend": "${StringUtil.booleanToInt($!productCollection.product.isOpenPriceRecommend)}",
+			"taskProductTag":"${HtmlDecodeTag.get($!productCollection.product.taskProductTag)}",
+			"profitRegion": "${StringUtil.nullToString($!productCollection.product.profitRegion)}",
+			"minPrice": "${StringUtil.nullToDoubleFormatStr($!productCollection.product.minPaymentPrice)}",
+		    "maxPrice": "${StringUtil.nullToDoubleFormatStr($!productCollection.product.maxPaymentPrice)}",
+		    "sellPriceRegion": "${StringUtil.nullToString($!productCollection.product.sellPriceRegion)}",
+		    "isTaskProduct":"${StringUtil.booleanToInt($!productCollection.product.isTaskProduct)}",
+		    "isRechargeGiftProduct":"${StringUtil.booleanToInt($!productCollection.product.isRechargeGiftProduct)}",
+			"taskProductTag":"${HtmlDecodeTag.get($!productCollection.product.taskProductTag)}",
+			"rewardNotes":"${HtmlDecodeTag.get($!productCollection.product.rewardNotes)}",
+			"isAggrProduct":"${StringUtil.booleanToInt($!productCollection.product.isAggrProduct)}"
+		}#if($velocityCount < $tagModel.data.size()),#end
+		#end
+	#end
+	]
+}

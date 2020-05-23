@@ -1,0 +1,148 @@
+##分销市场频道详情
+
+#set($channelId = $request.getParameter('channelId'))
+#set($pageId = $request.getParameter('pageId'))
+#set($ctx=$pageContext.request.contextPath)
+
+${channelDetailTag.setRequest($request)}
+#set($tagModel= ${channelDetailTag.getData(1, $pageId)})
+#set($speImageRateVo = ${imageRateTag.getImageRate($!tagModel.dataMap.get("picture"), "1200", "upload/")})
+{
+    "code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime": "$!systemTime",
+	"pageId": "$!pageId",
+    "channelId": "$!channelId",
+    "lastIndex": "$!tagModel.objectId",
+    "defKeywords": "${HtmlDecodeTag.get($!tagModel.dataMap.get("defKeywords"))}",
+    "storeName": "${HtmlDecodeTag.get($!tagModel.dataMap.get("storeName"))}",
+    "pageName": "${HtmlDecodeTag.get($!tagModel.dataMap.get("pageName"))}",
+    "color": "${HtmlDecodeTag.get($!tagModel.dataMap.get("color"))}",
+    "storeId": "$!tagModel.dataMap.get("storeId")",
+    "spePicture": "$!speImageRateVo.filePath",
+    "width": "$!speImageRateVo.width",
+	"height": "$!speImageRateVo.height",
+    "channelList":[
+	#if($tagModel.mapList && $!tagModel.mapList.size() > 0)
+    	#foreach($channel in $tagModel.mapList)
+    	{
+    		"channelId": "$!channel.get("channelId")",
+    		"isSeckill": "$!channel.get("isSeckill")",
+			"channelName": "${HtmlDecodeTag.get($!channel.get("channelName"))}",
+			"isHomeChannel": "${StringUtil.nullToInteger($!channel.get("isHomeChannel"))}",
+			"requestUrl": "$requestURL/clt/index.json?a=v1/home&channelId=$!channel.get("channelId")"
+    	}#if($velocityCount < $tagModel.mapList.size()),#end
+    	#end
+    #end
+    ],
+    "list": [
+    #if($tagModel.data && $tagModel.data.size() > 0)
+    	#set($isFirst = 1)
+		#foreach($fxChildren in $tagModel.data)
+		#set($imageVo = ${imageRateTag.getImageRate($fxChildren.picture, "1200")})
+			#if($fxChildren.detailMapList && $!fxChildren.detailMapList.size() > 0)
+			#if($isFirst == 2),#end
+			#set($isFirst = 2)
+			{
+				"childrenId": "$!fxChildren.childrenId",
+				"type": "$!fxChildren.type",
+				"attribute": "$!fxChildren.attribute",
+				"specialName": "${HtmlDecodeTag.get($!fxChildren.specialName)}",
+				"picture": "$!imageVo.filePath",
+				"width": "$!imageVo.width",
+				"height": "$!imageVo.height",
+				"contents": [
+				#if($fxChildren.type == 0 || $fxChildren.type == 1 || $fxChildren.type == 2 || $fxChildren.type == 7)
+					#foreach($fxDetail in $fxChildren.detailMapList)
+					#set($imageRateVo = ${imageRateTag.getImageRate($fxDetail.get("picture"), "1500", "upload/")})
+					{
+						"pictureIcon": "$!imageRateVo.filePath",
+						"width": "$!imageRateVo.width",
+						"height": "$!imageRateVo.height",
+	                    "targetType": "$!fxDetail.get("targetType")",
+	                    "discoveryType": "$!fxDetail.get("discoveryType")",
+	                    "webUrl": "$!fxDetail.get("webUrl")",
+	                    "content": "${HtmlDecodeTag.get($!fxDetail.get("content"))}",
+	                    "navigationName": "${HtmlDecodeTag.get($!fxDetail.get("navigationName"))}",
+	                    "color": "${HtmlDecodeTag.get($!fxDetail.get("navigationName"))}",
+	                    "giftId": "${HtmlDecodeTag.get($!fxDetail.get("giftId"))}",
+	                    "originId": "${HtmlDecodeTag.get($!fxDetail.get("originId"))}",
+	                    "appid": "${HtmlDecodeTag.get($!fxDetail.get("appid"))}",
+	                    "title": "${HtmlDecodeTag.get($!fxDetail.get("title"))}",
+	                    "seckillName": "${HtmlDecodeTag.get($!fxDetail.get("seckillName"))}",
+	                    "seckillId": "${HtmlDecodeTag.get($!fxDetail.get("seckillId"))}",
+	                    "startTime": "$!fxDetail.get("startTime")",
+	                    "endTime": "$!fxDetail.get("endTime")",
+	                    #if($fxDetail.get("content") != "")
+		                    #if($fxDetail.get("targetType") == "2")
+		                    	"requestUrl":"$!requestURL/clt/index.json?a=v1/productDetail&productId=$!fxDetail.get("content")"
+		                    #elseif($fxDetail.get("targetType") == "5")
+		                    "requestUrl":"$!requestURL/clt/index.json?a=v1/productCategoryV2List&categoryId=$!fxDetail.get("content")"
+		                    #else
+		                    	"requestUrl":"$!requestURL/clt/index.json?a=v1/home&productId=$!channelId&pageId=$!fxDetail.get("content")"
+		                    #end
+		                #else
+		                	"requestUrl":""
+		                #end
+					}#if($velocityCount < $fxChildren.detailMapList.size()),#end
+					#end
+				#end
+				],
+				"products": [
+				#if( $fxChildren.type != 0 && $fxChildren.type != 1)
+				#if($fxChildren.type == 2 || $fxChildren.type == 7)
+				 #set($detailList = ${fxChildren.detailSpecialMapList})
+				#else
+				 #set($detailList = ${fxChildren.detailMapList})
+				#end
+					#foreach($fxDetail in $detailList)
+					#set($isSeckillProduct =${StringUtil.booleanToInt($!fxDetail.get("isSeckillProduct"))})
+					#set($level =${StringUtil.nullToInteger($!tagModel.dataMap.get("level"))})
+					#set($imageURL = ${imageRateTag.getData($fxDetail.get("image"), "1200", "upload/")})
+					{
+						 "productId": "$!fxDetail.get("productId")",
+			             "productName": "${HtmlDecodeTag.get($!fxDetail.get("productName"))}",
+			             "imageUrl": "$!imageURL",
+			             "isShowPrice": "${StringUtil.booleanToInt($!fxDetail.get("isShowPrice"))}",
+			             "isSeckillProduct": "${StringUtil.booleanToInt($!fxDetail.get("isSeckillProduct"))}",
+			             "isSeckillStarted": "${StringUtil.booleanToInt($!fxDetail.get("isSeckillStarted"))}",
+			             "seckillEndTime": "${StringUtil.nullToLong($!fxDetail.get("seckillEndTime"))}",
+			             "price": "${StringUtil.nullToDoubleFormatStr($!fxDetail.get("price"))}",
+						 "priceRecommend": "${StringUtil.nullToDoubleFormatStr($!fxDetail.get("priceRecommend"))}",
+					   	 "priceWholesale": "${StringUtil.nullToDoubleFormatStr($!fxDetail.get("priceWholesale"))}",
+					   	 "seckillPrice": "${StringUtil.nullToDoubleFormatStr($!fxDetail.get("seckillPrice"))}",
+						 "v2Price": "${StringUtil.nullToDoubleFormatStr($!fxDetail.get("v2Price"))}",
+						 "v3Price": "${StringUtil.nullToDoubleFormatStr($!fxDetail.get("v3Price"))}",
+						 "minPaymentPrice": "${StringUtil.nullToDoubleFormatStr($!fxDetail.get("minPaymentPrice"))}",
+						 "maxPaymentPrice": "${StringUtil.nullToDoubleFormatStr($!fxDetail.get("maxPaymentPrice"))}",
+			             "productEffectIntro": "${HtmlDecodeTag.get($!fxDetail.get("productEffectIntro"))}",
+			             "couponIntro": "${HtmlDecodeTag.get($!fxDetail.get("couponIntro"))}",
+			             "soldoutNoticeType": "${StringUtil.nullToInteger($!fxDetail.get("soldoutNoticeType"))}",
+			             "soldoutNotice":"${HtmlDecodeTag.get($!fxDetail.get("soldoutNotice"))}",
+			             "originalPrice": "${StringUtil.nullToDoubleFormatStr($!fxDetail.get("originalPrice"))}",
+			           	 "seckillNoticeType": "$!fxDetail.get("seckillNoticeType")",
+			             "isProxy": "$!fxDetail.get("isProxy")",
+			             "isGroupProduct": "$!fxDetail.get("isGroupProduct")",
+			             "isOpenPriceRecommend": "$!fxDetail.get("isOpenPriceRecommend")",
+			             "isOpenV2Price": "$!fxDetail.get("isOpenV2Price")",
+			             "isOpenV3Price": "$!fxDetail.get("isOpenV3Price")",
+			             "isShowLevelPrice": "$!fxDetail.get("isShowLevelPrice")",
+			             "isShowV2Price": "$!fxDetail.get("isShowV2Price")",
+			             "isShowV3Price": "$!fxDetail.get("isShowV3Price")",
+			             "isSoldOut": "$!fxDetail.get("isSoldOut")",
+			             "isRechargeGiftProduct": "$!fxDetail.get("isRechargeGiftProduct")",
+			             "isHaveProductMaterial": "$!fxDetail.get("isHaveProductMaterial")",
+			             "isTaskProduct": "$!fxDetail.get("isTaskProduct")",
+			             "taskProductTag": "${HtmlDecodeTag.get($!fxDetail.get("taskProductTag"))}",
+			             "rewardNotes": "${HtmlDecodeTag.get($!fxDetail.get("rewardNotes"))}",
+			             "requestUrl":"$!requestURL/clt/index.json?a=v1/productDetail&productId=$!fxDetail.get("productId")"
+					}#if($velocityCount < $detailList.size()),#end
+					#end
+				#end
+				]
+			}
+			#end
+		#end
+	#end
+    ]
+}

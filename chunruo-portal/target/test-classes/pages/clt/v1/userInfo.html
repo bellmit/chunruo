@@ -1,0 +1,137 @@
+##用户详情
+
+${userInfoTag.setRequest($request)}
+#set($tagModel= ${userInfoTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	#set($user = ${tagModel.data.get("user")})
+	#set($isApplyAgent = ${tagModel.data.get("isApplyAgent")})
+	#set($isNewTalent = ${tagModel.data.get("isNewTalent")})
+	#set($couponCount = ${tagModel.data.get("couponCount")})
+	#set($collectionCount = ${tagModel.data.get("collectionCount")})
+	#set($halfV2SaleAmount = ${tagModel.data.get("halfV2SaleAmount")})
+	#set($thridV3SaleAmount = ${tagModel.data.get("thridV3SaleAmount")})
+	#set($isCurrentSign = ${tagModel.data.get("isCurrentSign")})
+	#set($isOpenStore = ${tagModel.data.get("isOpenStore")})
+	#set($isShowTopStore = ${tagModel.data.get("isShowTopStore")})
+	#set($isChangeButton = ${tagModel.data.get("isChangeButton")})
+	#set($isOpenTax = ${tagModel.data.get("isOpenTax")})
+	#set($isOpenPriceRecommend = ${tagModel.data.get("isOpenPriceRecommend")})
+	#set($vipCustomerId = ${tagModel.data.get("vipCustomerId")})
+	#set($preCustomerId = ${tagModel.data.get("preCustomerId")})
+	#set($salesCustomerId = ${tagModel.data.get("salesCustomerId")})
+	#set($signIntegral = ${tagModel.data.get("signIntegral")})
+	#set($isShowImageText = ${tagModel.data.get("isShowImageText")})
+	
+	#set($logo = ${imageRateTag.getData($user.storeLogo, "1200", "upload/")})
+	"userInfo":{
+		"headerImage":"$!user.headerImage",
+		"weixinCardImage":"$!user.weixinCardImage",
+		"introduce":"${HtmlDecodeTag.get($!user.introduce)}",
+		"sex": "$!user.sex",
+		"mobile": "${StringUtil.null2Str($!user.mobile)}",
+		"storeMobile": "${StringUtil.null2Str($!user.storeMobile)}",
+		"cityId": "$!user.cityId",
+		"userId": "$!user.userId",
+		"provinceId": "$!user.provinceId",
+		"realName": "${HtmlDecodeTag.get($!user.realName)}",
+		"areaId": "$!user.areaId",
+		"cityName": "${HtmlDecodeTag.get($!user.cityName)}",
+		"nickname": "${HtmlDecodeTag.get($!user.nickname)}",
+		"areaName": "${HtmlDecodeTag.get($!user.areaName)}",
+		"provinceName": "${HtmlDecodeTag.get($!user.provinceName)}",
+		"isBindWechat": "${StringUtil.booleanToInt($!user.isBindWechat)}",
+		"isBindWeixin": "${StringUtil.booleanToInt($!user.isBindWechat)}",
+		"isBdUser": "${StringUtil.booleanToInt($!user.isBdUser)}",
+		"isImAdviser": "${StringUtil.booleanToInt($!user.isImAdviser)}",
+		"isAdviserFriend": "${StringUtil.booleanToInt($!user.isAdviserFriend)}",
+		"adviserUserId": "${StringUtil.null2Str($!user.adviserUserId)}",
+		"adviserUserName": "${HtmlDecodeTag.get($!user.adviserUserName)}",
+		"wechatNick": "${HtmlDecodeTag.get($!user.wechatNick)}",
+		"vipLevel": "$!user.level",
+		"expireTime": "${StringUtil.strDateYMD2Long($!user.expireEndDate)}",
+		"isApplyAgent": "$!isApplyAgent",
+		"isNewTalent": "$!isNewTalent",
+		"isAuthSucc": "${StringUtil.booleanToInt($!user.isAuthSucc)}",
+		"idCardName": "${StringUtil.replaceIdCardName($!user.idCardName)}",
+		"idCardNo": "${StringUtil.replaceIdCardNo($!user.idCardNo)}",
+		"couponCount":"$!couponCount",
+		"halfV2SaleAmount":"$!halfV2SaleAmount",
+		"thridV3SaleAmount":"$!thridV3SaleAmount",
+		"collectionCount":"$!collectionCount",
+		"isHavePassword":"$!user.isHavePassword",
+		"isCurrentSign":"${StringUtil.booleanToInt($!isCurrentSign)}",
+		"isOpenStore":"${StringUtil.booleanToInt($!isOpenStore)}",
+		"isOpenTax":"${StringUtil.booleanToInt($!isOpenTax)}",
+		"isShowTopStore":"${StringUtil.booleanToInt($!isShowTopStore)}",
+		"isOpenPriceRecommend":"${StringUtil.booleanToInt($!isOpenPriceRecommend)}",
+		"isShowImageText":"${StringUtil.booleanToInt($!isShowImageText)}",
+		"isChangeButton":"${StringUtil.booleanToInt($!isChangeButton)}",
+		"vipCustomerId":"${StringUtil.null2Str($!vipCustomerId)}",
+		"preCustomerId":"${StringUtil.null2Str($!preCustomerId)}",
+		"salesCustomerId":"${StringUtil.null2Str($!salesCustomerId)}",
+		"storeName": "${HtmlDecodeTag.get($!user.nickname)}",
+		"topStoreName": "${HtmlDecodeTag.get($!user.topStoreName)}",
+		"linkman": "${HtmlDecodeTag.get($!user.linkman)}",
+		"registerTime":"${DateUtil.getSeconds($!user.registerTime)}",
+		"consultateNumber":"${StringUtil.nullToInteger($!tagModel.data.get("consultateNumber"))}",
+		"isTemporaryMember": "${StringUtil.booleanToInt($!user.isTemporaryMember)}",
+		"memberEndTime": "${StringUtil.nullToLong($!user.memberEndTime)}",
+		"logo":"$logo",
+		"pushLevel": "${StringUtil.nullToInteger($!user.pushLevel)}",
+		#if($!user.level > 1)
+			"invitationCode":"$!user.inviterCode",
+			"invitationUrl":"$requestURL/wap/in.html?a=$!user.inviterCode&b=$!user.userId",
+		#end
+		"shareUrl": "$requestURL/wap/index?shopid=$!user.userId",
+		"discoveryPrivacy": "$requestURL/upload/discoveryPrivacy.html"
+	},
+	"storeInfo":{
+		"logo":"$logo",
+		"storeName": "${HtmlDecodeTag.get($!user.nickname)}",
+		"mobile": "${HtmlDecodeTag.get($!user.storeMobile)}",
+		"linkman": "${HtmlDecodeTag.get($!user.linkman)}",
+		"serviceTel": "${HtmlDecodeTag.get($!user.serviceTel)}",
+		"serviceQq": "${HtmlDecodeTag.get($!user.serviceQq)}",
+		"storeId": "$!user.userId",
+		#if($!user.level > 1)
+			"invitationCode":"$!user.inviterCode",
+			"invitationUrl":"$requestURL/wap/in.html?a=$!user.inviterCode&b=$!user.userId",
+		#end
+		"shareUrl": "$requestURL/wap/index?shopid=$!user.userId"     
+	},
+	"orderInfo":{
+		#set($orderInfo = ${tagModel.data.get("orderInfo")})
+		"unpayCount":"$!orderInfo.unpayCount",
+		"unsentCount":"$!orderInfo.unsentCount",
+		"undeliveryCount":"$!orderInfo.undeliveryCount",
+		"refuntCount" :"$!orderInfo.refuntCount",
+		"waitEvaluateCount" :"$!orderInfo.waitEvaluateCount"
+	},
+	"financeInfo":{
+	    #set($orderInfo = ${tagModel.data.get("orderInfo")})
+		#set($finance = ${tagModel.data.get("financeInfo")})
+		"balance":"${NumberUtil.amountConversion($!finance.balance)}",
+		"accountAmount":"${NumberUtil.amountConversion($!finance.accountAmount)}",
+		"unbalance":"$!finance.unbalance",
+		"storeBalance":"$!finance.storeBalance",
+		"groupBalance":"$!finance.groupBalance",
+		"groupUnbalance":"$!finance.groupUnbalance",
+		"teamSize":"$!finance.teamSize",
+		"monthSales" :"${NumberUtil.amountConversion($!finance.realMonthSaleAmount)}",
+		"brokerage":"${NumberUtil.amountConversion($!finance.brokerage)}",
+		"signIntegral":"${StringUtil.nullToInteger($!signIntegral)}",
+		"daySaleAmount":"${NumberUtil.amountConversion($!finance.daySaleAmount)}",
+		"intRealMonthSaleAmount":"${StringUtil.getIntegerNumberStr($!finance.realMonthSaleAmount,1)}",
+		"realMonthSaleAmount":"$!finance.realMonthSaleAmount",
+		"virtualMonthSaleAmount":"$!finance.virtualMonthSaleAmount",
+		"lastMonthSaleAmount":"$!finance.lastMonthSaleAmount",
+		"saleAmountStandard":"$!finance.saleAmountStandard",
+		"halfV2SaleAmount":"$!finance.halfV2SaleAmount",
+		"thridV3SaleAmount":"$!finance.thridV3SaleAmount",
+		"needSaleAmount":"$!finance.needSaleAmount",
+		"totalSaleAmount":"${NumberUtil.amountConversion($!finance.totalSaleAmount)}"
+	}
+}

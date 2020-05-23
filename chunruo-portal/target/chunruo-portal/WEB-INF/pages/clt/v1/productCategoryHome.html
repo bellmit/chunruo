@@ -1,0 +1,39 @@
+## 商品分类首页
+
+${productCategoryHomeTag.setRequest($request)}
+#set($tagModel = ${productCategoryHomeTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"secondCategory":{
+	    "typeName" : "精选推荐",
+	    "list" : [
+		    #if($tagModel.data.get("secondCategoryList") && $!tagModel.data.get("secondCategoryList").size() > 0)
+				#foreach($category in $tagModel.data.get("secondCategoryList"))
+				#set($imageURL = ${imageRateTag.getData($category.imagePath, "1200", "upload/")})
+				{
+				    "categoryId":"${StringUtil.nullToLong($!category.categoryId)}",
+				    "imageUrl":"$!imageURL",
+				    "catName":"${HtmlDecodeTag.get($!$!category.name)}"
+				}#if($velocityCount < $tagModel.data.get("secondCategoryList").size()),#end
+				#end
+			#end
+	    ]
+	},
+	"firstCategory":{
+	    "typeName" : "全部类目",
+	    "list" : [
+		    #if($tagModel.data.get("firstCategroyList") && $!tagModel.data.get("firstCategroyList").size() > 0)
+				#foreach($category in $tagModel.data.get("firstCategroyList"))
+				#set($imageURL = ${imageRateTag.getData($category.imagePath, "1200", "upload/")})
+				{
+				    "categoryId":"${StringUtil.nullToLong($!category.categoryId)}",
+				    "imageUrl":"$!imageURL",
+				    "catName":"${HtmlDecodeTag.get($!$!category.name)}"
+				}#if($velocityCount < $tagModel.data.get("firstCategroyList").size()),#end
+				#end
+			#end
+	    ]
+	}
+}

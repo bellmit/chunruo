@@ -1,0 +1,55 @@
+## 用户的收货地址管理
+
+#set($pageidx = $request.getParameter('pageidx'))
+#set($pagesize = $request.getParameter('pagesize'))
+#set($lastId = $request.getParameter('lastId'))
+#set($productType = $request.getParameter('productType'))
+#set($keyword = $request.getParameter('keyword'))
+
+${addressListTag.setRequest($request)}
+#set($tagModel= ${addressListTag.getData($productType, $pageidx, $pagesize, $lastId, $keyword)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"total":"$!tagModel.total",
+	"dataList":[
+	#set($isDefault = 0)
+	#if($tagModel.data && $tagModel.data.size() > 0)
+		#foreach($address in $tagModel.data)
+		#set($identityBack = ${imageRateTag.getData($!address.identityBack, "1200", "upload/")})
+		#set($identityFront = ${imageRateTag.getData($!address.identityFront, "1200", "upload/")})
+	 	{
+			"addressId": "$!address.addressId",
+			"name": "${HtmlDecodeTag.get($!address.name)}",
+			"mobile": "${HtmlDecodeTag.get($!address.mobile)}",
+			"address": "${HtmlDecodeTag.get($!address.address)}",
+			"fullAddress": "${HtmlDecodeTag.get($!address.fullAddress)}",
+			"isValidIdentity": "${StringUtil.booleanToInt($address.isHavRealInfo)}",
+			"isDefault": "${StringUtil.booleanToInt($address.isDefault)}",
+			"msg":"${HtmlDecodeTag.get($!address.msg)}",
+			"areaId":"$!address.areaId",
+			"cityId":"$!address.cityId",
+			"identityBack":"$!address.identityBack",
+			"identityFront":"$!address.identityFront",
+			"identityBackRelative":"$!address.identityBack",
+			"identityFrontRelative":"$!address.identityFront",
+			"identityBackData":"$!address.identityBackData",
+			"identityFrontData":"$!address.identityFrontData",
+			"realName":"${HtmlDecodeTag.get($!address.realName)}",
+			"identityNo":"${HtmlDecodeTag.get($!address.identityNo)}",
+			"provinceId":"$!address.provinceId",
+			"zipcode":"$!address.zipcode",
+			"provinceName":"$!address.provinceName",
+			"cityName":"${HtmlDecodeTag.get($!address.cityName)}",
+			"areaName":"${HtmlDecodeTag.get($!address.areaName)}"
+			#if(${StringUtil.booleanToInt($address.isDefault)} > $isDefault)
+				#set($isDefault = ${StringUtil.booleanToInt($address.isDefault)})
+			#end
+		}#if($velocityCount < $tagModel.data.size()),#end
+		#end
+	#end
+	],
+	"isDefault": "$isDefault"
+}

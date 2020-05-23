@@ -1,0 +1,50 @@
+ ## 领取好礼页面
+
+${fitnessCoachInfoTag.setRequest($request)}
+#set($tagModel = ${fitnessCoachInfoTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"storeId":"${StringUtil.nullToLong($!tagModel.data.storeId)}",
+	"reason":"${StringUtil.nullToString($!tagModel.data.reason)}",
+	"status":"${StringUtil.nullToInteger($!tagModel.data.status)}",
+	"surplus":"${StringUtil.nullToString($!tagModel.data.surplus)}",
+	"desc":"${StringUtil.nullToString($!tagModel.data.desc)}",
+	"mainImageList": [
+	#if($!tagModel.data.mainImageList && $!tagModel.data.mainImageList.size() > 0)
+   		#foreach($mainImage in $tagModel.data.mainImageList)
+   		#set($headImageURL = ${imageRateTag.getData($mainImage, "1200", "upload/")})
+		{
+           	"imageUrl": "$!headImageURL"
+		}#if($velocityCount < $tagModel.data.mainImageList.size()),#end
+   		#end
+   	#end
+   	],
+   	"codeImageList": [
+	#if($!tagModel.data.codeImageList && $!tagModel.data.codeImageList.size() > 0)
+   		#foreach($codeImage in $tagModel.data.codeImageList)
+   		#set($codeImageURL = ${imageRateTag.getData($codeImage, "1200", "upload/")})
+		{
+           	"imageUrl": "$!codeImageURL"
+		}#if($velocityCount < $tagModel.data.codeImageList.size()),#end
+   		#end
+   	#end
+   	],
+	"headImageList": [
+	#if($!tagModel.data.headImageList && $!tagModel.data.headImageList.size() > 0)
+   		#foreach($headImage in $tagModel.data.headImageList)
+		{
+           	"imageUrl": "$!headImage"
+		}#if($velocityCount < $tagModel.data.headImageList.size()),#end
+   		#end
+   	#end
+   	],
+   	"activityPrize": {
+   		#set($imageURL = ${imageRateTag.getData($!tagModel.data.get('activityPrize').image, "1200", "upload/")})
+        "productName": "$!tagModel.data.get('activityPrize').content",
+        "imageURL": "$!imageURL",
+        "totalQuantity": "$!tagModel.data.get('activityPrize').totalQuantity",
+        "quantity": "$!tagModel.data.get('activityPrize').quantity"
+   	}
+}

@@ -1,0 +1,46 @@
+## 优惠券
+
+#set($pageidx_1 = $request.getParameter('pageidx'))
+#set($pagesize_1 = $request.getParameter('pagesize'))
+#set($status_1 = $request.getParameter('status'))
+#set($lastId_1 = $request.getParameter('lastId'))
+
+${couponListTag.setRequest($request)}
+#set($tagModel = ${couponListTag.getData($pageidx_1, $pagesize_1, $status_1, $lastId_1)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"dataList":[
+		#if($tagModel.data && $tagModel.data.size() > 0)
+	 		#foreach($userCoupon in $tagModel.data)
+	 		 #set($imageURL = ${imageRateTag.getData($userCoupon.productImagePath, "1200", "upload/")})
+	 
+	 		{
+	 			"receiveTime":"$!userCoupon.receiveTime",
+				"effectiveTime":"$!userCoupon.effectiveTime",
+				"effectiveTimeFormat":"${HtmlDecodeTag.get($!userCoupon.effectiveTimeFormat)}",
+				"couponNo":"$!userCoupon.couponNo",
+				"userCouponId":"$!userCoupon.userCouponId",
+				"couponName":"${HtmlDecodeTag.get($!userCoupon.coupon.couponName)}",
+				"couponId":"$!userCoupon.coupon.couponId",
+				"couponType":"$!userCoupon.coupon.couponType",
+				"fullAmount":"$!userCoupon.coupon.fullAmount",
+				"giveAmount": "$!userCoupon.coupon.giveAmount",
+				"attribute":"$!userCoupon.coupon.attribute",
+				"couponStatus":"$!userCoupon.couponStatus",
+				"typeName":"${HtmlDecodeTag.get($!userCoupon.coupon.typeName)}",
+				"title":"${HtmlDecodeTag.get($!userCoupon.coupon.title)}",
+				"bindNames":"${HtmlDecodeTag.get($!userCoupon.coupon.bindNames)}",
+				"isLastDay": "${StringUtil.booleanToInt($!userCoupon.isLastDay)}",
+				"lastDayInfo":"${HtmlDecodeTag.get($!userCoupon.lastDayInfo)}",
+				"isRechargeProductCoupon":"${StringUtil.booleanToInt($!userCoupon.isRechargeProductCoupon)}",
+		        "imageUrl":"$!imageURL",
+		        "bindIntro":"${HtmlDecodeTag.get($!userCoupon.coupon.bindIntro)}",
+		        "productNames":"${HtmlDecodeTag.get($!userCoupon.coupon.productNames)}"
+			}#if($velocityCount < $tagModel.data.size()),#end
+		 	#end
+		#end
+	]
+}

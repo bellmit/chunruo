@@ -1,0 +1,286 @@
+
+## 分类搜索
+#set($brandId = $request.getParameter('brandId'))
+#set($firstCategoryId = $request.getParameter('firstCategoryId'))
+#set($secondCategoryId = $request.getParameter('secondCategoryId'))
+#set($productType = $request.getParameter('productType'))
+#set($pageidx = $request.getParameter('pageidx'))
+#set($pagesize = $request.getParameter('pagesize'))
+#set($lastId = $request.getParameter('lastId'))
+
+${productCategoryDetailTag.setRequest($request)}
+#set($tagModel= ${productCategoryDetailTag.getData($brandId,$firstCategoryId, $secondCategoryId,  $pageidx, $pagesize, $lastId)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"total": "$!tagModel.total",
+	"brandId" : "${StringUtil.nullToLong($!tagModel.dataMap.get("brandId"))}",
+	"firstCategoryId" : "${StringUtil.nullToLong($!tagModel.dataMap.get("firstCategoryId"))}",
+	"secondCategoryId" : "${StringUtil.nullToLong($!tagModel.dataMap.get("secondCategoryId"))}",
+	"adBanner" : {
+	        #if($tagModel.dataMap.get("realSecondCategory"))
+	        #set($imageRateVo = ${imageRateTag.getImageRate($!tagModel.dataMap.get("realSecondCategory").adImagePath, "1200", "upload/")})
+			#set($targetType =${StringUtil.nullToLong($!tagModel.dataMap.get("realSecondCategory").realTargetType)})
+			#set($content =${StringUtil.null2Str($!tagModel.dataMap.get("realSecondCategory").content)})
+			"imageUrl": "$!imageRateVo.filePath",
+	     	"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height",
+			"targetType":"$!targetType",
+			"content":"$!content",
+			"webUrl":"$!content",
+			"originId": "",
+	        "appid": "",
+			"pageName" : "${HtmlDecodeTag.get($!tagModel.dataMap.get("realSecondCategory").pageName)}",
+			#if($!content != "")
+			#if($targetType == "2")
+              	"requestUrl":"$!requestURL/clt/index.json?a=v1/productDetail&productId=$!content",
+            #elseif($targetType == "0" || $targetType == "3")
+            	"requestUrl":"$!requestURL/clt/index.json?a=v1/channelDetail&productId=$!channelId&pageId=$!content",
+            #else
+              	"requestUrl":"",
+            #end
+			#end
+			"discoveryType" : "${StringUtil.nullToInteger($!tagModel.dataMap.get("realSecondCategory").discoveryType)}"
+		 #end
+	},
+	"firstCategoryList":[
+	   #if($tagModel.dataMap.get("firstCategoryList") && $!tagModel.dataMap.get("firstCategoryList").size() > 0)
+				#foreach($category in $tagModel.dataMap.get("firstCategoryList"))
+				#set($imageURL = ${imageRateTag.getData($category.microImagePath, "1200", "upload/")})
+				{
+				    "categoryId":"${StringUtil.nullToLong($!category.categoryId)}",
+				    "imageUrl":"$!imageURL",
+				    "catName":"${HtmlDecodeTag.get($!category.name)}"
+				}#if($velocityCount < $tagModel.dataMap.get("firstCategoryList").size()),#end
+				#end
+			#end
+	],
+	"secondCategoryList":[
+	   #if($tagModel.dataMap.get("secondCategoryList") && $!tagModel.dataMap.get("secondCategoryList").size() > 0)
+				#foreach($category in $tagModel.dataMap.get("secondCategoryList"))
+				#set($imageURL = ${imageRateTag.getData($category.imagePath, "1200", "upload/")})
+				{
+				    "categoryId":"${StringUtil.nullToLong($!category.categoryId)}",
+				    "imageUrl":"$!imageURL",
+				    "catName":"${HtmlDecodeTag.get($!category.name)}"
+				}#if($velocityCount < $tagModel.dataMap.get("secondCategoryList").size()),#end
+				#end
+			#end
+	],
+	"recommendProductBrandList":[
+	   #if($tagModel.dataMap.get("recommendProductBrandList") && $!tagModel.dataMap.get("recommendProductBrandList").size() > 0)
+				#foreach($brand in $tagModel.dataMap.get("recommendProductBrandList"))
+				#set($imageURL = ${imageRateTag.getData($brand.image, "1200", "upload/")})
+				{
+				    "brandId":"${StringUtil.nullToLong($!brand.brandId)}",
+				    "imageUrl":"$!imageURL",
+				    "shortName":"${HtmlDecodeTag.get($!brand.shortName)}"
+				}#if($velocityCount < $tagModel.dataMap.get("recommendProductBrandList").size()),#end
+				#end
+			#end
+	],
+	"searchBrandList":[
+	   #if($tagModel.dataMap.get("searchBrandList") && $!tagModel.dataMap.get("searchBrandList").size() > 0)
+				#foreach($brand in $tagModel.dataMap.get("searchBrandList"))
+				#set($imageURL = ${imageRateTag.getData($brand.image, "1200", "upload/")})
+				{
+				    "brandId":"${StringUtil.nullToLong($!brand.brandId)}",
+				    "imageUrl":"$!imageURL",
+				    "shortName":"${HtmlDecodeTag.get($!brand.shortName)}"
+				}#if($velocityCount < $tagModel.dataMap.get("searchBrandList").size()),#end
+				#end
+			#end
+	],
+	"dataList":[
+	#if($tagModel.data && $tagModel.data.size() > 0)
+		#foreach($product in $tagModel.data)
+		#set($imageVo = ${imageRateTag.getImageRate($product.image, "1200","upload/")})
+		#set($isSeckillProduct =${StringUtil.booleanToInt($!product.isSeckillProduct)})
+		#set($isOpenV2Price =${StringUtil.booleanToInt($!product.isOpenV2Price)})
+		#set($isOpenV3Price =${StringUtil.booleanToInt($!product.isOpenV3Price)})
+		{
+		 	"productId": "$!product.productId",
+			"imageUrl": "$!imageVo.filePath",
+			"width": "$!imageVo.width",
+			"height": "$!imageVo.height",
+			"productName": "${HtmlDecodeTag.get($!product.name)}",
+			"price": "${StringUtil.nullToDoubleFormatStr($!product.paymentPrice)}",
+			"priceDiscount": "${StringUtil.null2Str($!product.priceDiscount)}",
+			"productProfit": "赚￥${StringUtil.nullToInteger($!product.productProfit)}",
+			"isOpenV2Price": "${StringUtil.booleanToInt($!product.isOpenV2Price)}",
+			"isOpenV3Price": "${StringUtil.booleanToInt($!product.isOpenV3Price)}",
+			"isShowLevelPrice": "${StringUtil.booleanToInt($!product.isShowLevelPrice)}",
+			"isShowV2Price": "${StringUtil.booleanToInt($!product.isShowV2Price)}",
+			"isShowV3Price": "${StringUtil.booleanToInt($!product.isShowV3Price)}",
+			"isProxy": "${StringUtil.nullToInteger($!product.isProxy)}",
+			"isOpenPriceRecommend": "${StringUtil.booleanToInt($!product.isOpenPriceRecommend)}",
+			"isSoldOut": "${StringUtil.booleanToInt($!product.isPaymentSoldout)}",
+			"isAggrProduct":"${StringUtil.booleanToInt($!product.isAggrProduct)}",
+			"seckillPrice": "${StringUtil.nullToDoubleFormatStr($!product.paymentPrice)}",
+		    "priceRecommend": "${StringUtil.nullToDoubleFormatStr($!product.priceRecommend)}",
+		    "priceWholesale": "${StringUtil.nullToDoubleFormatStr($!product.priceWholesale)}",
+		    "isRechargeGiftProduct": "${StringUtil.booleanToInt($!product.isRechargeGiftProduct)}",
+			"v2Price": "${StringUtil.nullToDoubleFormatStr($!product.v2Price)}",
+			"v3Price": "${StringUtil.nullToDoubleFormatStr($!product.v3Price)}",
+			"minPrice": "${StringUtil.nullToDoubleFormatStr($!product.minPaymentPrice)}",
+		    "maxPrice": "${StringUtil.nullToDoubleFormatStr($!product.maxPaymentPrice)}",
+			"isHaveProductMaterial": "${StringUtil.booleanToInt($!product.isHaveProductMaterial)}",
+			"isTaskProduct":"${StringUtil.booleanToInt($!product.isTaskProduct)}",
+			"taskProductTag":"${HtmlDecodeTag.get($!product.taskProductTag)}",
+			"rewardNotes":"${HtmlDecodeTag.get($!product.rewardNotes)}",
+			"productEffectIntro": "${HtmlDecodeTag.get($!product.productEffectIntro)}",
+			"couponIntro":"${HtmlDecodeTag.get($!product.couponIntro)}",
+			"soldoutNoticeType": "${StringUtil.nullToInteger($!product.soldoutNoticeType)}",
+			"soldoutNotice":"${HtmlDecodeTag.get($!product.soldoutNotice)}",
+			"stockNumber": "${StringUtil.nullToInteger($!product.paymentStockNumber)}",
+			"isSeckillReadStatus": "${StringUtil.booleanToInt($!product.isSeckillReadStatus)}",
+			"seckillReadDateTips": "${StringUtil.null2Str($!product.seckillReadDateTips)}",
+			"seckillStartTime": "${StringUtil.nullToLong($!product.seckillStartTime)}",
+			"isSeckillProduct": "${StringUtil.booleanToInt($!product.isSeckillProduct)}",
+			"isSeckillStarted": "${StringUtil.booleanToInt($!product.isSeckillStarted)}",
+			"seckillEndTime": "${StringUtil.nullToLong($!product.seckillEndTime)}",
+			"isSeckillLimit": "${StringUtil.booleanToInt($!product.isSeckillLimit)}",
+			"seckillLimitNumber": "${StringUtil.nullToInteger($!product.seckillLimitNumber)}",
+			"seckillExistBuyNum": "${StringUtil.nullToInteger($!product.seckillExistBuyNum)}",
+			"seckillWaitBuyNum": "${StringUtil.nullToInteger($!product.seckillWaitBuyNum)}",
+			"productType": "${StringUtil.nullToInteger($!product.productType)}",
+			"warehouseType": "${StringUtil.nullToInteger($!product.warehouseType)}",
+			"categoryFid": "${StringUtil.null2Str($!product.categoryFids)}",
+			"categoryId": "${StringUtil.null2Str($!product.categoryIds)}",
+			"countryName": "${HtmlDecodeTag.get($!product.countryName)}",
+			"isProxy": "${StringUtil.nullToInteger($!product.isProxy)}",
+			"groupPriceRegion": "${StringUtil.nullToString($!product.paymentGroupPriceRegion)}",
+			"priceRegion": "${StringUtil.nullToString($!product.paymentPriceRegion)}",
+			"seckillPriceRegion": "${StringUtil.nullToString($!product.seckillPriceRegion)}",
+			"tax": "${StringUtil.nullToString($!product.tax)}",
+			"taxRegion": "${StringUtil.nullToString($!product.paymentTaxRegion)}",
+			"profitRegion": "${StringUtil.nullToString($!product.profitRegion)}",
+			"sellPriceRegion": "${StringUtil.nullToString($!product.sellPriceRegion)}",
+			"aggrProductList": [
+			#if($!product.aggrProductList && $!product.aggrProductList.size() > 0)
+			#foreach($aggrProduct in $tagModel.data.aggrProductList)
+			#set($aggrProductType =${StringUtil.nullToInteger($!aggrProduct.productType)})
+			#set($aggrProductTax =${StringUtil.nullToDouble($!aggrProduct.tax)})
+			#set($imageURL = ${imageRateTag.getData($aggrProduct.image, "1200", "upload/")})
+			{
+			 "wareHouseName" : "${HtmlDecodeTag.get($!aggrProduct.wareHouseName)}",
+			 "deliveryIntroUrl" : "$requestURL/upload/deliveryIntro.html",
+			 #if($!aggrProductType == "4")
+			 "iconUrl" : "$requestURL/upload/images/send_icon.png",
+			 #elseif($!aggrProductType == "3")
+			 "iconUrl" : "$requestURL/upload/images/cross_icon.png",
+			 #else
+			 "iconUrl" : "$requestURL/upload/images/product_cross_default.png",
+			 #end
+			 "productId": "${StringUtil.nullToLong($!aggrProduct.productId)}",
+			 "isSpceProduct": "${StringUtil.booleanToInt($!aggrProduct.isSpceProduct)}",
+			 "isMoreSpecProduct": "${StringUtil.booleanToInt($!aggrProduct.isMoreSpecProduct)}",
+			 "goTax": "0",
+			 "tax": "${StringUtil.nullToString($!aggrProduct.tax)}",
+			 #if($!aggrProductType == "4")
+			 "taxRegion": "税费自理",
+			 "goTaxIntro":"带有\"税费自理\"标签的商品，需由您自行至海关缴纳并承担进口税（行邮税）及邮政代办报关手续费。",
+			 #else
+			 "taxRegion": "${StringUtil.nullToString($!aggrProduct.paymentTaxRegion)}",
+			 "goTaxIntro":"",
+			 #end
+			 "isFreeTax":"${StringUtil.booleanToInt($!aggrProduct.isFreeTax)}",
+			 "productType": "${StringUtil.nullToInteger($!aggrProduct.productType)}",
+			 "isFreePostage":"${StringUtil.booleanToInt($!aggrProduct.isFreePostage)}",
+			 "price": "${StringUtil.nullToDoubleFormatStr($!aggrProduct.paymentPrice)}",
+			 "priceRegion": "${StringUtil.nullToString($!aggrProduct.paymentPriceRegion)}",
+			 "estimatedTime": "${HtmlDecodeTag.get($!aggrProduct.estimatedTime)}",
+			 "postage": "${StringUtil.nullToString($!aggrProduct.postage)}",
+			 "postageNotice": "${HtmlDecodeTag.get($!aggrProduct.postageNotice)}",
+			 "payIntro": "${HtmlDecodeTag.get($!aggrProduct.payIntro)}",
+			 "stockNumber": "${StringUtil.nullToInteger($!aggrProduct.paymentStockNumber)}",
+			 "postage": "${StringUtil.nullToString($!aggrProduct.postage)}",
+			 "isSoldOut": "${StringUtil.booleanToInt($!aggrProduct.isPaymentSoldout)}",
+			 "isSeckillProduct": "${StringUtil.booleanToInt($!aggrProduct.isSeckillProduct)}",
+			 "isSeckillReadStatus": "${StringUtil.booleanToInt($!aggrProduct.isSeckillReadStatus)}",
+			 "seckillReadDateTips": "${StringUtil.null2Str($!aggrProduct.seckillReadDateTips)}",
+			 "seckillStartTime": "${StringUtil.nullToLong($!aggrProduct.seckillStartTime)}",
+			 "seckillEndTime": "${StringUtil.nullToLong($!aggrProduct.seckillEndTime)}",
+			 "seckillPriceRegion": "${StringUtil.nullToString($!aggrProduct.seckillPriceRegion)}",
+			 "isSeckillLimit": "${StringUtil.booleanToInt($!aggrProduct.isSeckillLimit)}",
+			 "seckillLimitNumber": "${StringUtil.nullToInteger($!aggrProduct.seckillLimitNumber)}",
+			 "seckillExistBuyNum": "${StringUtil.nullToInteger($!aggrProduct.seckillExistBuyNum)}",
+			 "seckillWaitBuyNum": "${StringUtil.nullToInteger($!aggrProduct.seckillWaitBuyNum)}",
+			 "originalPrice": "${StringUtil.nullToDoubleFormatStr($!aggrProduct.paymentOriginalPrice)}",
+			 "originalPriceRegion": "${StringUtil.null2Str($!aggrProduct.paymentOriginalPriceRegion)}",
+			 "soldoutNoticeType": "${StringUtil.nullToInteger($!aggrProduct.soldoutNoticeType)}",
+			 "soldoutNotice":"${HtmlDecodeTag.get($!aggrProduct.soldoutNotice)}",
+			 "imageUrl": "$!imageURL",
+			 "productSpecList" : [
+			    #if($!aggrProduct.productSpecList && $!aggrProduct.productSpecList.size() > 0)
+		    		#foreach($productSpec in $product.productSpecList)
+		    		#set($aggrProductSpecTax =${StringUtil.nullToDouble($!productSpec.tax)})
+		    		#set($specImageURL = ${imageRateTag.getData($productSpec.specImagePath, "1200", "upload/")})
+					{
+			        	"productSpecId": "$!productSpec.productSpecId",
+			            "productSku": "${HtmlDecodeTag.get($!productSpec.productSku)}",
+			            "imageUrl": "$!specImageURL",
+			            "primarySpecId": "$!productSpec.primarySpecId",
+			            "primarySpecName": "${HtmlDecodeTag.get($!productSpec.primarySpecName)}",
+			            "primarySpecModelName": "${HtmlDecodeTag.get($!productSpec.primarySpecModelName)}",
+			            "secondarySpecId": "$!productSpec.secondarySpecId",
+			            "secondarySpecName": "${HtmlDecodeTag.get($!productSpec.secondarySpecName)}",
+			            "secondarySpecModelName": "${HtmlDecodeTag.get($!productSpec.secondarySpecModelName)}",
+						"stockNumber": "${StringUtil.nullToInteger($!productSpec.paymentStockNumber)}",
+						"isSoldOut": "${StringUtil.booleanToInt($!productSpec.isPaymentSoldout)}",
+						"isSeckillLimit": "${StringUtil.booleanToInt($!productSpec.isSeckillLimit)}",
+						"seckillLimitNumber": "${StringUtil.nullToInteger($!productSpec.seckillLimitNumber)}",
+						"seckillExistBuyNum": "${StringUtil.nullToInteger($!productSpec.seckillExistBuyNum)}",
+						"seckillWaitBuyNum": "${StringUtil.nullToInteger($!productSpec.seckillWaitBuyNum)}",
+						"weigth": "${StringUtil.nullToInteger($!productSpec.weigth)}",
+						"price": "${StringUtil.nullToDoubleFormatStr($!productSpec.paymentPrice)}",
+						"tax": "${StringUtil.nullToString($!productSpec.tax)}",
+						"goTax": "0",
+						"productTags": "${HtmlDecodeTag.get($!productSpec.productTags)}",
+						"soldoutNoticeType": "${StringUtil.nullToInteger($!productSpec.soldoutNoticeType)}",
+			            "soldoutNotice":"${HtmlDecodeTag.get($!productSpec.soldoutNotice)}"
+					}#if($velocityCount < $aggrProduct.productSpecList.size()),#end
+		    		#end
+		      #end
+			 ]
+			}#if($velocityCount < $product.aggrProductList.size()),#end
+	    		#end
+	    	#end
+   	 	],
+		"productSpecList": [
+		#if($!product.productSpecList && $!product.productSpecList.size() > 0)
+    		#foreach($productSpec in $tagModel.data.productSpecList)
+    		#set($specImageURL = ${imageRateTag.getData($productSpec.specImagePath, "1200", "upload/")})
+			{
+	        	"productSpecId": "$!productSpec.productSpecId",
+	            "productSku": "${HtmlDecodeTag.get($!productSpec.productSku)}",
+	            "imageUrl": "$!specImageURL",
+	            "primarySpecId": "$!productSpec.primarySpecId",
+	            "primarySpecName": "${HtmlDecodeTag.get($!productSpec.primarySpecName)}",
+	            "primarySpecModelName": "${HtmlDecodeTag.get($!productSpec.primarySpecModelName)}",
+	            "secondarySpecId": "$!productSpec.secondarySpecId",
+	            "secondarySpecName": "${HtmlDecodeTag.get($!productSpec.secondarySpecName)}",
+	            "secondarySpecModelName": "${HtmlDecodeTag.get($!productSpec.secondarySpecModelName)}",
+				"stockNumber": "${StringUtil.nullToInteger($!productSpec.paymentStockNumber)}",
+				"isSoldOut": "${StringUtil.booleanToInt($!productSpec.isPaymentSoldout)}",
+				"isSeckillLimit": "${StringUtil.booleanToInt($!productSpec.isSeckillLimit)}",
+				"seckillLimitNumber": "${StringUtil.nullToInteger($!productSpec.seckillLimitNumber)}",
+				"seckillExistBuyNum": "${StringUtil.nullToInteger($!productSpec.seckillExistBuyNum)}",
+				"seckillWaitBuyNum": "${StringUtil.nullToInteger($!productSpec.seckillWaitBuyNum)}",
+				"weigth": "${StringUtil.nullToInteger($!productSpec.weigth)}",
+				"price": "${StringUtil.nullToDoubleFormatStr($!productSpec.paymentPrice)}",
+				"tax": "${StringUtil.nullToDoubleFormatStr($!productSpec.tax)}",
+				"productTags": "${HtmlDecodeTag.get($!productSpec.productTags)}",
+				"soldoutNoticeType": "${StringUtil.nullToInteger($!productSpec.soldoutNoticeType)}",
+			    "soldoutNotice":"${HtmlDecodeTag.get($!productSpec.soldoutNotice)}"
+			}#if($velocityCount < $product.productSpecList.size()),#end
+    		#end
+    	#end
+   	 	]
+		}#if($velocityCount < $tagModel.data.size()),#end
+		#end
+	#end
+	]
+}

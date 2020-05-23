@@ -1,0 +1,157 @@
+##等级价格
+
+${memberCenterTag.setRequest($request)}
+#set($tagModel= ${memberCenterTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"levelPrice":{
+		"levelAgent": "$!tagModel.data.get("levelAgent")",
+		"levelSpecialDealer": "9800.00",
+		"giftProductId": "$!tagModel.data.get("giftProductId")",
+		"crucesMoney": "$!tagModel.data.get("crucesMoney")",
+		"saveMoney": "$!tagModel.data.get("saveMoney")",
+		"earnMoney": "$!tagModel.data.get("earnMoney")",
+		"discount": "$!tagModel.data.get("discount")",
+		"brokerage":"${NumberUtil.amountConversion($!tagModel.data.get("brokerage"))}",
+		"videoUrl": "$!tagModel.data.get("videoUrl")",
+		"videoImageUrl": "$requestURL/upload/$!tagModel.data.get("videoImageUrl")",
+		#set($imageRateVo = ${imageRateTag.getImageRate($!tagModel.data.get("decleareImageUrl"), "1200", "upload/")})
+		"decleareImageWidth": "$!imageRateVo.width",
+		"decleareImageHeight": "$!imageRateVo.height",
+		"decleareImageUrl" : "$!imageRateVo.filePath"
+	},
+	"conditionVoList":[{
+		"isMeetApplyAgent": "${StringUtil.nullToInteger($!tagModel.data.get("isMeetApplyAgent"))}",
+	     #if($tagModel.data.get("conditionVoList") && $tagModel.data.get("conditionVoList").size() > 0)
+	     "contents":[
+	     	#foreach($ex in $tagModel.data.get("conditionVoList"))
+			{
+				"name":"${HtmlDecodeTag.get($!ex.name)}",
+				"count":"${StringUtil.nullToString($!ex.count)}"
+			}#if($velocityCount < $tagModel.data.get("conditionVoList").size()),#end
+			#end
+	  	]
+	  	#end
+	}],
+	"authority":[
+	#if($tagModel.data.get("ex2List") && $tagModel.data.get("ex2List").size() > 0)
+		#foreach($ex in $tagModel.data.get("ex2List"))
+		{
+			"title":"${HtmlDecodeTag.get($!ex.title)}",
+			"sort":"$!ex.sort",
+			"content":"${HtmlDecodeTag.get($!ex.content)}",
+			"type":"$!ex.type",
+			#if(${StringUtil.nullToString($!ex.imageUrl)} != "")
+				"imageUrl":"$requestURL/upload/$!ex.imageUrl"
+			#else
+				"imageUrl":""
+			#end
+		}#if($velocityCount < $tagModel.data.get("ex2List").size()),#end
+		#end
+	#end
+	],
+	"nextAuthority":[
+	#if($tagModel.data.get("ex3List") && $tagModel.data.get("ex3List").size() > 0)
+		#foreach($ex in $tagModel.data.get("ex3List"))
+		{
+			"title":"${HtmlDecodeTag.get($!ex.title)}",
+			"sort":"$!ex.sort",
+			"content":"${HtmlDecodeTag.get($!ex.content)}",
+			"type":"$!ex.type",
+			#if(${StringUtil.nullToString($!ex.imageUrl)} != "")
+				"imageUrl":"$requestURL/upload/$!ex.imageUrl",
+			#else
+				"imageUrl":"",
+			#end
+			#if(${StringUtil.nullToString($!ex.headImage)} != "")
+				"headImage":"$requestURL/upload/$!ex.headImage"
+			#else
+				"headImage":""
+			#end
+		}#if($velocityCount < $tagModel.data.get("ex3List").size()),#end
+	 	#end
+	#end
+	],
+	"welfareList":[
+	#if($tagModel.data.get("welfareList") && $tagModel.data.get("welfareList").size() > 0)
+		#foreach($welfare in $tagModel.data.get("welfareList"))
+		{
+			"name":"${HtmlDecodeTag.get($!welfare.title)}",
+			"sort":"$!welfare.sort",
+			"type":"$!welfare.type",
+			#if(${StringUtil.nullToString($!welfare.imageUrl)} != "")
+				"imageUrl":"$requestURL/upload/$!welfare.imageUrl",
+			#else
+				"imageUrl":"",
+			#end
+			"textList":[
+             	#if($welfare.textList && $!welfare.textList.size() > 0)
+              	   #foreach($text in $welfare.textList)
+              	   {
+              	    	"text": "${HtmlDecodeTag.get($!text)}"
+              	   }#if($velocityCount < $welfare.textList.size()),#end
+              	   #end
+            	#end
+  				]
+		}#if($velocityCount < $tagModel.data.get("welfareList").size()),#end
+		#end
+	#end
+	],
+	"calculateList":[
+	#if($tagModel.data.get("calculateList") && $tagModel.data.get("calculateList").size() > 0)
+		#foreach($calculate in $tagModel.data.get("calculateList"))
+		{
+			"title":"${HtmlDecodeTag.get($!calculate.title)}",
+			"content":"${HtmlDecodeTag.get($!calculate.content)}",
+			"price":"${HtmlDecodeTag.get($!calculate.description)}",
+			"sort":"$!calculate.sort",
+			"type":"$!calculate.type"
+		}#if($velocityCount < $tagModel.data.get("calculateList").size()),#end
+		#end
+	#end
+	],
+	"commentList":[
+	#if($tagModel.data.get("commentList") && $tagModel.data.get("commentList").size() > 0)
+		#foreach($comment in $tagModel.data.get("commentList"))
+		{
+			"name":"${HtmlDecodeTag.get($!comment.title)}",
+			"content":"${HtmlDecodeTag.get($!comment.content)}",
+			"profession":"${HtmlDecodeTag.get($!comment.description)}",
+			"sort":"$!comment.sort",
+			"type":"$!comment.type",
+			#if(${StringUtil.nullToString($!comment.imageUrl)} != "")
+				"imageUrl":"$requestURL/upload/$!comment.imageUrl"
+			#else
+				"imageUrl":""
+			#end
+		}#if($velocityCount < $tagModel.data.get("commentList").size()),#end
+		#end
+	#end
+	],
+	"imageList" : [
+			#if($tagModel.data.imageList && $tagModel.data.imageList.size() > 0)
+				#foreach($image in $tagModel.data.imageList)
+				{
+				#set($imageRateVo = ${imageRateTag.getImageRate($!image, "1200", "upload/")})
+					"width": "$!imageRateVo.width",
+					"height": "$!imageRateVo.height",
+					"imageUrl": "$!imageRateVo.filePath"
+				}#if($velocityCount < $tagModel.data.imageList.size()),#end
+			 	#end
+			#end
+		],
+		"memberCenterImageList":[
+		     #if($tagModel.data.memberCenterImageList && $tagModel.data.memberCenterImageList.size() > 0)
+			    #foreach($image in $tagModel.data.memberCenterImageList)
+			       #set($imageRateVo = ${imageRateTag.getImageRate($image.imagePath, "1200", "upload/")})
+					{
+						"width": "$!imageRateVo.width",
+						"height": "$!imageRateVo.height",
+						"imageUrl": "$!imageRateVo.filePath"
+					}#if($velocityCount < $tagModel.data.memberCenterImageList.size()),#end
+				 	#end
+			 #end
+		]
+}

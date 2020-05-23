@@ -1,0 +1,74 @@
+## 选手数据
+
+${entrollCheckInfoTag.setRequest($request)}
+#set($tagModel= ${entrollCheckInfoTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"data":{
+	    "storeId": "$StringUtil.nullToLong($!tagModel.dataMap.get("storeId"))",
+		"status": "$StringUtil.nullToInteger($!tagModel.dataMap.get("status"))",
+		"reason": "$StringUtil.nullToString($!tagModel.dataMap.get("reason"))",
+		"enrollTime": "$StringUtil.nullToString($!tagModel.dataMap.get("enrollTime"))",
+		"activityLevel": "$StringUtil.nullToString($!tagModel.dataMap.get("activityLevel"))",
+		"currentTime": "$StringUtil.nullToString($!tagModel.dataMap.get("currentTime"))",
+		"startTime": "$StringUtil.nullToString($!tagModel.dataMap.get("startTime"))",
+		"endTime": "$StringUtil.nullToString($!tagModel.dataMap.get("endTime"))",
+		"firstVoteTime": "$StringUtil.nullToString($!tagModel.dataMap.get("firstVoteTime"))",
+		"secondVoteTime": "$StringUtil.nullToString($!tagModel.dataMap.get("secondVoteTime"))"
+	},
+	 "activityPrizeListMap": [
+    #if($tagModel.dataMap.get("activityPrizeListMap") && $tagModel.dataMap.get("activityPrizeListMap").size() > 0)
+   		#foreach($entry in $tagModel.dataMap.get("activityPrizeListMap").entrySet())
+   		#set($prizeList = $entry.value)
+    	{
+            "level": "${HtmlDecodeTag.get($!entry.key)}",
+            "prizeList": [
+           	#if($prizeList && $prizeList.size() > 0)
+            	#foreach($prize in $prizeList)
+            	#set($imageURL = ${imageRateTag.getData($prize.image, "1200", "upload/")})
+            	{
+            	 	"title": "${HtmlDecodeTag.get($!prize.title)}",
+		            "content": "${HtmlDecodeTag.get($!prize.content)}",
+		            "imageURL": "$!imageURL"
+            	}#if($velocityCount < $prizeList.size()),#end
+				#end
+			#end
+           ]
+		}#if($velocityCount < $tagModel.dataMap.get("activityPrizeListMap").size()),#end
+		#end
+	#end
+    ],
+    "activityInfoListMap": [
+    #if($tagModel.dataMap.get("activityInfoListMap") && $tagModel.dataMap.get("activityInfoListMap").size() > 0)
+   		#foreach($entry in $tagModel.dataMap.get("activityInfoListMap").entrySet())
+   		#set($infoList = $entry.value)
+    	{
+            "level": "${StringUtil.nullToInteger($!entry.key)}",
+            "infoList": [
+           	#if($infoList && $infoList.size() > 0)
+            	#foreach($info in $infoList)
+            	#if($!entry.key == "4" || $!entry.key == "2" || $!entry.key == "3" || $!entry.key == "5")
+            	 #set($imageURL = ${imageRateTag.getData($info.content, "1200", "upload/")})
+            	 {
+		            "content": "$!imageURL",
+		            "introduce": "${HtmlDecodeTag.get($!info.introduce)}",
+		            "title": "${HtmlDecodeTag.get($!info.title)}"
+            	 }
+            	 #else
+            	 {
+		            "content": "${HtmlDecodeTag.get($!info.content)}",
+		            "introduce": "${HtmlDecodeTag.get($!info.introduce)}",
+		            "title": "${HtmlDecodeTag.get($!info.title)}"
+            	 }
+            	#end
+            	#if($velocityCount < $infoList.size()),#end
+				#end
+			#end
+           ]
+		}#if($velocityCount < $tagModel.dataMap.get("activityInfoListMap").size()),#end
+		#end
+	#end
+    ]
+}

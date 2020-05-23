@@ -1,0 +1,37 @@
+##充值中心
+
+${rechargeCenterTag.setRequest($request)}
+#set($tagModel= ${rechargeCenterTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"isClosedWechatPay":"0",
+	"isAuthSucc": "${StringUtil.booleanToInt($!tagModel.dataMap.get("isAuthSucc"))}",
+    "rechargeTemplateList":[
+	#if($tagModel.data && $tagModel.data.size() > 0)
+		#foreach($rechargeTemplate in $tagModel.data)
+		{
+			"templateId": "${StringUtil.nullToLong($!rechargeTemplate.templateId)}",
+			"type": "${StringUtil.nullToInteger($!rechargeTemplate.type)}",
+			"price": "${StringUtil.nullToDoubleFormat($!rechargeTemplate.amount)}",
+			"giftName": "${HtmlDecodeTag.get($!rechargeTemplate.giftName)}",
+			"isRecommend":"${StringUtil.booleanToInt($!rechargeTemplate.isRecommend)}",
+			"imageUrlList":[
+             	#if($rechargeTemplate.imageUrlList && $!rechargeTemplate.imageUrlList.size() > 0)
+              	   #foreach($image in $rechargeTemplate.imageUrlList)
+              	   #set($rechargeTemplateImageVo = ${imageRateTag.getImageRate($image, "1200","upload/")})
+              	   {
+              	    	"imageUrl": "$!rechargeTemplateImageVo.filePath",
+              	    	"width": "${StringUtil.nullToInteger($!rechargeTemplateImageVo.width)}",
+			    	    "height": "${StringUtil.nullToInteger($!rechargeTemplateImageVo.height)}"
+              	   }#if($velocityCount < $rechargeTemplate.imageUrlList.size()),#end
+              	   #end
+            	#end
+  				]
+		}#if($velocityCount < $tagModel.data.size()),#end
+	 	#end
+	#end
+   ]
+  	
+}

@@ -1,0 +1,27 @@
+##  国家地区编码列表
+
+#set($tagModel= ${countryListTag.getData()})
+{
+    "code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime": "$!systemTime",
+    "list": [
+    #if($tagModel.data && $tagModel.data.size() > 0)
+		#foreach($each in $tagModel.data.entrySet())	
+		{
+			"key": "$!each.key",	
+			"value": [
+			#if($each.value && $each.value.size() > 0)
+				#foreach($country in $each.value)
+				{
+					"countryName": "${HtmlDecodeTag.get($!country.countryName)}",
+					"mobilePrefix": "$!country.telCode"
+				}#if($velocityCount < $each.value.size()),#end
+				#end
+			#end
+			]
+		}#if($velocityCount < $tagModel.data.size()),#end
+		#end
+	#end
+    ]
+}

@@ -1,0 +1,32 @@
+
+#set($pageidx = $request.getParameter('pageidx'))
+#set($pagesize = $request.getParameter('pagesize'))
+#set($lastId = $request.getParameter('lastId'))
+#set($status = $request.getParameter('status'))
+
+
+${withdrawalListTag.setRequest($request)}
+#set($tagModel= ${withdrawalListTag.getData($pageidx, $pagesize, $lastId,$status)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"dataList":[
+	 #if($tagModel.data && $tagModel.data.size() > 0)
+		#foreach($record in $tagModel.data)
+		{
+			"createTime": "${DateUtil.getSeconds($!record.createTime)}",
+			"amount": "${StringUtil.nullToDoubleFormatStr($!record.amount)}",
+			"status": "$!record.status",
+			#if($!record.complateTime)
+				"complateTime": "${DateUtil.getSeconds($!record.complateTime)}",
+			#else
+				"complateTime": "",
+			#end
+			"name": "${HtmlDecodeTag.get($!record.name)}"
+		}#if($velocityCount < $tagModel.data.size()),#end
+	 	#end
+	#end
+	]
+}

@@ -1,0 +1,16 @@
+##微信二维码生成帮助
+
+{
+	"code":"1",
+	"msg":"请求成功",
+	"systemTime":"$!systemTime",
+	"dataList":[
+		{
+			#set($imageRateVo = ${imageRateTag.getImageRate("/images/flock/codeCourse.png", "1200", "upload/")})
+			"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height",
+			"imageUrl" : "$!imageRateVo.filePath"
+		}
+	]
+}
+

@@ -1,0 +1,87 @@
+## 首页弹窗
+
+
+${homePopupTag.setRequest($request)}
+#set($tagModel= ${homePopupTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"data": {
+		#if($tagModel.dataMap.get("homePopup"))
+		#set($imageRateVo = ${imageRateTag.getImageRate($tagModel.dataMap.get("homePopup").imageUrl, "1200", "upload/")})
+	    	#set($targetType =${StringUtil.nullToLong($!tagModel.dataMap.get("homePopup").realTargetType)})
+			#set($content =${StringUtil.nullToString($!tagModel.dataMap.get("homePopup").content)})
+	    	"popupId" : "${StringUtil.nullToLong($!tagModel.dataMap.get("homePopup").popupId)}",
+	    	"imageUrl": "$!imageRateVo.filePath",
+			"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height",
+	    	"pushLevel" : "${StringUtil.nullToInteger($!tagModel.dataMap.get("homePopup").pushLevel)}",
+	    	"targetType" : "$!targetType",
+	    	"discoveryType" : "${StringUtil.nullToInteger($!tagModel.dataMap.get("homePopup").discoveryType)}",
+	    	"webUrl" : "$!content",
+	    	"content" : "$!content",
+	    	"pageName" : "${StringUtil.null2Str($!tagModel.dataMap.get("homePopup").pageName)}",
+	    	"originId": "",
+	        "appid": "",
+	        #if($content != "")
+	        #if($targetType == "2")
+              	"requestUrl":"$!requestURL/clt/index.json?a=v1/productDetail&productId=$!content",
+            #elseif($targetType == "0" || $targetType == "3")
+            	"requestUrl":"$!requestURL/clt/index.json?a=v1/channelDetail&productId=$!channelId&pageId=$!content",
+            #else
+              	"requestUrl":"",
+            #end
+            #else
+              	"requestUrl":"",
+            #end
+	    	"productId" : "${StringUtil.nullToInteger($!tagModel.dataMap.get("homePopup").productId)}",
+	    	"isInvitePage":"${StringUtil.booleanToInt($!tagModel.dataMap.get("homePopup").isInvitePage)}"
+	    	#if($tagModel.dataMap.get("invitesCourtesy"))
+	    	#set($invitesCourtesy = ${tagModel.dataMap.get("invitesCourtesy")})
+			#set($imagePathVo = ${imageRateTag.getImageRate($!invitesCourtesy.imagePath, "1200", "upload/")})
+			,"inviteImageUrl": "$!imagePathVo.filePath",
+			"inviteWidth": "$!imagePathVo.width",
+	        "inviteHeight": "$!imagePathVo.height"
+	    	#end
+	    #end
+	},
+	"rightPopup": {
+		#if($tagModel.dataMap.get("rightPopup"))
+			#set($imageRateVo = ${imageRateTag.getImageRate($tagModel.dataMap.get("rightPopup").imageUrl, "1200", "upload/")})
+	    	#set($targetType =${StringUtil.nullToLong($!tagModel.dataMap.get("rightPopup").realTargetType)})
+			#set($content =${StringUtil.nullToString($!tagModel.dataMap.get("rightPopup").content)})
+	    	"popupId" : "${StringUtil.nullToLong($!tagModel.dataMap.get("rightPopup").popupId)}",
+	    	"imageUrl": "$!imageRateVo.filePath",
+			"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height",
+	    	"pushLevel" : "${StringUtil.nullToInteger($!tagModel.dataMap.get("rightPopup").pushLevel)}",
+	    	"targetType" : "$!targetType",
+	    	"discoveryType" : "${StringUtil.nullToInteger($!tagModel.dataMap.get("rightPopup").discoveryType)}",
+	    	"webUrl" : "$!content",
+	    	"content" : "$!content",
+	    	"originId": "",
+	        "appid": "",
+	        #if($content != "")
+	        #if($targetType == "2")
+              	"requestUrl":"$!requestURL/clt/index.json?a=v1/productDetail&productId=$!content",
+            #elseif($targetType == "0" || $targetType == "3")
+            	"requestUrl":"$!requestURL/clt/index.json?a=v1/channelDetail&productId=$!channelId&pageId=$!content",
+            #else
+              	"requestUrl":"",
+            #end
+            #else
+              	"requestUrl":"",
+            #end
+            "isInvitePage":"${StringUtil.booleanToInt($!tagModel.dataMap.get("rightPopup").isInvitePage)}",
+	    	"pageName" : "${StringUtil.null2Str($!tagModel.dataMap.get("rightPopup").pageName)}"
+	    	#if($tagModel.dataMap.get("invitesCourtesy"))
+	    	#set($invitesCourtesy = ${tagModel.dataMap.get("invitesCourtesy")})
+			#set($imagePathVo = ${imageRateTag.getImageRate($!invitesCourtesy.imagePath, "1200", "upload/")})
+			,"inviteImageUrl": "$!imagePathVo.filePath",
+			"inviteWidth": "$!imagePathVo.width",
+	        "inviteHeight": "$!imagePathVo.height"
+	    	#end
+	    #end
+	}
+}

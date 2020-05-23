@@ -1,0 +1,23 @@
+ ## 财务管理首页面
+
+${financeTag.setRequest($request)}
+#set($tagModel = ${financeTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"data":{
+	    "brokerage":"${NumberUtil.amountConversion($!tagModel.data.get("brokerage"))}",
+	    "reward": "$!tagModel.data.get("reward")",
+	    "unReward": "$!tagModel.data.get("unReward")",
+		"balance": "$!tagModel.data.get("balance")",
+		"unbalance": "$!tagModel.data.get("unbalance")",
+		"hasBalance": "$!tagModel.data.get("hasBalance")",
+		"groupBalance": "$!tagModel.data.get("groupBalance")",
+		"groupUnbalance": "$!tagModel.data.get("groupUnbalance")",
+		"isNoEmptyBankCard": "$!tagModel.data.get("isNoEmptyBankCard")",
+		"isNoEmptyPayPassword": "$!tagModel.data.get("isNoEmptyPayPassword")",
+		"bankInfo": "$!tagModel.data.get("bankInfo")",
+		"isAuthSucc": "${StringUtil.booleanToInt($!tagModel.data.get("isAuthSucc"))}"
+	}
+}

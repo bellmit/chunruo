@@ -1,0 +1,66 @@
+##商标品牌
+
+#set($imageUrlHeader= "http://www.jikeduo.com.cn/")
+
+#set($tagModel = ${productBrandListTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime": "$!systemTime",
+	"backgroundImage" : {
+		#set($imageVo = ${imageRateTag.getImageRate($tagModel.minImagePath, "1200", "upload/")})
+	        "imageUrl": "$!imageVo.filePath",
+			"width": "$!imageVo.width",
+			"height": "$!imageVo.height"
+	},
+	"hotBrandList": [
+   	#if($tagModel.data && $tagModel.data.size() > 0)
+   		#foreach($productBrand in $tagModel.data)
+   		#set($brandPic = ${imageRateTag.getData($productBrand.image, "1200", "upload/")})
+		{
+			"brandId": "$!productBrand.brandId",
+            "brandName": "${HtmlDecodeTag.get($!productBrand.shortName)}",
+            "brandPic": "$!brandPic"
+		}#if($velocityCount < $tagModel.data.size()),#end
+		#end
+	#end
+    ],
+    "brandMap": [
+    #if($tagModel.listMap && $tagModel.listMap.size() > 0)
+   		#foreach($entry in $tagModel.listMap.entrySet())
+   		#set($brandList = $entry.value)
+    	{
+            "initial": "${HtmlDecodeTag.get($!entry.key)}",
+            "brandList": [
+           	#if($brandList && $brandList.size() > 0)
+            	#foreach($productBrand in $brandList)
+            	#set($imageURL = ${imageRateTag.getData($productBrand.image, "1200", "upload/")})
+            	{
+            	 	"brandId": "$!productBrand.brandId",
+		            "brandName": "${HtmlDecodeTag.get($!productBrand.name)}",
+		            "initial": "${HtmlDecodeTag.get($!productBrand.initial)}",
+		            "brandPic": "$!imageURL",
+		            "isHot": "${StringUtil.booleanToInt($!productBrand.isHot)}"
+            	}#if($velocityCount < $brandList.size()),#end
+				#end
+			#end
+           ]
+		}#if($velocityCount < $tagModel.listMap.size()),#end
+		#end
+	#end
+    ],
+    "allBrandList": [
+        #if($tagModel.dataList && $tagModel.dataList.size() > 0)
+           	#foreach($productBrand in $tagModel.dataList)
+           	#set($imageURL = ${imageRateTag.getData($productBrand.image, "1200", "upload/")})
+           	{
+           	 	"brandId": "$!productBrand.brandId",
+	            "brandName": "${HtmlDecodeTag.get($!productBrand.name)}",
+	            "initial": "${HtmlDecodeTag.get($!productBrand.initial)}",
+	            "brandPic": "$!imageURL",
+	            "typeNumber": "$!productBrand.typeNumber"
+           	}#if($velocityCount < $tagModel.dataList.size()),#end
+			#end
+		#end
+    ]
+}

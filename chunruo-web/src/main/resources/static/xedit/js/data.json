@@ -1,0 +1,83 @@
+[{
+        "module_name": "",
+        "type_show": 0,
+        "field_type": "image_ad",
+        "content": {
+            "max_width": "1125",
+            "image_size": "0",
+            "image_type": "0",
+            "max_height": "861",
+            "nav_list": {
+                "0": {
+                    "title": "MUSCLEPHARM",
+                    "prefix": "外链",
+                    "name": "http://localhost:8080/wap/productDetail?shopid=1&productid=2781",
+                    "image": "http://www.jikeduo.com.cn/upload/images/000/000/001/201702/58abd3f8b0d6f.jpg",
+                    "url": "2781&store_id=1"
+                },
+                "1": {
+                    "title": "MUSCLEMILK",
+                    "prefix": "外链",
+                    "name": "http://localhost:8080/wap/productDetail?shopid=1&productid=127564",
+                    "image": "http://www.jikeduo.com.cn/upload/images/000/000/001/201702/58abd38b16c09.jpg",
+                    "url": "127564&store_id=1"
+                },
+                "2": {
+                    "title": "",
+                    "prefix": "",
+                    "name": "",
+                    "image": "http://www.jikeduo.com.cn/upload/images/000/000/001/201702/58abbce72ac1b.png",
+                    "url": ""
+                }
+            }
+        }
+    },
+    {
+        "module_name": "",
+        "type_show": 0,
+        "field_type": "image_ad",
+        "content": {
+            "max_width": "540",
+            "image_size": "0",
+            "image_type": "0",
+            "max_height": "135",
+            "nav_list": {
+                "0": {
+                    "title": "",
+                    "prefix": "",
+                    "name": "",
+                    "image": "http://www.jikeduo.com.cn/upload/images/000/000/001/201607/5795e9038f733.jpg",
+                    "url": ""
+                }
+            }
+        }
+    },
+    {
+        "module_name": "",
+        "type_show": 0,
+        "field_type": "goods",
+        "content": {
+            "price": "1",
+            "buy_btn_type": "3",
+            "goods": [{
+                    "id": 127565,
+                    "title": "Muscle Milk 低脂乳清蛋白粉 巧克力味 875克/桶(1.93磅)【保税仓发货】",
+                    "price": 299,
+                    "image": "http://www.jikeduo.com.cn/upload/images/000/000/001/201702/58abd3f8b0d6f.jpg",
+                    "url": ""
+                },
+                {
+                    "id": 2728,
+                    "title": "MP Fitmiss 乳清蛋白粉 2磅/桶【保税仓发货】",
+                    "price": 239,
+                    "image": "http://www.jikeduo.com.cn/upload/images/000/000/001/201702/58abd3f8b0d6f.jpg",
+                    "url": ""
+                }
+            ],
+            "show_title": "1",
+            "buy_btn": "1",
+            "size_type": "0",
+            "size": "1"
+        }
+    }
+]

@@ -1,0 +1,47 @@
+## 根据店铺查询用户的购物车
+
+${cartListTag.setRequest($request)}
+#set($tagModel = ${cartListTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nickName": "${HtmlDecodeTag.get($!tagModel.dataMap.get("nickName"))}",
+	"level": "${StringUtil.nullToInteger($!tagModel.dataMap.get("level"))}",
+	"data":{
+	    #set($commonImageVo = ${imageRateTag.getImageRate("/images/common_cart@2x.png", "1200", "upload/")})
+	    #set($crossImageVo = ${imageRateTag.getImageRate("/images/cross_cart@2x.png", "1200", "upload/")})
+		"storeName":"${HtmlDecodeTag.get($!tagModel.dataMap.get("storeName"))}",
+		"commomImageUrl":"$!commonImageVo.filePath",
+		"crossImageUrl":"$!crossImageVo.filePath"
+	},
+	"dataList":[
+		#if($tagModel.data && $tagModel.data.size() > 0)
+	 		#foreach($cart in $tagModel.data)
+	 		#set($imageURL = ${imageRateTag.getData($cart.imagePath, "1200", "/upload/")})
+		 	{
+				"cartId":"$!cart.cartId",
+				"productId":"$!cart.productId",
+				"productSpecId":"$!cart.productSpecId",
+				"imageUrl":"$!imageURL",
+				"productName":"${HtmlDecodeTag.get($!cart.productName)}",
+				"productTags":"${HtmlDecodeTag.get($!cart.productTags)}",
+				"productNumber":"$!cart.quantity",
+				"isSoldOut":"${StringUtil.booleanToInt($!cart.isSoldout)}",
+				"isSpceProduct":"${StringUtil.booleanToInt($!cart.isSpceProduct)}",
+				"isSeckillProduct":"${StringUtil.booleanToInt($!cart.isSeckillProduct)}",
+				"stockNumber": "${StringUtil.nullToInteger($!cart.stockNumber)}",
+				"price":"${StringUtil.nullToDoubleFormatStr($cart.paymentPrice)}",
+				"tax":"${StringUtil.nullToDoubleFormatStr($cart.tax)}",
+				"productType": "${StringUtil.nullToInteger($!cart.productType)}",
+				"groupProductInfo": "${HtmlDecodeTag.get($!cart.groupProductInfo)}",
+				"isTaskProduct":"${StringUtil.booleanToInt($!cart.isTaskProduct)}",
+				"taskProductTag":"${HtmlDecodeTag.get($!cart.taskProductTag)}",
+				"isRechargeGiftProduct":"${StringUtil.booleanToInt($!cart.isRechargeGiftProduct)}"
+			}#if($velocityCount < $tagModel.data.size()),#end
+		 	#end
+		#end
+	]
+}
+
+

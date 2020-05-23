@@ -1,0 +1,617 @@
+.more-price-store-table {
+    margin-top: 10px;
+}
+.f12 {
+    font-size: 12px;
+}
+.ui-table-head {
+    -moz-box-align: center;
+    background: #f5f5f5 none repeat scroll 0 0;
+    border-bottom: 1px solid #e5e5e5;
+    display: -webkit-box;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+}
+.ui-table-list {
+    overflow: initial;
+}
+.ui-table-head .ui-table-list {
+    min-height: 35px;
+    font-family: Helvetica,STHeiti,"Microsoft YaHei",Verdana,Arial,Tahoma,sans-serif;
+    font-size: 13px;
+}
+.ui-table .width-auto {
+    -moz-box-flex: 1;
+    width: 9%;
+}
+.ui-table-list {
+    -moz-box-align: center;
+    -moz-box-pack: center;
+    display: -webkit-box;
+    overflow: hidden;
+    text-align: center;
+}
+.ui-table-head {
+    font-size: 14px;
+    line-height: 25px;
+}
+.item-con {
+    -moz-box-flex: 1;
+    font-size: 12px;
+    position: relative;
+}
+.ui-color2 {
+    color: #888d99;
+}
+.ui-input{
+	border: 1px solid #c0c8cf;
+    height: 25px;
+    line-height: 25px;
+    padding: 4px;
+    width: 99%;
+}
+.ui-table-body-item {
+    -moz-box-align: center;
+    background: #ffffff none repeat scroll 0 0;
+    border-bottom: 1px solid #e5e5e5;
+    display: -webkit-box;
+    font-size: 12px;
+    min-height: 25px;
+}
+.table-spec-wrap {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+}
+.page-border-right {
+    border-right: 1px solid #ddd;
+    width: 100%;
+}
+.table-spec-wrap .table-spec {
+    align-items: center;
+    display: flex;
+    flex: 1 1 0;
+    height: 25px;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+}
+
+.x-panel-body{
+    background: white;
+    font: 11px Arial, Helvetica, sans-serif;
+}
+.thumb{
+    background: #dddddd;
+    margin-top: 2px;
+    padding-bottom: 0;
+    text-align: center;
+}
+
+.x-quirks .thumb {
+    padding-bottom: 3px;
+}
+
+.thumb img{
+    height: 100px;
+    width: 100px;
+}
+.thumb-wrap{
+    float: left;
+    margin: 4px;
+    margin-right: 0;
+    padding: 5px;
+}
+.thumb-wrap span {
+    height: 40px;
+    display: block;
+    overflow: hidden;
+    text-align: center;
+    width: 100px; /* for ie to ensure that the text is centered */
+    align-items: center;
+    background: #fff none repeat scroll 0 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    justify-content: center;
+    line-height: 40px;
+    overflow: hidden;
+    padding: 0 10px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100px;
+}
+
+.x-item-over{
+    border:1px solid #dddddd;
+    background: #efefef url(over.gif) repeat-x left top;
+    padding: 4px;
+}
+
+.x-item-selected{
+    background: #eff5fb url(selected.gif) no-repeat right bottom;
+    border:1px solid #99bbe8;
+    padding: 4px;
+}
+.x-item-selected .thumb{
+    background:transparent;
+}
+
+.loading-indicator {
+    font-size:11px;
+    background-image:url('../../resources/themes/images/default/grid/loading.gif');
+    background-repeat: no-repeat;
+    background-position: left;
+    padding-left:20px;
+    margin:10px;
+}
+.x-view-selector {
+    position:absolute;
+    left:0;
+    top:0;
+    width:0;
+    border:1px dotted;
+    opacity: .5;
+    -moz-opacity: .5;
+    filter:alpha(opacity=50);
+    zoom:1;
+    background-color:#c3daf9;
+    border-color:#3399bb;
+}
+.ext-strict .ext-ie .x-tree .x-panel-bwrap{
+    position:relative;
+    overflow:hidden;
+}
+.x-editable {
+    color: #000;
+}
+
+#loading-mask {
+    background-color: white;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 20000;
+}
+#loading {
+    height: auto;
+    left: 45%;
+    padding: 2px;
+    position: absolute;
+    top: 40%;
+    z-index: 20001;
+}
+#loading a {
+    color: #225588;
+}
+#loading .loading-indicator {
+    background: white none repeat scroll 0 0;
+    color: #444;
+    font: bold 13px Helvetica,Arial,sans-serif;
+    height: auto;
+    margin: 0;
+    padding: 10px;
+}
+#loading-msg {
+    font-size: 10px;
+    font-weight: normal;
+}
+#header {
+    background-color: #025b80;
+    float: left;
+    height: 58px;
+    margin: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+}
+.logo {
+    float: left;
+    padding-left: 10px;
+}
+.toolkit-switch {
+    color: white;
+    font-size: 11px;
+    left: 289px;
+    position: absolute;
+    text-align: right;
+    top: 12px;
+}
+.product-header {
+    color: white;
+    left: 50px;
+    margin: 0;
+    position: absolute;
+    z-index: 2;
+}
+.loginSection {
+	color: #ffffff;
+	float: right;
+	text-align: right;
+	width: 480px;
+	height: 25px;
+	line-height: 36px;
+}
+.loginSection span{
+	font-size: 13px;
+	padding-top: 20px;
+}
+.loginSection span a{
+	text-decoration:none;
+} 
+.xd-menu-icon-separator {
+    background-color: white;
+    border-left: 1px solid #e0e0e0;
+    left: 38px;
+    width: 1px;
+}
+.xd-menu-item-link {
+    display: inline-block;
+    line-height: 40px;
+    padding: 12px 0px 20px 30px;
+    font-size: 30px;
+    background-color: white;
+    border-top: 1px solid #e0e0e0;
+}
+.msg .x-box-mc {
+    font-size:14px;
+}
+#msg-div {
+    position:absolute;
+    left:35%;
+    top:10px;
+    width:300px;
+    z-index:20000;
+}
+#msg-div .msg {
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    background: #F6F6F6;
+    border: 0.01em solid #ccc;
+    margin-top: 2px;
+    padding: 10px 15px;
+    color: #555;
+}
+#msg-div .msg h3 {
+    margin: 0 0 8px;
+    font-weight: bold;
+    font-size: 15px;
+}
+#msg-div .msg p {
+    margin: 0;
+}
+.navigation{
+	background-image: url(../ximages/icons/navigation.png) !important;
+}
+.video{
+	background-image: url(../ximages/icons/folder_video.png) !important;
+}
+.system{
+	background-image: url(../ximages/icons/folder_system.png) !important;
+}
+.sync{
+	background-image: url(../ximages/icons/folder_sync.png) !important;
+}
+.content{
+	background-image: url(../ximages/icons/folder_content.png) !important;
+}
+.template{
+	background-image: url(../ximages/icons/folder_template.png) !important;
+}
+.add{
+	background-image: url(../ximages/icons/add.png) !important;
+}
+.add_folder{
+	background-image: url(../ximages/icons/add_folder.png) !important;
+}
+.save{
+	background-image: url(../ximages/icons/save.png) !important;
+}
+.delete{
+	background-image: url(../ximages/icons/delete.png) !important;
+}
+.attribute{
+	background-image: url(../ximages/icons/attribute.png) !important;
+}
+.move{
+	background-image: url(../ximages/icons/move.png) !important;
+}
+.link{
+	background-image: url(../ximages/icons/link.png) !important;
+}
+.refresh{
+	background-image: url(../ximages/icons/refresh.png) !important;
+}
+.tip_refresh{
+	background-image: url(../ximages/refresh.png) !important;
+}
+.tip_search{
+	background-image: url(../ximages/search.png) !important;
+}
+.dataobj{
+	background-image: url(../ximages/icons/dataobj.gif) !important;
+}
+.dict_item{
+	background-image: url(../ximages/icons/objdict_item.png) !important;
+}
+.dict_tpl{
+	background-image: url(../ximages/icons/objdict_tpl.png) !important;
+}
+.sort{
+	background-image: url(../ximages/icons/sort.png) !important;
+}
+.publish{
+	background-image: url(../ximages/icons/publish.png) !important;
+}
+.publishlist{
+	background-image: url(../ximages/icons/publishlist.png) !important;
+}
+.layout-hide{
+	background-image: url(../ximages/icons/layout-hide.png) !important;
+}
+.layout-bottom{
+	background-image: url(../ximages/icons/layout-bottom.png) !important;
+}
+.start_pub{
+	background-image: url(../ximages/icons/start_pub.png) !important;
+}
+.preview{
+	background-image: url(../ximages/icons/preview.png) !important;
+}
+.history{
+	background-image: url(../ximages/icons/history.png) !important;
+}
+.submit{
+	background-image: url(../ximages/icons/submit.png) !important;
+}
+.compare{
+	background-image: url(../ximages/icons/compare.png) !important;
+}
+.compare_current{
+	background-image: url(../ximages/icons/compare_current.png) !important;
+}
+.compare_history{
+	background-image: url(../ximages/icons/compare_history.png) !important;
+}
+.batch{
+	background-image: url(../ximages/icons/batch.png) !important;
+}
+.work{
+	background-image: url(../ximages/icons/work.png) !important;
+}
+.multiple-wait{
+	background: url(../ximages/icons/wait.png)no-repeat;height:16px;width:16px;cursor:pointer;
+}
+.multiple-error{
+	background: url(../ximages/icons/error.png)no-repeat;height:16px;width:16px;cursor:pointer;
+}
+.multiple-completed{
+	background: url(../ximages/icons/completed.png)no-repeat;height:16px;width:16px;cursor:pointer;
+}
+.upload{
+	background-image: url(../ximages/icons/upload.png) !important;
+}
+.withdraw{
+	background-image: url(../ximages/icons/withdraw.png) !important;
+}
+.synth{
+	background-image: url(../ximages/icons/synth.png) !important;
+}
+.system_manager{
+	background-image: url(../ximages/icons/system_manager.png) !important;
+}
+.user_manager{
+	background-image: url(../ximages/icons/user_manager.png) !important;
+}
+.pubserver{
+	background-image: url(../ximages/icons/pubserver.png) !important;
+}
+.system_user{
+	background-image: url(../ximages/icons/system_user.png) !important;
+}
+.system_role{
+	background-image: url(../ximages/icons/system_role.png) !important;
+}
+.system_group{
+	background-image: url(../ximages/icons/system_group.png) !important;
+}
+.system_resource{
+	background-image: url(../ximages/icons/system_resource.png) !important;
+}
+.disabled{
+	background-image: url(../ximages/icons/disabled.png) !important;
+}
+.enable{
+	background-image: url(../ximages/icons/enable.png) !important;
+}
+.folder-pub{
+	background-image: url(../ximages/icons/folder-pub.png) !important;
+}
+.folder{
+	background-image: url(../ximages/icons/folder.png) !important;
+}
+.rePublish{
+	background-image: url(../ximages/icons/rePublish.png) !important;
+}
+.error{
+	background-image: url(../ximages/icons/error.png) !important;
+}
+.vector{
+	background-image: url(../ximages/icons/vector.png) !important;
+}
+.vector_add{
+	background-image: url(../ximages/icons/vector_add.png) !important;
+}
+.tool{
+	background-image: url(../ximages/icons/tool.png) !important;
+}
+
+.device_manager{
+	background-image: url(../ximages/icons/device_manager.png) !important;
+}
+.device_list{
+	background-image: url(../ximages/icons/device_list.png) !important;
+}
+
+.client_user_manager{
+	background-image: url(../ximages/icons/user_manager.gif) !important;
+}
+.client_user{
+	background-image: url(../ximages/icons/client_user.gif) !important;
+}
+
+.push_manager{
+	background-image: url(../ximages/icons/push_manager.gif) !important;
+}
+.new_push{
+	background-image: url(../ximages/icons/new_push.png) !important;
+}
+.push_history{
+	background-image: url(../ximages/icons/push_history.png) !important;
+}
+.push_config{
+	background-image: url(../ximages/icons/push_config.png) !important;
+}
+.push_sender{
+	background-image: url(../ximages/icons/push_sender.png) !important;
+}
+
+.app_manager{
+	background-image: url(../ximages/icons/app_manager.png) !important;
+}
+.app_list{
+	background-image: url(../ximages/icons/app_list.png) !important;
+}
+.white_list{
+	background-image: url(../ximages/icons/white_list.png) !important;
+}
+.app_version{
+	background-image: url(../ximages/icons/app_version.png) !important;
+}
+.app_plugin{
+	background-image: url(../ximages/icons/app_plugin.png) !important;
+}
+.system_config{
+	background-image: url(../ximages/icons/system_config.gif) !important;
+}
+.package{
+	background-image: url(../ximages/icons/package.png) !important;
+}
+.sourceData_manager{
+	background-image: url(../ximages/icons/source_data.png) !important;
+}
+.task_manager{
+	background-image: url(../ximages/icons/task_manager.png) !important;
+}
+.msg_process{
+	background-image: url(../ximages/icons/msg_process.png) !important;
+}
+.config_manager{
+	background-image: url(../ximages/icons/config_manager.png) !important;
+}
+.storage_config{
+	background-image: url(../ximages/icons/storage_config.png) !important;
+}
+.sys_config{
+	background-image: url(../ximages/icons/sys_config.png) !important;
+}
+.sys_refresh{
+	background-image: url(../ximages/icons/sys_refresh.gif) !important;
+}
+.folder_show{
+	background-image: url(../ximages/icons/folder_show.png) !important;	
+}
+.shortcut{
+	background-image: url(../ximages/icons/shortcut.png) !important;	
+}
+.day{
+	background-image: url(../ximages/icons/statis_day.png) !important;	
+}
+.week{
+	background-image: url(../ximages/icons/statis_week.png) !important;	
+}
+.month{
+	background-image: url(../ximages/icons/statis_month.png) !important;	
+}
+.year{
+	background-image: url(../ximages/icons/statis_year.png) !important;	
+}
+.statis_all{
+	background-image: url(../ximages/icons/statis_all.png) !important;	
+}
+.statis_a{
+	background-image: url(../ximages/icons/statis_a.png) !important;	
+}
+.statis_b{
+	background-image: url(../ximages/icons/statis_b.gif) !important;	
+}
+.statis_c{
+	background-image: url(../ximages/icons/statis_c.png) !important;	
+}
+.statis_d{
+	background-image: url(../ximages/icons/statis_d.png) !important;	
+}
+.statis_e{
+	background-image: url(../ximages/icons/statis_e.png) !important;	
+}
+.statis_f{
+	background-image: url(../ximages/icons/statis_f.png) !important;	
+}
+.attachment{
+	background-image: url(../ximages/icons/attachment.png) !important;	
+}
+.users{
+	background-image: url(../ximages/icons/users.png) !important;	
+}
+.check_course{
+	background-image: url(../ximages/icons/check_course.png) !important;	
+}
+.learning_schedule{
+	background-image: url(../ximages/icons/learning_schedule.png) !important;	
+}
+.log_manager{
+	background-image: url(../ximages/icons/log_manager.png) !important;	
+}
+.cont_manager{
+	background-image: url(../ximages/icons/cont_manager.gif) !important;	
+}
+.reservation_course{
+	background-image: url(../ximages/icons/reservation_course.png) !important;	
+}
+.iconHelp{
+	background-image: url(../ximages/icons/iconHelp.png) !important;	
+}
+.guang{
+	background-image: url(../ximages/icons/guang.png) !important;	
+}
+.hua{
+	background-image: url(../ximages/icons/hua.png) !important;	
+}
+.da{
+	background-image: url(../ximages/icons/da.png) !important;	
+}
+.excel{
+	background-image: url(../ximages/icons/page_excel.png) !important;	
+}
+.adds{
+	background-image: url(../ximages/adds.gif) !important;
+	height: 32px;
+    width: 32px;	
+}
+.tab_open{
+	background-image: url(../ximages/tab_open.jpg) !important;
+	height: 32px;
+    width: 32px;	
+}
+.tab_close{
+	background-image: url(../ximages/tab_close.jpg) !important;
+	height: 32px;
+    width: 32px;	
+}

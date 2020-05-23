@@ -1,0 +1,81 @@
+## 订单详情页面
+
+#set($orderId = $request.getParameter('orderId'))
+#set($isNeedCheckPayment = $request.getParameter('isNeedCheckPayment'))
+
+${orderDetailTag.setRequest($request)}
+#set($tagModel= ${orderDetailTag.getData($orderId, $isNeedCheckPayment)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"data":{
+	    "isClosedWechatPay":"0",
+	    "isNeedCheckPayment":"${StringUtil.nullToInteger($!tagModel.dataMap.get("isNeedCheckPayment"))}",
+		"orderId":"$!tagModel.data.orderId",
+		"orderNo":"$!tagModel.data.orderNo",
+		"tradeNo":"$!tagModel.data.tradeNo",
+		"status":"$!tagModel.data.status",
+		"unDeliverStatus":"${StringUtil.nullToInteger($!tagModel.data.unDeliverStatus)}",
+		"productType":"$!tagModel.data.productType",
+		"isMyself":"${StringUtil.booleanToInt($!tagModel.data.isMyselfStore)}",
+		"name":"${HtmlDecodeTag.get($!tagModel.data.consignee)}",
+		"mobile":"${HtmlDecodeTag.get($!tagModel.data.consigneePhone)}",
+		"address":"${HtmlDecodeTag.get($!tagModel.data.fullAddress)}",
+		"postage":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.postage)}",
+		"actualAmount":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.orderAmount)}",
+		"createTime":"${DateUtil.getSeconds($!tagModel.data.createTime)}",
+		"payTime":"${DateUtil.getSeconds($!tagModel.data.payTime)}",
+		"sendTime":"${DateUtil.getSeconds($!tagModel.data.sentTime)}",
+		"deliveryTime":"${DateUtil.getSeconds($!tagModel.data.deliveryTime)}",
+		"cancelTime":"${DateUtil.getSeconds($!tagModel.data.cancelTime)}",
+		"complateTime":"${DateUtil.getSeconds($!tagModel.data.complateTime)}",
+		"refundTime":"${DateUtil.getSeconds($!tagModel.data.refundTime)}",
+		"buyWayType":"$!tagModel.data.buyWayType",
+		"preferentialAmount":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.preferentialAmount)}",
+		"isUserCoupon":"${StringUtil.booleanToInt($!tagModel.data.isUserCoupon)}",
+		"payAmount":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.payAmount)}",
+		"tax":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.tax)}",
+		"isPackage": "${StringUtil.booleanToInt($!tagModel.data.isInvitationAgent)}",
+		"isSeckillProduct": "${StringUtil.booleanToInt($!tagModel.data.isSeckillProduct)}",
+		"endPaymentTime": "${StringUtil.nullToLong($!tagModel.data.endPaymentTime)}",
+		"memberGiftType": "${StringUtil.nullToInteger($!tagModel.data.memberGiftType)}",
+		"rollingNotice":"${HtmlDecodeTag.get($!tagModel.dataMap.get("rollingNotice"))}",
+		"deliveryIntro":"${HtmlDecodeTag.get($!tagModel.dataMap.get("deliveryIntro"))}",
+		"payAccountAmount":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.payAccountAmount)}"
+	},
+	"dataList":[
+	#if($tagModel.data.orderItemsList && $tagModel.data.orderItemsList.size() > 0)
+		#foreach($orderItems in $tagModel.data.orderItemsList)
+		#set($imageURL = ${imageRateTag.getData($orderItems.productImagePath, "1200", "upload/")})
+		{
+			"isSoldOut": "${StringUtil.booleanToInt($!tagModel.data.isSoldout)}",
+			"isSeckillProduct": "${StringUtil.booleanToInt($!orderItems.isSeckillProduct)}",
+			"isRechargeProductCoupon": "${StringUtil.booleanToInt($!orderItems.isRechargeProductCoupon)}",
+			"isPackage": "${StringUtil.booleanToInt($!tagModel.data.isInvitationAgent)}",
+			"imageUrl": "$!imageURL",
+			"productName": "${HtmlDecodeTag.get($!orderItems.productName)}",
+			"productTags": "${HtmlDecodeTag.get($!orderItems.productTags)}",
+			"price": "${StringUtil.nullToDoubleFormatStr($!orderItems.price)}",
+			"productNumber": "$!orderItems.quantity",
+			"refundStatus":"$!orderItems.refundStatus",
+			"orderItemId": "$!orderItems.itemId",
+			"productId": "$!orderItems.productId",
+			"isGroupProduct":"${StringUtil.booleanToInt($!orderItems.isGroupProduct)}",
+			"groupUniqueBatch": "${HtmlDecodeTag.get($!orderItems.groupUniqueBatch)}"
+		}#if($velocityCount < $tagModel.data.orderItemsList.size()),#end
+		#end
+	#end
+	],
+	"cancelReasonList": [
+		#if($tagModel.dataMap.get("cancelReasonList") && $!tagModel.dataMap.get("cancelReasonList").size() > 0)
+	    	#foreach($reason in $tagModel.dataMap.get("cancelReasonList"))
+	    	{
+	    		"reasonId": "${StringUtil.nullToLong($!reason.reasonId)}",
+               	"reason":  "${HtmlDecodeTag.get($!reason.reason)}",
+               	"reasonType": "${StringUtil.nullToLong($!reason.reasonType)}"
+			}#if($velocityCount < $tagModel.dataMap.get("cancelReasonList").size()),#end
+	    	#end
+	    #end
+   ]
+}

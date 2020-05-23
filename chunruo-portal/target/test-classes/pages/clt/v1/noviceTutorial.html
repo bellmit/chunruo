@@ -1,0 +1,58 @@
+##新手指引
+
+{
+	"code":"1",
+	"msg":"请求成功",
+	"systemTime":"$!systemTime",
+	"data":[
+		{
+			"index" : "1",
+			"list" : [
+				{
+					#set($imageRateVo = ${imageRateTag.getImageRate("/images/noviceTutorial/searchProduct_1.jpg", "1200", "upload/")})
+					"name" : "如何搜索商品",
+					"width": "$!imageRateVo.width",
+					"height": "$!imageRateVo.height",
+					"imageUrl" : "$!imageRateVo.filePath"
+				}
+			]
+		},
+		{
+			"index" : "2",
+			"list" : [
+				{
+					#set($imageRateVo = ${imageRateTag.getImageRate("/images/noviceTutorial/home_1.jpg", "1200", "upload/")})
+					"name" : "纯若介绍",
+					"width": "$!imageRateVo.width",
+					"height": "$!imageRateVo.height",
+					"imageUrl": "$!imageRateVo.filePath"
+				}
+			]
+		},
+		{
+			"index" : "3",
+			"list" : [
+				{
+					#set($imageRateVo = ${imageRateTag.getImageRate("/images/noviceTutorial/finance_1.jpg", "1200", "upload/")})
+					"name" : "如何提现",
+					"width": "$!imageRateVo.width",
+					"height": "$!imageRateVo.height",
+					"imageUrl": "$!imageRateVo.filePath"
+				}
+			]
+		},
+		{
+			"index" : "4",
+			"list" : [
+				{
+					#set($imageRateVo = ${imageRateTag.getImageRate("/images/noviceTutorial/question.jpg", "1200", "upload/")})
+					"name" : "疑难解答",
+					"width": "$!imageRateVo.width",
+					"height": "$!imageRateVo.height",
+					"imageUrl": "$!imageRateVo.filePath"
+				}
+			]
+		}
+	]
+}
+

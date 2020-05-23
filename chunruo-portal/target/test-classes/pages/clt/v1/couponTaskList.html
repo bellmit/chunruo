@@ -1,0 +1,37 @@
+## 优惠券任务
+
+#set($pageidx_1 = $request.getParameter('pageidx'))
+#set($pagesize_1 = $request.getParameter('pagesize'))
+#set($status_1 = $request.getParameter('status'))
+#set($lastId_1 = $request.getParameter('lastId'))
+
+${couponTaskListTag.setRequest($request)}
+#set($tagModel = ${couponTaskListTag.getData($pageidx_1, $pagesize_1, $status_1, $lastId_1)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"data":{
+		"monthsales":"$!tagModel.data.monthsales",
+		"lastMonthsales":"$!tagModel.data.lastMonthsales",
+		"predictMonthsales":"$!tagModel.data.predictMonthsales",
+		"couponTask":[
+		#if($tagModel.data.dataList && $tagModel.data.dataList.size() > 0)
+	 		#foreach($CouponTask in $tagModel.data.dataList)
+	 		{
+	 			"taskId":"$!CouponTask.taskId",
+				"taskContent":"$!CouponTask.taskContent",
+				"taskName":"${HtmlDecodeTag.get($!CouponTask.taskName)}",
+				"couponName":"${HtmlDecodeTag.get($!CouponTask.coupon.couponName)}",
+				"giveAmount":"$!CouponTask.coupon.giveAmount",
+				"isComplete":"${StringUtil.booleanToInt($!CouponTask.isComplete)}",
+				"complete":"$!CouponTask.hadComplete/$!CouponTask.taskContent",
+				"isShowGet":"${StringUtil.booleanToInt($!CouponTask.isShowGet)}",
+				"taskTime":"$!CouponTask.taskTime"
+			}#if($velocityCount < $tagModel.data.dataList.size()),#end
+		 	#end
+		#end
+		]
+	}
+}

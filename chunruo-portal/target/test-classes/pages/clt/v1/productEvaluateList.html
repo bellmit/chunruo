@@ -1,0 +1,87 @@
+##商品评价列表
+
+#set($pageidx = $request.getParameter('pageidx'))
+#set($pagesize = $request.getParameter('pagesize'))
+#set($lastId = $request.getParameter('lastId'))
+#set($productId = $request.getParameter('productId'))
+
+${productEvaluateListTag.setRequest($request)}
+#set($tagModel= ${productEvaluateListTag.getData($pageidx, $pagesize, $lastId, $productId)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"data":{
+		"list" : [{
+			#set($imageRateVo = ${imageRateTag.getImageRate("/images/shareEvaluate/share_header1.png", "1200", "upload/")})
+			"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height",
+			"imageUrl": "$!imageRateVo.filePath"
+		},{
+			#set($imageRateVo = ${imageRateTag.getImageRate("/images/shareEvaluate/share_evaluate1.png", "1200", "upload/")})
+			"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height",
+			"imageUrl": "$!imageRateVo.filePath"
+		},{
+			#set($imageRateVo = ${imageRateTag.getImageRate("/images/shareEvaluate/share_evaluate2.png", "1200", "upload/")})
+			"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height",
+			"imageUrl": "$!imageRateVo.filePath"
+		},{
+			#set($imageRateVo = ${imageRateTag.getImageRate("/images/shareEvaluate/share_evaluate3.png", "1200", "upload/")})
+			"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height",
+			"imageUrl": "$!imageRateVo.filePath"
+		}],
+		"headerImageList":[
+		#if($tagModel.dataList && $!tagModel.dataList.size() > 0)
+		   	#foreach($imagePath in $tagModel.dataList)
+		   	#set($imageVo = ${imageRateTag.getImageRate($imagePath, "1200")})
+		   	{
+				"imageUrl": "$!imageVo.filePath",
+				"width": "$!imageVo.width",
+				"height": "$!imageVo.height"
+			}#if($velocityCount < $tagModel.dataList.size()),#end
+		   	#end
+		#end
+		],
+	    "evaluateQuantity":"${HtmlDecodeTag.get($tagModel.dataMap.get("evaluateQuantity"))}",
+	    "evaluateRate":"${HtmlDecodeTag.get($tagModel.dataMap.get("evaluateRate"))}",
+       	"shareUserUrl": "${HtmlDecodeTag.get($!tagModel.dataMap.get("shareUserUrl"))}",
+        "shareUserWord": "${HtmlDecodeTag.get($!tagModel.dataMap.get("shareUserWord"))}",
+	    "evaluateList":[
+		#if($tagModel.data && $tagModel.data.size() > 0)
+			#set($imageVo = ${imageRateTag.getImageRate($tagModel.dataMap.get("productImage"), "1200","upload/")})
+			#foreach($evaluate in $tagModel.data)
+			{
+				"evaluateId": "${StringUtil.nullToLong($!evaluate.evaluateId)}",
+				"content": "${HtmlDecodeTag.get($!evaluate.content)}",
+				"status": "${StringUtil.nullToInteger($!evaluate.status)}",
+				"userHeaderImage": "${HtmlDecodeTag.get($!evaluate.userHeaderImage)}",
+				"nickName": "${StringUtil.null2Str($!evaluate.nickName)}",
+				"evaluateTime": "${StringUtil.null2Str($!evaluate.evaluateTime)}",
+				"productName": "${HtmlDecodeTag.get($tagModel.dataMap.get("productName"))}",
+			    "productImage":{
+		        	"imageUrl": "$!imageVo.filePath",
+		          	"width": "$!imageVo.width",
+		            "height": "$!imageVo.height"
+		        },
+				"imageUrlList":[
+              	#if($evaluate.imagePathList && $!evaluate.imagePathList.size() > 0)
+               	   #foreach($image in $evaluate.imagePathList)
+               	   #set($evaluateImageVo = ${imageRateTag.getImageRate($image, "1200","upload/")})
+               	   {
+               	    	"imageUrl": "$!evaluateImageVo.filePath",
+               	    	"width": "${StringUtil.nullToInteger($!evaluateImageVo.width)}",
+				    	"height": "${StringUtil.nullToInteger($!evaluateImageVo.height)}"
+               	   }#if($velocityCount < $evaluate.imagePathList.size()),#end
+               	   #end
+             	#end
+   				]
+			}#if($velocityCount < $tagModel.data.size()),#end
+		 	#end
+		#end
+	   ]
+  	}
+}

@@ -1,0 +1,79 @@
+##我的团队
+
+#set($pageidx_1 = $request.getParameter('pageidx'))
+#set($pagesize_1 = $request.getParameter('pagesize'))
+#set($lastId_1 = $request.getParameter('lastId'))
+#set($sort_1 = $request.getParameter('sort'))
+#set($sortType_1 = $request.getParameter('sortType'))
+#set($keyword_1 = $request.getParameter('keyword'))
+#set($isSearchPage_1 = $request.getParameter('isSearchPage'))
+
+${myTeamTag.setRequest($request)}
+#set($tagModel= ${myTeamTag.getData($pageidx_1, $pagesize_1, $lastId_1, $sort_1, $sortType_1,$keyword_1,$isSearchPage_1)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"teamInfo":{
+	    "inviterCode": "$!tagModel.data.inviterCode",
+	    "downloadUrl": "https://a.app.qq.com/o/simple.jsp?pkgname=com.webapp",
+		"totalIncome":"$!tagModel.data.totalIncome",
+		"shopownerCount":"$!tagModel.data.shopownerCount",
+		"agentCount":"$!tagModel.data.agentCount",
+		"specialDealerCount":"$!tagModel.data.specialDealerCount",
+		"totalTeamCount":"$!tagModel.data.totalTeamCount",
+		"v1Count":"$!tagModel.data.v1Count",
+		"balFirstCount":"$!tagModel.data.balFirstCount",
+		"balSecondCount":"$!tagModel.data.balSecondCount",
+		"applyStatus":"$!tagModel.data.applyStatus",
+		"hintType":"$!tagModel.data.hintType",
+		"loginAmount": "$!tagModel.data.loginAmount",
+		"shareUserUrl": "${HtmlDecodeTag.get($!tagModel.data.shareUserUrl)}",
+		"shareUserWord": "${HtmlDecodeTag.get($!tagModel.data.shareUserWord)}"
+	},
+	"vipPicturesInfo":{
+		#if($tagModel.data.imagesVIPList && $tagModel.data.imagesVIPList.size() > 0)
+			#set($inviteImage = $tagModel.data.imagesVIPList)
+			"imageUrlList":[
+				#foreach($image in $tagModel.data.imagesVIPList)
+				#set($imageURL = ${imageRateTag.getData($image.imagePath, "1200","upload/")})
+				{
+					"imageURL": "$!imageURL"
+				}#if($velocityCount < $tagModel.data.imagesVIPList.size()),#end
+			 	#end
+			],
+			"content": "${HtmlDecodeTag.get($!inviteImage[0].imageContent)}"
+		#end
+		},
+		"shopownerPopImageInfo":{
+		#if($tagModel.data.shopownerPopImageInfo && $tagModel.data.shopownerPopImageInfo.size() > 0)
+			#set($explain = $tagModel.data.shopownerPopImageInfo)
+			#set($imageRateVo = ${imageRateTag.getImageRate($!explain[0].imagePath, "1200", "upload/")})
+			"popImageUrl":"$!imageRateVo.filePath",
+			"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height"
+		#end
+		},
+	"storeList":[
+	#if($tagModel.data.dataList && $tagModel.data.dataList.size() > 0)
+		#foreach($userTeam in $tagModel.data.dataList)
+		#set($imageURL = ${imageRateTag.getData($!userTeam.logo, "1200", "upload/")})
+		{
+		    "userId": "$!userTeam.userId",
+			"storeId": "$!userTeam.userId",
+			"logo": "$!imageURL",
+			"level": "$!userTeam.level",
+			"downCount": "${StringUtil.nullToInteger($!userTeam.declareCount)}",
+			"userNumber": "${StringUtil.nullToLong($!userTeam.userId)}",
+			"storeName": "${HtmlDecodeTag.get($!userTeam.storeName)}",
+			"totalIncome": "0.0",
+			"monthIncome": "0.0",
+			"expireTime": "${HtmlDecodeTag.get($!userTeam.expireEndDate)}",
+			"createTime": "$!userTeam.userCreateTime",
+			"registerTime": "${DateUtil.getSeconds($!userTeam.userCreateTime)}"
+		}#if($velocityCount < $tagModel.data.dataList.size()),#end
+	 	#end
+	#end
+	]
+}

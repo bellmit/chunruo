@@ -1,0 +1,21 @@
+##快捷支付绑定银行卡号列表
+
+${userQuickCardListTag.setRequest($request)}
+#set($tagModel= ${userQuickCardListTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"dataList":[
+	#if($tagModel.data && $!tagModel.data.size() > 0)
+		#foreach($objectMap in $tagModel.data)
+		{
+			"quickCardId": "$!{StringUtil.nullToLong($objectMap.get("quickCardId"))}",
+			"cardNumber": "$!{HtmlDecodeTag.get($objectMap.get("cardNumber"))}",
+			"bankName": "$!{HtmlDecodeTag.get($objectMap.get("bankName"))}"
+			
+		}#if($velocityCount < $tagModel.data.size()),#end
+    	#end
+	#end
+	]
+}

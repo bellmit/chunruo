@@ -1,0 +1,21 @@
+##快递公司列表
+
+#set($tagModel= ${expressListTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"dataList":[
+	#if($tagModel.data && $tagModel.data.size() > 0)
+		#foreach($express in $tagModel.data)
+		{
+			"codeId":"$!express.codeId",
+			"companyName":"${HtmlDecodeTag.get($!express.companyName)}",
+			"companyCode":"${HtmlDecodeTag.get($!express.companyCode)}",
+			"expressCode":"${HtmlDecodeTag.get($!express.expressCode)}"
+		}#if($velocityCount < $tagModel.data.size()),#end
+	 	#end
+	#end
+	]
+}
+

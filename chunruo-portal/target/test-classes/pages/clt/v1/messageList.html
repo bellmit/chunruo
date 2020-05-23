@@ -1,0 +1,95 @@
+##问题列表
+
+#set($lastTime = $request.getParameter('lastTime'))
+#set($userId = $request.getParameter('userId'))
+${messageListTag.setRequest($request)}
+#set($tagModel= ${messageListTag.getData($lastTime,$userId )})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"lastTime": "$!tagModel.objectId",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	#set($level =${StringUtil.nullToInteger($!tagModel.dataMap.get("level"))})
+	"messageList":[
+	#if($tagModel.data && $tagModel.data.size() > 0)
+		#foreach($message in $tagModel.data)
+		#set($imageURL = ${imageRateTag.getData($!message.imageUrl, "1200", "upload/")})
+		{
+			"messageId":"$!message.msgId",
+			"msgType":"$!message.msgType",
+			"childMsgType":"${StringUtil.nullToInteger($!message.childMsgType)}",
+			"status":"0",
+			"imageUrl":"$!imageURL",
+			"title":"${HtmlDecodeTag.get($!message.title)}",
+			"id":"$!message.objectId",
+			"userId":"$!message.userId",
+			"createTime":"${DateUtil.getSeconds($!message.createTime)}",
+			"content":"${HtmlDecodeTag.get($!message.msgContent)}",
+			"typeName":"${HtmlDecodeTag.get($!message.typeName)}",
+			"webUrl":"${HtmlDecodeTag.get($!message.webUrl)}",
+			"jumpPageType":"${StringUtil.nullToInteger($!message.jumpPageType)}",
+			"isTimeOut":"${StringUtil.booleanToInt($!message.isTimeOut)}",
+			"isInvitePage":"${StringUtil.booleanToInt($!message.isInvitePage)}",
+			#if($tagModel.dataMap.get("invitesCourtesy"))
+	    	#set($invitesCourtesy = ${tagModel.dataMap.get("invitesCourtesy")})
+			#set($imagePathVo = ${imageRateTag.getImageRate($!invitesCourtesy.imagePath, "1200", "upload/")})
+			"inviteImageUrl": "$!imagePathVo.filePath",
+			"inviteWidth": "$!imagePathVo.width",
+	        "inviteHeight": "$!imagePathVo.height",
+	    	#end
+			"orderContent":{
+			   #if($!message.orderMessageVo)
+			   "orderTitle":"${HtmlDecodeTag.get($!message.orderMessageVo.orderTitle)}",
+			   "productName":"${HtmlDecodeTag.get($!message.orderMessageVo.productName)}",
+			   "productTags":"${HtmlDecodeTag.get($!message.orderMessageVo.productTags)}",
+			   "expressNo":"${HtmlDecodeTag.get($!message.orderMessageVo.expressNo)}",
+			   "orderNo":"${HtmlDecodeTag.get($!message.orderMessageVo.orderNo)}",
+			   "orderNotice":"${HtmlDecodeTag.get($!message.orderMessageVo.orderNotice)}",
+			   "number":"${StringUtil.nullToInteger($!message.orderMessageVo.number)}",
+			   "isNewOrder":"${StringUtil.booleanToInt($!message.orderMessageVo.isNewOrder)}",
+			   "totalNumber":"${StringUtil.nullToInteger($!message.orderMessageVo.totalNumber)}",
+			   "payMoney":"${StringUtil.nullToDoubleFormatStr($!message.orderMessageVo.payMoney)}",
+			   "name":"${HtmlDecodeTag.get($!message.orderMessageVo.name)}",
+			   "mobile":"${HtmlDecodeTag.get($!message.orderMessageVo.mobile)}",
+			   "address":"${HtmlDecodeTag.get($!message.orderMessageVo.address)}",
+			   "logisticsStatus":"${StringUtil.nullToInteger($!message.logisticsStatus)}"
+			   #end
+			},
+			"productList": [
+			#if($!message.productList && $!message.productList.size() > 0)
+	    		#foreach($product in $message.productList)
+	    		#set($imageURL = ${imageRateTag.getData($product.image, "1200", "upload/")})
+	    		#set($isSeckillProduct =${StringUtil.booleanToInt($!product.isSeckillProduct)})
+				{
+	        		 "productId": "$!product.productId",
+	            	 "imageUrl": "$!imageURL",
+	            	 "productName": "${HtmlDecodeTag.get($!product.name)}",
+	            	 "isSeckillProduct": "${StringUtil.booleanToInt($!product.isSeckillProduct)}",
+					 "price": "${StringUtil.nullToDoubleFormatStr($!product.paymentPrice)}",
+					 "priceRecommend": "${StringUtil.nullToDoubleFormatStr($!product.priceRecommend)}",
+					 "priceWholesale": "${StringUtil.nullToDoubleFormatStr($!product.priceWholesale)}",
+					 "v2Price": "${StringUtil.nullToDoubleFormatStr($!product.v2Price)}",
+			         "v3Price": "${StringUtil.nullToDoubleFormatStr($!product.v3Price)}",
+					 "productProfit": "赚￥${StringUtil.nullToInteger($!product.productProfit)}",
+					 "seckillPrice": "${StringUtil.nullToDoubleFormatStr($!product.paymentPrice)}",
+					 "isProxy": "${StringUtil.nullToInteger($!product.isProxy)}",
+					 "isOpenV2Price": "${StringUtil.booleanToInt($!product.isOpenV2Price)}",
+					 "isOpenV3Price": "${StringUtil.booleanToInt($!product.isOpenV3Price)}",
+					 "isShowV2Price": "${StringUtil.booleanToInt($!product.isShowV2Price)}",
+					 "isShowV3Price": "${StringUtil.booleanToInt($!product.isShowV3Price)}",
+					 "isRechargeGiftProduct": "${StringUtil.booleanToInt($!product.isRechargeGiftProduct)}",
+					 "isOpenPriceRecommend": "${StringUtil.booleanToInt($!product.isOpenPriceRecommend)}",
+					 "isTaskProduct":"${StringUtil.booleanToInt($!product.isTaskProduct)}",
+			         "taskProductTag":"${HtmlDecodeTag.get($!product.taskProductTag)}",
+			         "rewardNotes":"${HtmlDecodeTag.get($!product.rewardNotes)}"
+				}#if($velocityCount < $message.productList.size()),#end
+	    		#end
+	    	#end
+	    	]
+		}#if($velocityCount < $tagModel.data.size()),#end
+	 	#end
+	#end
+	]
+}
+

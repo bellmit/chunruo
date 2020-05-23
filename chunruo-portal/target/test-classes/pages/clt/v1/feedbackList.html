@@ -1,0 +1,28 @@
+##我的反馈
+
+#set($pageidx = $request.getParameter('pageidx'))
+#set($pagesize = $request.getParameter('pagesize'))
+#set($lastId = $request.getParameter('lastId'))
+
+${feedbackListTag.setRequest($request)}
+#set($tagModel= ${feedbackListTag.getData($pageidx, $pagesize, $lastId)})
+{		
+	"code": "$!tagModel.code",
+	"msg": "${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime": "$!systemTime",
+	"nextPageURL": "$!tagModel.nextPageURL",
+	"dataList": [
+	#if($tagModel.data && $!tagModel.data.size() > 0)
+  		#foreach($feedback in $tagModel.data)
+  		{
+       	  	 "feedbackId": "$!feedback.feedbackId",
+       	  	 "content": "${HtmlDecodeTag.get($!feedback.content)}",
+       	  	 "isReply": "${StringUtil.nullToInteger($!feedback.isReply)}",
+       	  	 "replyMsg": "${HtmlDecodeTag.get($!feedback.replyMsg)}",
+       	  	 "createTime": "${DateUtil.getSeconds($!feedback.createTime)}",
+       	  	 "replyTime": "${DateUtil.getSeconds($!feedback.updateTime)}"
+		}#if($velocityCount < $tagModel.data.size()),#end
+  		#end
+  	#end
+	]
+}

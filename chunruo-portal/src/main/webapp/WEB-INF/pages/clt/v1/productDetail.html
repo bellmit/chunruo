@@ -1,0 +1,562 @@
+##商品详情
+#set($productId = $request.getParameter('productId'))
+
+${productDetailTag.setRequest($request)}
+#set($tagModel = ${productDetailTag.getData($productId)})
+{
+   	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"storeId":"$!tagModel.objectId",
+	"systemTime": "$!systemTime",
+	"minImagePath": "$!tagModel.minImagePath",
+	"shareURL": "$!tagModel.shareURL",
+	#set($isFreeTax = ${StringUtil.booleanToInt($!tagModel.data.isFreeTax)})
+	#set($isSeckillProduct =${StringUtil.booleanToInt($!tagModel.data.isSeckillProduct)})
+	#set($level =${StringUtil.nullToInteger($!tagModel.dataMap.get("level"))})
+	#set($productType =${StringUtil.nullToInteger($!tagModel.data.productType)})
+	#set($isOpenV2Price =${StringUtil.booleanToInt($!tagModel.data.isOpenV2Price)})
+	#set($isOpenV3Price =${StringUtil.booleanToInt($!tagModel.data.isOpenV3Price)})
+	#set($tax =${StringUtil.nullToDouble($!tagModel.data.tax)})
+	"headerImageList":[
+	#if($tagModel.mapList && $!tagModel.mapList.size() > 0)
+    	#foreach($imageMap in $tagModel.mapList)
+    	#set($imageURL = ${imageRateTag.getData($imageMap.get("imageURL"), "1200", "upload/")})
+    	{
+    		"imageUrl": "$!imageURL"
+    	}#if($velocityCount < $tagModel.mapList.size()),#end
+    	#end
+    #end
+	],
+	"data":{
+	    "isChecked": "1",
+	    #if($!isFreeTax == "0" && $!productType == "2")
+		"taxRate" : "0.091",
+		#else
+		"taxRate" : "0",
+		#end
+		"goTax": "0",
+		"isTeamPackage": "${StringUtil.booleanToInt($!tagModel.data.isTeamPackage)}",
+		"productId": "$!tagModel.data.productId",
+		"productName": "${HtmlDecodeTag.get($tagModel.data.name)}",
+		"categoryFidName": "${HtmlDecodeTag.get($tagModel.data.categoryFidName)}",
+		"categoryIdName": "${HtmlDecodeTag.get($tagModel.data.categoryIdName)}",
+		"productMaterialRequestUrl": "",
+		"isShowPrice":"${StringUtil.booleanToInt($!tagModel.data.isShowPrice)}",
+		"isFreePostage":"${StringUtil.booleanToInt($!tagModel.data.isFreePostage)}",
+		"price": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.paymentPrice)}",
+		"minPrice": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.minPaymentPrice)}",
+		"maxPrice": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.maxPaymentPrice)}",
+		"seckillPrice": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.paymentPrice)}",
+		"priceRecommend": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.priceRecommend)}",
+		"priceWholesale": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.priceWholesale)}",
+		"productProfit": "赚${StringUtil.nullToInteger($!tagModel.data.productProfit)}",
+		"recommendProfit": "${StringUtil.nullToInteger($!tagModel.data.recommendProfit)}",
+		"v2Price": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.v2Price)}",
+		"v3Price": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.v3Price)}",
+		"realSellPrice": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.realSellPrice)}",
+		"hideSeckillPrice": "${StringUtil.null2Str($!tagModel.data.hideSeckillPrice)}",
+		"taobaoPrice": "$!tagModel.data.taobaoPrice",
+		"originalPrice": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.paymentOriginalPrice)}",
+		"originalPriceRegion": "${StringUtil.null2Str($!tagModel.data.paymentOriginalPriceRegion)}",
+		"priceDiscount": "${StringUtil.null2Str($!tagModel.data.priceDiscount)}",
+		"productType": "${StringUtil.nullToInteger($!tagModel.data.productType)}",
+		"warehouseType": "${StringUtil.nullToInteger($!tagModel.data.warehouseType)}",
+		"categoryFid": "${StringUtil.null2Str($!tagModel.data.categoryFids)}",
+		"categoryId": "${StringUtil.null2Str($!tagModel.data.categoryIds)}",
+		"countryName": "${HtmlDecodeTag.get($!tagModel.data.countryName)}",
+		"isProxy": "${StringUtil.nullToInteger($!tagModel.data.isProxy)}",
+		"isH5CommonUser": "${StringUtil.nullToInteger($!tagModel.data.isCommonUserLevel)}",
+		"nickName": "${HtmlDecodeTag.get($!tagModel.data.nickName)}",
+		"isBuyPackage": "${StringUtil.nullToInteger($!tagModel.data.isBuyPackage)}",
+		"cartProductNumbers": "${StringUtil.nullToInteger($!tagModel.data.paymentCartNumbers)}",
+		"stockNumber": "${StringUtil.nullToInteger($!tagModel.data.paymentStockNumber)}",
+		"isSoldOut": "${StringUtil.booleanToInt($!tagModel.data.isPaymentSoldout)}",
+		"isAggrProduct": "${StringUtil.booleanToInt($!tagModel.data.isAggrProduct)}",
+		"isSpceProduct": "${StringUtil.booleanToInt($!tagModel.data.isSpceProduct)}",
+		"isMoreSpecProduct": "${StringUtil.booleanToInt($!tagModel.data.isMoreSpecProduct)}",
+		"isSeckillProduct": "${StringUtil.booleanToInt($!tagModel.data.isSeckillProduct)}",
+		"isSeckillReadStatus": "${StringUtil.booleanToInt($!tagModel.data.isSeckillReadStatus)}",
+		"seckillReadDateTips": "${StringUtil.null2Str($!tagModel.data.seckillReadDateTips)}",
+		"seckillStartTime": "${StringUtil.nullToLong($!tagModel.data.seckillStartTime)}",
+		"seckillEndTime": "${StringUtil.nullToLong($!tagModel.data.seckillEndTime)}",
+		"isSeckillLimit": "${StringUtil.booleanToInt($!tagModel.data.isSeckillLimit)}",
+		"isRechargeGiftProduct": "${StringUtil.booleanToInt($!tagModel.data.isRechargeGiftProduct)}",
+		"rechargeDesc": "${HtmlDecodeTag.get($!tagModel.data.rechargeDesc)}",
+		"rechargeNotes": "${HtmlDecodeTag.get($!tagModel.data.rechargeNotes)}",
+		"seckillLimitNumber": "${StringUtil.nullToInteger($!tagModel.data.seckillLimitNumber)}",
+		"seckillExistBuyNum": "${StringUtil.nullToInteger($!tagModel.data.seckillExistBuyNum)}",
+		"seckillWaitBuyNum": "${StringUtil.nullToInteger($!tagModel.data.seckillWaitBuyNum)}",
+		"productEffectIntro": "${HtmlDecodeTag.get($!tagModel.data.productEffectIntro)}",
+		"inviteProductId": "${StringUtil.nullToString($!tagModel.data.inviteProductId)}",
+		"mobile": "${StringUtil.mobileFormat($!tagModel.dataMap.get("mobile"))}",
+		"groupPriceRegion": "${StringUtil.nullToString($!tagModel.data.paymentGroupPriceRegion)}",
+		"priceRegion": "${StringUtil.nullToString($!tagModel.data.paymentPriceRegion)}",
+		"seckillPriceRegion": "${StringUtil.nullToString($!tagModel.data.seckillPriceRegion)}",
+		"tax": "${StringUtil.nullToString($!tagModel.data.tax)}",
+		"taxRegion": "${StringUtil.nullToString($!tagModel.data.paymentTaxRegion)}",
+		"profitRegion": "${StringUtil.nullToString($!tagModel.data.profitRegion)}",
+		"sellPriceRegion": "${StringUtil.nullToString($!tagModel.data.sellPriceRegion)}",
+		"isGroupProduct":"${StringUtil.booleanToInt($!tagModel.data.isGroupProduct)}",
+		"usageMethod": "${HtmlDecodeTag.get($!tagModel.data.usageMethod)}",
+		"isFreeTax":"${StringUtil.booleanToInt($!tagModel.data.isFreeTax)}",
+		"isExpire": "${StringUtil.booleanToInt($!tagModel.dataMap.get("isExpire"))}",
+		"isOpenV2Price": "${StringUtil.booleanToInt($!tagModel.data.isOpenV2Price)}",
+		"isOpenV3Price": "${StringUtil.booleanToInt($!tagModel.data.isOpenV3Price)}",
+		"isTaskProduct": "${StringUtil.booleanToInt($!tagModel.data.isTaskProduct)}",
+		"rewardNotes":"${HtmlDecodeTag.get($!tagModel.data.rewardNotes)}",
+		"isShowLevelPrice": "${StringUtil.booleanToInt($!tagModel.data.isShowLevelPrice)}",
+		"isShowV2Price": "${StringUtil.booleanToInt($!tagModel.data.isShowV2Price)}",
+		"isShowV3Price": "${StringUtil.booleanToInt($!tagModel.data.isShowV3Price)}",
+		"isHaveProductMaterial": "${StringUtil.booleanToInt($!tagModel.data.isHaveProductMaterial)}",
+		"commodityPriceTag": "${HtmlDecodeTag.get($!tagModel.data.commodityPriceTag)}",
+		"productLevelType": "${StringUtil.nullToInteger($!tagModel.data.productLevelType)}",
+		"estimatedTime": "${HtmlDecodeTag.get($!tagModel.data.estimatedTime)}",
+		"isBanPurchase": "${StringUtil.booleanToInt($!tagModel.data.isBanPurchase)}",
+		"banPurchaseEndTime": "${DateUtil.getSeconds($!tagModel.data.banPurchaseEndTime)}",
+		"soldoutNoticeType": "${StringUtil.nullToInteger($!tagModel.data.soldoutNoticeType)}",
+		"soldoutNotice":"${HtmlDecodeTag.get($!tagModel.data.soldoutNotice)}",
+		#if($!level < 5  && ($!isOpenV2Price == "1" || $!isOpenV3Price == "1"))
+	       "promoteInfo": "该商品还享有V2或V3经销商特价，详情请联系您的专属顾问咨询",
+        #else
+           "promoteInfo": "",
+        #end 
+		"productDesc": [
+		#set($productDescList = ${productDescWebViewTag.get($tagModel.data.productDesc)})
+		#if($productDescList && $!productDescList.size() > 0)
+	    	#foreach($productDesc in $productDescList)
+	    	#set($imageRateVo = ${imageRateTag.getImageRate($!productDesc.webViewFileVo.src, "1200", "upload/")})
+	    	{
+	        	"contType": "$!productDesc.contType",
+	            "pixel": "$!productDesc.content",
+	            "type": "$!productDesc.webViewFileVo.type",
+	     		"src": "$!imageRateVo.filePath",
+	     		"width": "$!imageRateVo.width",
+				"height": "$!imageRateVo.height"
+			}#if($velocityCount < $productDescList.size()),#end
+	    	#end
+	    #end
+		],
+		"aggrProductList": [
+			#if($!tagModel.data.aggrProductList && $!tagModel.data.aggrProductList.size() > 0)
+			#foreach($product in $tagModel.data.aggrProductList)
+			#set($aggrProductType =${StringUtil.nullToInteger($!product.productType)})
+			#set($aggrProductTax =${StringUtil.nullToDouble($!product.tax)})
+			#set($imageURL = ${imageRateTag.getData($product.image, "1200", "upload/")})
+			{
+			 "wareHouseName" : "${HtmlDecodeTag.get($!product.wareHouseName)}",
+			 "deliveryIntroUrl" : "$requestURL/upload/deliveryIntro.html",
+			 #if($!aggrProductType == "4")
+			 "iconUrl" : "$requestURL/upload/images/send_icon.png",
+			 #elseif($!aggrProductType == "3")
+			 "iconUrl" : "$requestURL/upload/images/cross_icon.png",
+			 #else
+			 "iconUrl" : "$requestURL/upload/images/product_cross_default.png",
+			 #end
+			 "productId": "${StringUtil.nullToLong($!product.productId)}",
+			 "isSpceProduct": "${StringUtil.booleanToInt($!product.isSpceProduct)}",
+			 "isMoreSpecProduct": "${StringUtil.booleanToInt($!product.isMoreSpecProduct)}",
+			 "goTax": "0",
+			 "tax": "${StringUtil.nullToString($!product.tax)}",
+			 #if($!aggrProductType == "4")
+			 "taxRegion": "税费自理",
+			 "goTaxIntro":"带有\"税费自理\"标签的商品，需由您自行至海关缴纳并承担进口税（行邮税）及邮政代办报关手续费。",
+			 #else
+			 "taxRegion": "${StringUtil.nullToString($!product.paymentTaxRegion)}",
+			 "goTaxIntro":"",
+			 #end
+			 "isFreeTax":"${StringUtil.booleanToInt($!product.isFreeTax)}",
+			 "productType": "${StringUtil.nullToInteger($!product.productType)}",
+			 "isFreePostage":"${StringUtil.booleanToInt($!product.isFreePostage)}",
+			 "price": "${StringUtil.nullToDoubleFormatStr($!product.paymentPrice)}",
+			 "priceRegion": "${StringUtil.nullToString($!product.paymentPriceRegion)}",
+			 "estimatedTime": "${HtmlDecodeTag.get($!product.estimatedTime)}",
+			 "postage": "${StringUtil.nullToString($!product.postage)}",
+			 "postageNotice": "${HtmlDecodeTag.get($!product.postageNotice)}",
+			 "payIntro": "${HtmlDecodeTag.get($!product.payIntro)}",
+			 "stockNumber": "${StringUtil.nullToInteger($!product.paymentStockNumber)}",
+			 "isSoldOut": "${StringUtil.booleanToInt($!product.isPaymentSoldout)}",
+			 "isSeckillProduct": "${StringUtil.booleanToInt($!product.isSeckillProduct)}",
+			 "isSeckillReadStatus": "${StringUtil.booleanToInt($!product.isSeckillReadStatus)}",
+			 "seckillReadDateTips": "${StringUtil.null2Str($!product.seckillReadDateTips)}",
+			 "seckillStartTime": "${StringUtil.nullToLong($!product.seckillStartTime)}",
+			 "seckillEndTime": "${StringUtil.nullToLong($!product.seckillEndTime)}",
+			 "seckillPriceRegion": "${StringUtil.nullToString($!product.seckillPriceRegion)}",
+			 "isSeckillLimit": "${StringUtil.booleanToInt($!product.isSeckillLimit)}",
+			 "seckillLimitNumber": "${StringUtil.nullToInteger($!product.seckillLimitNumber)}",
+			 "seckillExistBuyNum": "${StringUtil.nullToInteger($!product.seckillExistBuyNum)}",
+			 "seckillWaitBuyNum": "${StringUtil.nullToInteger($!product.seckillWaitBuyNum)}",
+			 "originalPrice": "${StringUtil.nullToDoubleFormatStr($!product.paymentOriginalPrice)}",
+			 "originalPriceRegion": "${StringUtil.null2Str($!product.paymentOriginalPriceRegion)}",
+			 "soldoutNoticeType": "${StringUtil.nullToInteger($!product.soldoutNoticeType)}",
+			 "soldoutNotice":"${HtmlDecodeTag.get($!product.soldoutNotice)}",
+			 "imageUrl": "$!imageURL",
+			 "productSpecList" : [
+			    #if($!product.productSpecList && $!product.productSpecList.size() > 0)
+		    		#foreach($productSpec in $product.productSpecList)
+		    		#set($aggrProductSpecTax =${StringUtil.nullToDouble($!productSpec.tax)})
+		    		#set($specImageURL = ${imageRateTag.getData($productSpec.specImagePath, "1200", "upload/")})
+					{
+			        	"productSpecId": "$!productSpec.productSpecId",
+			            "productSku": "${HtmlDecodeTag.get($!productSpec.productSku)}",
+			            "imageUrl": "$!specImageURL",
+			            "primarySpecId": "$!productSpec.primarySpecId",
+			            "primarySpecName": "${HtmlDecodeTag.get($!productSpec.primarySpecName)}",
+			            "primarySpecModelName": "${HtmlDecodeTag.get($!productSpec.primarySpecModelName)}",
+			            "secondarySpecId": "$!productSpec.secondarySpecId",
+			            "secondarySpecName": "${HtmlDecodeTag.get($!productSpec.secondarySpecName)}",
+			            "secondarySpecModelName": "${HtmlDecodeTag.get($!productSpec.secondarySpecModelName)}",
+						"stockNumber": "${StringUtil.nullToInteger($!productSpec.paymentStockNumber)}",
+						"isSoldOut": "${StringUtil.booleanToInt($!productSpec.isPaymentSoldout)}",
+						"isSeckillLimit": "${StringUtil.booleanToInt($!productSpec.isSeckillLimit)}",
+						"seckillLimitNumber": "${StringUtil.nullToInteger($!productSpec.seckillLimitNumber)}",
+						"seckillExistBuyNum": "${StringUtil.nullToInteger($!productSpec.seckillExistBuyNum)}",
+						"seckillWaitBuyNum": "${StringUtil.nullToInteger($!productSpec.seckillWaitBuyNum)}",
+						"weigth": "${StringUtil.nullToInteger($!productSpec.weigth)}",
+						"price": "${StringUtil.nullToDoubleFormatStr($!productSpec.paymentPrice)}",
+						"tax": "${StringUtil.nullToString($!productSpec.tax)}",
+						"goTax": "0",
+						"productTags": "${HtmlDecodeTag.get($!productSpec.productTags)}",
+						"soldoutNoticeType": "${StringUtil.nullToInteger($!productSpec.soldoutNoticeType)}",
+			            "soldoutNotice":"${HtmlDecodeTag.get($!productSpec.soldoutNotice)}"
+					}#if($velocityCount < $product.productSpecList.size()),#end
+		    		#end
+		      #end
+			 ]
+			}#if($velocityCount < $tagModel.data.aggrProductList.size()),#end
+	    		#end
+	    	#end
+   	 	],
+		"productSpecList": [
+		#if($!tagModel.data.productSpecList && $!tagModel.data.productSpecList.size() > 0)
+    		#foreach($productSpec in $tagModel.data.productSpecList)
+    		#set($specImageURL = ${imageRateTag.getData($productSpec.specImagePath, "1200", "upload/")})
+			{
+	        	"productSpecId": "$!productSpec.productSpecId",
+	            "productSku": "${HtmlDecodeTag.get($!productSpec.productSku)}",
+	            "imageUrl": "$!specImageURL",
+	            "primarySpecId": "$!productSpec.primarySpecId",
+	            "primarySpecName": "${HtmlDecodeTag.get($!productSpec.primarySpecName)}",
+	            "primarySpecModelName": "${HtmlDecodeTag.get($!productSpec.primarySpecModelName)}",
+	            "secondarySpecId": "$!productSpec.secondarySpecId",
+	            "secondarySpecName": "${HtmlDecodeTag.get($!productSpec.secondarySpecName)}",
+	            "secondarySpecModelName": "${HtmlDecodeTag.get($!productSpec.secondarySpecModelName)}",
+				"stockNumber": "${StringUtil.nullToInteger($!productSpec.paymentStockNumber)}",
+				"isSoldOut": "${StringUtil.booleanToInt($!productSpec.isPaymentSoldout)}",
+				"isSeckillLimit": "${StringUtil.booleanToInt($!productSpec.isSeckillLimit)}",
+				"seckillLimitNumber": "${StringUtil.nullToInteger($!productSpec.seckillLimitNumber)}",
+				"seckillExistBuyNum": "${StringUtil.nullToInteger($!productSpec.seckillExistBuyNum)}",
+				"seckillWaitBuyNum": "${StringUtil.nullToInteger($!productSpec.seckillWaitBuyNum)}",
+				"weigth": "${StringUtil.nullToInteger($!productSpec.weigth)}",
+				"price": "${StringUtil.nullToDoubleFormatStr($!productSpec.paymentPrice)}",
+				"tax": "${StringUtil.nullToDoubleFormatStr($!productSpec.tax)}",
+				"productTags": "${HtmlDecodeTag.get($!productSpec.productTags)}",
+				"soldoutNoticeType": "${StringUtil.nullToInteger($!productSpec.soldoutNoticeType)}",
+			    "soldoutNotice":"${HtmlDecodeTag.get($!productSpec.soldoutNotice)}"
+			}#if($velocityCount < $tagModel.data.productSpecList.size()),#end
+    		#end
+    	#end
+   	 	],
+   	 	"groupProductList":[
+		#if($tagModel.dataMap.get("groupProductList") && $!tagModel.dataMap.get("groupProductList").size() > 0)
+	    	#foreach($groupProduct in $tagModel.dataMap.get("groupProductList"))
+			#set($imageVo = ${imageRateTag.getImageRate($groupProduct.image, "1200", "upload/")})
+			{
+				"groupId": "${StringUtil.nullToInteger($!groupProduct.groupId)}",
+			 	"productId": "$!groupProduct.productId",
+				"imageUrl": "$!imageVo.filePath",
+				"width": "$!imageVo.width",
+				"height": "$!imageVo.height",
+				"productName": "${HtmlDecodeTag.get($!groupProduct.name)}",
+				"price": "${StringUtil.nullToDoubleFormatStr($!groupProduct.paymentPrice)}",
+				"saleTimes": "${StringUtil.nullToInteger($!groupProduct.saleTimes)}",
+				"stockNumber": "${StringUtil.nullToInteger($!groupProduct.stockNumber)}",
+				"isSoldOut": "${StringUtil.booleanToInt($!groupProduct.isPaymentSoldout)}",
+				"isSpceProduct": "${StringUtil.booleanToInt($!groupProduct.isSpceProduct)}",
+				"productSpecList": [
+				#if($!groupProduct.productSpecList && $!groupProduct.productSpecList.size() > 0)
+		    		#foreach($productSpec in $groupProduct.productSpecList)
+		    		#set($specImageURL = ${imageRateTag.getData($productSpec.specImagePath, "1200", "upload/")})
+					{
+						"groupId": "${StringUtil.nullToInteger($!productSpec.groupId)}",
+		        		"productSpecId": "$!productSpec.productSpecId",
+		            	"productSku": "${HtmlDecodeTag.get($!productSpec.productSku)}",
+		            	"imageUrl": "$!specImageURL",
+		            	"primarySpecId": "$!productSpec.primarySpecId",
+		            	"primarySpecName": "${HtmlDecodeTag.get($!productSpec.primarySpecName)}",
+		            	"primarySpecModelName": "${HtmlDecodeTag.get($!productSpec.primarySpecModelName)}",
+		            	"secondarySpecId": "$!productSpec.secondarySpecId",
+		            	"secondarySpecName": "${HtmlDecodeTag.get($!productSpec.secondarySpecName)}",
+		            	"secondarySpecModelName": "${HtmlDecodeTag.get($!productSpec.secondarySpecModelName)}",
+						"stockNumber": "${StringUtil.nullToInteger($!productSpec.paymentStockNumber)}",
+						"isSoldOut": "${StringUtil.booleanToInt($!productSpec.isPaymentSoldout)}",
+						"price": "${StringUtil.nullToDoubleFormatStr($!productSpec.paymentPrice)}",
+						"productTags": "${HtmlDecodeTag.get($!productSpec.productTags)}"
+					}#if($velocityCount < $groupProduct.productSpecList.size()),#end
+		    		#end
+		    	#end
+		    	]
+			}#if($velocityCount < $tagModel.dataMap.get("groupProductList").size()),#end
+			#end
+		#end
+		],
+		"sameKindWholesaleList": [
+		#if($tagModel.dataMap.get("sameKindWholesaleList") && $!tagModel.dataMap.get("sameKindWholesaleList").size() > 0)
+	    	#foreach($product in $tagModel.dataMap.get("sameKindWholesaleList"))
+	    	#set($imageVo = ${imageRateTag.getImageRate($product.image, "1200", "upload/")})
+	    	#set($isSeckillProductVo =${StringUtil.booleanToInt($!product.isSeckillProduct)})
+	    	{
+         	   	"imageUrl": "$!imageVo.filePath",
+				"width": "$!imageVo.width",
+				"height": "$!imageVo.height",
+               	"name":  "${HtmlDecodeTag.get($!product.name)}",
+               	"price": "${StringUtil.nullToDoubleFormatStr($!product.paymentPrice)}",
+               	"productProfit": "赚${StringUtil.nullToInteger($!product.productProfit)}",
+               	"isSeckillProduct": "${StringUtil.booleanToInt($!product.isSeckillProduct)}",
+               	"isOpenPriceRecommend": "${StringUtil.booleanToInt($!product.isOpenPriceRecommend)}",
+				"productId": "$!product.productId"
+			}#if($velocityCount < $tagModel.dataMap.get("sameKindWholesaleList").size()),#end
+	    	#end
+	    #end
+		],
+		"recommendWholesaleList": [
+		#if($tagModel.dataMap.get("recommendWholesaleList") && $!tagModel.dataMap.get("recommendWholesaleList").size() > 0)
+    		#foreach($product in $tagModel.dataMap.get("recommendWholesaleList"))
+    		#set($imageVo = ${imageRateTag.getImageRate($product.image, "1200", "upload/")})
+    		#set($isSeckillProductVo =${StringUtil.booleanToInt($!product.isSeckillProduct)})
+    		{
+         	   	"imageUrl": "$!imageVo.filePath",
+				"width": "$!imageVo.width",
+				"height": "$!imageVo.height",
+               	"name":  "${HtmlDecodeTag.get($!product.name)}",
+               	"price": "${StringUtil.nullToDoubleFormatStr($!product.paymentPrice)}",
+               	"productProfit": "赚${StringUtil.nullToInteger($!product.productProfit)}",
+               	"isSeckillProduct": "${StringUtil.booleanToInt($!product.isSeckillProduct)}",
+               	"isOpenPriceRecommend": "${StringUtil.booleanToInt($!product.isOpenPriceRecommend)}",
+				"productId": "$!product.productId"
+			}#if($velocityCount < $tagModel.dataMap.get("recommendWholesaleList").size()),#end
+    		#end
+    	#end
+		],
+		"postageData":{
+			"provinceId": "$!tagModel.dataMap.get("provinceId")",
+			"provinceName": "${HtmlDecodeTag.get($!tagModel.dataMap.get("provinceName"))}",
+			"cityId": "$!tagModel.dataMap.get("cityId")",
+			"cityName": "${HtmlDecodeTag.get($!tagModel.dataMap.get("cityName"))}",
+			"address": "${HtmlDecodeTag.get($!tagModel.dataMap.get("address"))}",
+			"totalWeights": "$!tagModel.dataMap.get("totalWeights")",
+			"postageDesc": "${HtmlDecodeTag.get($!tagModel.dataMap.get("postageDesc"))}",
+			"postageDescH5List":[
+			#if($tagModel.dataMap.get("postageDescH5List") && $tagModel.dataMap.get("postageDescH5List").size() > 0)
+	    		#foreach($postageDescH5 in $!tagModel.dataMap.get("postageDescH5List"))
+	    		{
+	    			"postageDescH5": "${HtmlDecodeTag.get($postageDescH5)}"
+				}#if($velocityCount < $tagModel.dataMap.get("postageDescH5List").size()),#end
+	    		#end
+	    	#end
+			],
+			"postage": "$!tagModel.dataMap.get("postage")",
+			"freePostageAct": "${HtmlDecodeTag.get($!tagModel.dataMap.get("freePostageAct"))}"
+		},
+		"questionData":{
+			#if($tagModel.dataMap.get("question") && $tagModel.dataMap.get("question") != "") 
+				"hasQuestion" : "1",
+			#else
+				"hasQuestion" : "0", 
+		 	#end
+			"question": "#if($tagModel.dataMap.get("question") && $tagModel.dataMap.get("question") != "")${HtmlDecodeTag.get($!tagModel.dataMap.get("question"))}#else有疑问?问问买过的人!#end",
+			"answer": "${HtmlDecodeTag.get($!tagModel.dataMap.get("answer"))}"
+		},
+		"productIntroList":[
+		#if($tagModel.data.productIntroList && $!tagModel.data.productIntroList.size() > 0)
+    		#foreach($productIntro in $tagModel.data.productIntroList)
+    		{
+    			"title": "${HtmlDecodeTag.get($productIntro.title)}",
+    			"introduction": "${HtmlDecodeTag.get($productIntro.introduction)}"
+			}#if($velocityCount < $tagModel.data.productIntroList.size()),#end
+    		#end
+    	#end
+		],
+		"purchaseDoubtList":[
+		#if($tagModel.data.purchaseDoubtList && $!tagModel.data.purchaseDoubtList.size() > 0)
+    		#foreach($purchaseDoubt in $tagModel.data.purchaseDoubtList)
+    		{
+    			"title": "${HtmlDecodeTag.get($purchaseDoubt.title)}",
+    			"description": "${HtmlDecodeTag.get($purchaseDoubt.description)}"
+			}#if($velocityCount < $tagModel.data.purchaseDoubtList.size()),#end
+    		#end
+    	#end
+		],
+		"infoList":[
+		#if($tagModel.data.barrageVoList && $!tagModel.data.barrageVoList.size() > 0)
+    		#foreach($barrage in $tagModel.data.barrageVoList)
+    		#set($headerImage = ${imageRateTag.getData($barrage.headerImage, "1200", "upload/")})
+    		{
+    		    #if($headerImage != "")
+    		    "imageUrl": "$!headerImage",
+    		    #else
+    		    "imageUrl": "",
+    		    #end
+    			"value": "${HtmlDecodeTag.get($!barrage.content)}"
+			}#if($velocityCount < $tagModel.data.barrageVoList.size()),#end
+    		#end
+    	#end
+		],
+		"purchaseNotes": [
+		#set($purchaseNotesList = ${productDescWebViewTag.get($tagModel.data.purchaseNotes)})
+		#if($purchaseNotesList && $!purchaseNotesList.size() > 0)
+    		#foreach($purchaseNotes in $purchaseNotesList)
+    		#set($imageRateVo = ${imageRateTag.getImageRate($!purchaseNotes.webViewFileVo.src, "1200", "upload/")})
+    		{
+         	   	"contType": "$!purchaseNotes.contType",
+               	"pixel": "$!purchaseNotes.content",
+               	"type": "$!purchaseNotes.webViewFileVo.type",
+               	"src":  "$!imageRateVo.filePath",
+               	"width": "$!imageRateVo.width",
+				"height": "$!imageRateVo.height"
+			}#if($velocityCount < $purchaseNotesList.size()),#end
+    		#end
+    	#end
+		],
+		"evaluate": {
+		     "evaluateQuantity":"${StringUtil.nullToInteger($tagModel.dataMap.get("evaluateQuantity"))}",
+		     "evaluateRate":"${HtmlDecodeTag.get($tagModel.dataMap.get("evaluateRate"))}",
+		     "dataInfoList":[
+		     #if($tagModel.dataMap.get("evaluateList") && $!tagModel.dataMap.get("evaluateList").size() > 0)
+    			#foreach($evaluate in $tagModel.dataMap.get("evaluateList"))
+    			{
+    				"evaluateId":  "${StringUtil.nullToInteger($!evaluate.evaluateId)}",
+               		"content":  "${HtmlDecodeTag.get($!evaluate.content)}",
+               		"userHeaderImage":  "$!evaluate.userHeaderImage",
+               		"nickName":  "${HtmlDecodeTag.get($!evaluate.nickName)}",
+               		"imageQuantity":  "${StringUtil.null2Str($!evaluate.imageQuantity)}",
+               		"imageUrlList":[
+               	   	#if($evaluate.imagePathList && $!evaluate.imagePathList.size() > 0)
+               	   		#foreach($image in $evaluate.imagePathList)
+               	   		#set($imageVo = ${imageRateTag.getImageRate($image, "1200","upload/")})
+               	   		{
+               	    		"imageUrl": "$!imageVo.filePath",
+               	    		"width": "$!imageVo.width",
+				    		"height": "$!imageVo.height"
+               	   		}#if($velocityCount < $evaluate.imagePathList.size()),#end
+               	   		#end
+               	   	#end
+    				]
+				}#if($velocityCount < $tagModel.dataMap.get("evaluateList").size()),#end
+    			#end
+    		#end
+    	   	]
+		},
+		"taxData": {
+		     "tax": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.tax)}",
+		     "taxRegion": "${StringUtil.nullToString($!tagModel.data.paymentTaxRegion)}",
+		      #if($isFreeTax == 1)
+		      "taxInfo":"本商品包税",
+		      "taxDescList": [{"content":  "本商品由纯若承担税费。"}]
+		     #else
+		     "taxInfo":"预计￥${StringUtil.nullToDoubleFormatStr($!tagModel.data.tax)}",
+		     "taxDescList": [{"content":  "根据国家政策规定，对跨境商品征收进口税，进口税以提交订单时实际交易价格为基础进行计算。"}]
+		     #end
+		},
+		"newPostageData":{
+			"postage": "${HtmlDecodeTag.get($!tagModel.dataMap.get("postage"))}",
+			"postageDescList":[
+			#if($tagModel.dataMap.get("postageVoList") && $tagModel.dataMap.get("postageVoList").size() > 0)
+	    		#foreach($postageVo in $!tagModel.dataMap.get("postageVoList"))
+	    		{
+	    			"areaNames": "${HtmlDecodeTag.get($!postageVo.areaNames)}",
+	    			"priceNotice": "${HtmlDecodeTag.get($!postageVo.priceNotice)}"
+				}#if($velocityCount < $tagModel.dataMap.get("postageVoList").size()),#end
+	    		#end
+	    	#end
+			]
+		},
+		"commodityPriceList":[
+		#if($tagModel.data.commodityPriceVoList && $!tagModel.data.commodityPriceVoList.size() > 0)
+    		#foreach($commodityPriceVo in $tagModel.data.commodityPriceVoList)
+    		{
+    			"name": "${HtmlDecodeTag.get($commodityPriceVo.name)}",
+    			"price": "${HtmlDecodeTag.get($commodityPriceVo.price)}",
+    			"contentList":[
+    			#if($commodityPriceVo.contentList && $!commodityPriceVo.contentList.size() > 0)
+    			    #foreach($content in $commodityPriceVo.contentList)
+    			    {
+    			     "content": "${HtmlDecodeTag.get($content)}"
+    			    }#if($velocityCount < $commodityPriceVo.contentList.size()),#end
+    		        #end
+    			#end
+    			]
+			}#if($velocityCount < $tagModel.data.commodityPriceVoList.size()),#end
+    		#end
+    	#end
+		],
+		"newCommodityPrice":{
+		#if($tagModel.data.newCommodityPriceVoList && $!tagModel.data.newCommodityPriceVoList.size() > 0)
+		    "desc":"高等级经销商专享低价",
+		    "wechatNumber": "${HtmlDecodeTag.get($!tagModel.data.wechat)}",
+		    "commodityPriceList":[
+    		#foreach($commodityPriceVo in $tagModel.data.newCommodityPriceVoList)
+    		{
+    			"name": "${HtmlDecodeTag.get($commodityPriceVo.name)}",
+    			"price": "${HtmlDecodeTag.get($commodityPriceVo.price)}",
+    			"level": "${StringUtil.nullToInteger($commodityPriceVo.level)}",
+    			"isCurrentLevel": "${StringUtil.booleanToInt($commodityPriceVo.isCurrentLevel)}",
+    			"content": "${HtmlDecodeTag.get($commodityPriceVo.content)}"
+			}#if($velocityCount < $tagModel.data.newCommodityPriceVoList.size()),#end
+    		#end
+    		]
+    	#end
+	},
+	"levelPromoteList":[
+		#if($tagModel.data.levelPromoteList && $!tagModel.data.levelPromoteList.size() > 0)
+    		#foreach($commodityPriceVo in $tagModel.data.levelPromoteList)
+    		{
+    			"level": "${StringUtil.nullToInteger($commodityPriceVo.level)}",
+    			"content": "${HtmlDecodeTag.get($commodityPriceVo.content)}"
+			}#if($velocityCount < $tagModel.data.levelPromoteList.size()),#end
+    		#end
+    	#end
+	],
+	"awardTask":{
+		#if($tagModel.data.currentProductTask)
+		#set($task = ${tagModel.data.currentProductTask})
+		#set($imageRateVo = ${imageRateTag.getImageRate($task.imagePath, "1200", "upload/")})
+		#set($isCompleted = ${StringUtil.booleanToInt($!task.isCompleted)})
+		    "taskId":"$!task.taskId",
+			"productId":"$!task.productId",
+			"imageUrl": "$!imageRateVo.filePath",
+		    "width": "$!imageRateVo.width",
+		    "height": "$!imageRateVo.height",
+		    "taskName":"${HtmlDecodeTag.get($!task.taskName)}",
+			"productName":"${HtmlDecodeTag.get($!task.productName)}",
+			"taskNumber":"${StringUtil.nullToInteger($!task.taskNumber)}",
+			"reward":"${StringUtil.nullToInteger($!task.reward)}",
+			"beginTime":"${DateUtil.getSeconds($!task.beginTime)}",
+			"endTime":"${DateUtil.getSeconds($!task.endTime)}",
+			"taskStatus":"${StringUtil.nullToInteger($!task.taskStatus)}",
+			#if($!isCompleted == "1")"buttonTitle":"任务已完成",#else"buttonTitle":"知道了",#end
+			"rewardNotes":"${HtmlDecodeTag.get($!task.rewardNotes)}",
+			"rewardTag":"${HtmlDecodeTag.get($!task.rewardTag)}",
+			"purchaseIntroduce":"${HtmlDecodeTag.get($!task.purchaseIntroduce)}",
+			"taskRule":"${HtmlDecodeTag.get($!task.taskRule)}",
+			"headNumber":"${StringUtil.nullToInteger($!task.headNumber)}",
+			"tailNumber":"${StringUtil.nullToInteger($!task.tailNumber)}",
+			"salesNumber":"${StringUtil.nullToInteger($!task.salesNumber)}",
+			"targetReward":"${StringUtil.nullToInteger($!task.targetReward)}",
+			"isCompleted": "$!isCompleted",
+			"obtainReward":"${StringUtil.nullToInteger($!task.obtainReward)}",
+			"nextNumber":"${StringUtil.nullToInteger($!task.nextNumber)}",
+			"groupNumber":"${StringUtil.nullToInteger($!task.groupNumber)}"
+		#end 
+	  },
+	  "tagList":[
+		#if($tagModel.data.tagMap && $!tagModel.data.tagMap.size() > 0)
+    		#foreach($entry in $tagModel.data.tagMap.entrySet())
+    		{
+    			"modelName": "${HtmlDecodeTag.get($entry.key)}",
+    			"typeName": "${HtmlDecodeTag.get($entry.value)}"
+			}#if($velocityCount < $tagModel.data.tagMap.size()),#end
+    		#end
+    	#end
+		]
+	}
+}

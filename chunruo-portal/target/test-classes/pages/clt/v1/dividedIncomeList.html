@@ -1,0 +1,58 @@
+## 分销记录
+
+#set($mtype = ${StringUtil.null2Str($request.getParameter('mtype'))})
+#set($status = ${StringUtil.null2Str($request.getParameter('status'))})
+#set($pageidx = ${StringUtil.null2Str($request.getParameter('pageidx'))})
+#set($pagesize = ${StringUtil.null2Str($request.getParameter('pagesize'))})
+#set($lastId = ${StringUtil.null2Str($request.getParameter('lastId'))})
+
+${dividedIncomeListTag.setRequest($request)}
+#set($tagModel = ${dividedIncomeListTag.getData($mtype,$status, $pageidx, $pagesize, $lastId)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"balance": "$!tagModel.dataMap.get("balance")",
+	"dataList":[
+		#if($tagModel.data && $tagModel.data.size() > 0)
+	 		#foreach($record in $tagModel.data)
+	 		{
+	 			"storeName":"${HtmlDecodeTag.get($!record.storeName)}",
+	 			"orderAmount":"${StringUtil.nullToDoubleFormatDecimal($!record.orderAmount)}",
+	 			"orderNo":"$!record.orderNo",
+	 			"orderId":"$!record.orderId",
+	 			"dividedIncome":"${StringUtil.nullToDoubleFormatDecimal($!record.income)}",
+	 			"orderProfit":"${StringUtil.nullToDoubleFormatDecimal($!record.orderProfit)}",
+	 			"refundProfit":"${StringUtil.nullToDoubleFormatDecimal($!record.refundProfit)}",
+	 			"status":"$!record.status",
+	 			"createTime":"${DateUtil.getSeconds($!record.createTime)}",
+	 			"isHaveRefund":"${StringUtil.booleanToInt($!record.isHaveRefund)}",
+	 			"refundList":[
+	 				#if($record.refundVoList && $record.refundVoList.size() > 0)
+						#foreach($refund in $record.refundVoList)
+						{
+							"refundProfit":"${StringUtil.nullToDoubleFormatDecimal($!refund.refundProfit)}",
+							"createTime":"${DateUtil.getSeconds($!refund.createTime)}"
+						}#if($velocityCount < $record.refundVoList.size()),#end
+						#end
+					#end
+	 			],
+	 			"productList":[
+	 				#if($record.orderItemsList && $record.orderItemsList.size() > 0)
+						#foreach($orderItems in $record.orderItemsList)
+						{
+							"productName":"${HtmlDecodeTag.get($!orderItems.productName)}",
+							"price":"${StringUtil.nullToDoubleFormatStr($!orderItems.price)}",
+							"productNumber":"$!orderItems.quantity",
+							"refundStatus":"$!orderItems.refundStatus",
+							"isSeckillProduct":"${StringUtil.booleanToInt($!orderItems.isSeckillProduct)}"
+						}#if($velocityCount < $record.orderItemsList.size()),#end
+						#end
+					#end
+	 			]
+	 		}#if($velocityCount < $tagModel.data.size()),#end
+		 	#end
+		#end
+	]
+}

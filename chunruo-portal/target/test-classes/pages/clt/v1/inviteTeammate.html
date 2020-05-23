@@ -1,0 +1,217 @@
+## 客户端团队邀请介绍页面
+
+${inviteTeammateTag.setRequest($request)}
+#set($tagModel = ${inviteTeammateTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"data":{
+		"vipNumber": "$!tagModel.data.vipNumber",
+		"dealerNumber": "$!tagModel.data.dealerNumber",
+		"totalDownNumber": "$!tagModel.data.totalDownNumber",
+		"brokerage": "${NumberUtil.amountConversion($!tagModel.data.brokerage)}",
+		"price": "$!tagModel.data.price",
+		"level": "$!tagModel.data.level",
+		"topProfit": "$!tagModel.data.topProfit",
+		"loginAmount": "$!tagModel.data.loginAmount",
+		"inviterCode": "$!tagModel.data.inviterCode",
+		"inviteCount": "$!tagModel.data.inviteCount",
+		"downloadUrl": "https://a.app.qq.com/o/simple.jsp?pkgname=com.webapp",
+		"name": "${HtmlDecodeTag.get($!tagModel.data.name)}",
+		"notice": "${HtmlDecodeTag.get($!tagModel.data.notice)}",
+		"shareUserUrl": "${HtmlDecodeTag.get($!tagModel.data.shareUserUrl)}",
+		"shareAgentUrl": "${HtmlDecodeTag.get($!tagModel.data.shareAgentUrl)}",
+		"shareUserWord": "${HtmlDecodeTag.get($!tagModel.data.shareUserWord)}",
+		"shareAgentWord": "${HtmlDecodeTag.get($!tagModel.data.shareAgentWord)}",
+		"imageMin": "${HtmlDecodeTag.get($!tagModel.data.imageMin)}",
+		"pushUserMoney": "${HtmlDecodeTag.get($!tagModel.data.pushUserMoney)}",
+		"pushManagerMoney": "${HtmlDecodeTag.get($!tagModel.data.pushManagerMoney)}",
+		"popImageInfo":{
+		#if($tagModel.data.popImageInfo && $tagModel.data.popImageInfo.size() > 0)
+			#set($explain = $tagModel.data.popImageInfo)
+			"popImageUrl":"${HtmlDecodeTag.get($!explain[0])}",
+			"height": "$!explain[1]",
+			"width": "$!explain[2]"
+		#end
+		},
+       "pushProfitImage":{
+			#set($imageRateVo = ${imageRateTag.getImageRate("/images/level/push_profit@2x.png", "1200", "upload/")})
+			"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height",
+			"imageUrl" : "$!imageRateVo.filePath"
+		},
+		"pushLevelImage":{
+			#set($imageRateVo = ${imageRateTag.getImageRate("/images/level/push_level@2x.png", "1200", "upload/")})
+			"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height",
+			"imageUrl" : "$!imageRateVo.filePath"
+		},
+		"shopownerPopImageInfo":{
+		#if($tagModel.data.shopownerPopImageInfo && $tagModel.data.shopownerPopImageInfo.size() > 0)
+			#set($explain = $tagModel.data.shopownerPopImageInfo)
+			#set($imageRateVo = ${imageRateTag.getImageRate($!explain[0].imagePath, "1200", "upload/")})
+			"popImageUrl":"$!imageRateVo.filePath",
+			"width": "$!imageRateVo.width",
+			"height": "$!imageRateVo.height"
+		#end
+		},
+		"angentPopImageInfo":{
+		#if($tagModel.data.angentPopImageInfo && $tagModel.data.angentPopImageInfo.size() > 0)
+			#set($explain = $tagModel.data.angentPopImageInfo)
+			"popImageUrl":"${HtmlDecodeTag.get($!explain[0])}",
+			"height": "$!explain[1]",
+			"width": "$!explain[2]"
+		#end
+		},
+		"angentExList":[
+		#if($tagModel.data.angentExList && $tagModel.data.angentExList.size() > 0)
+			#foreach($explain in $tagModel.data.angentExList)
+			{
+				"title": "${HtmlDecodeTag.get($!explain.title)}",
+				"content": "${HtmlDecodeTag.get($!explain.content)}",
+				"level": "$!explain.level",
+				"type": "$!explain.type",
+				"sort": "$!explain.sort",
+				#if(${StringUtil.nullToString($!explain.imageUrl)} != "")
+					"imageUrl": "$requestURL/upload/$!explain.imageUrl"
+				#else
+					"imageUrl": ""
+				#end
+			}#if($velocityCount < $tagModel.data.angentExList.size()),#end
+		 	#end
+		#end
+		],
+		"shopownerExList":[
+		#if($tagModel.data.shopownerExList && $tagModel.data.shopownerExList.size() > 0)
+			#foreach($explain in $tagModel.data.shopownerExList)
+			{
+				"title": "${HtmlDecodeTag.get($!explain.title)}",
+				"content": "${HtmlDecodeTag.get($!explain.content)}",
+				"level": "$!explain.level",
+				"type": "$!explain.type",
+				"sort": "$!explain.sort",
+				#if(${StringUtil.nullToString($!explain.imageUrl)} != "")
+					"imageUrl": "$requestURL/upload/$!explain.imageUrl"
+				#else
+					"imageUrl": ""
+				#end
+			}#if($velocityCount < $tagModel.data.shopownerExList.size()),#end
+		 	#end
+		#end
+		],
+		"defaultExList":[
+		#if($tagModel.data.defaultExList && $tagModel.data.defaultExList.size() > 0)
+			#foreach($explain in $tagModel.data.defaultExList)
+			{
+				"title": "${HtmlDecodeTag.get($!explain.title)}",
+				"content": "${HtmlDecodeTag.get($!explain.content)}",
+				"level": "$!explain.level",
+				"type": "$!explain.type",
+				"sort": "$!explain.sort",
+				#if(${StringUtil.nullToString($!explain.imageUrl)} != "")
+					"imageUrl": "$requestURL/upload/$!explain.imageUrl"
+				#else
+					"imageUrl": ""
+				#end
+			}#if($velocityCount < $tagModel.data.defaultExList.size()),#end
+		 	#end
+		#end
+		],
+		"vipPicturesInfo":{
+		#if($tagModel.data.imagesVIPList && $tagModel.data.imagesVIPList.size() > 0)
+			#set($inviteImage = $tagModel.data.imagesVIPList)
+			"imageUrlList":[
+				#foreach($image in $tagModel.data.imagesVIPList)
+				#set($imageURL = ${imageRateTag.getData($image.imagePath, "1200","upload/")})
+				{
+					"imageURL": "$!imageURL"
+				}#if($velocityCount < $tagModel.data.imagesVIPList.size()),#end
+			 	#end
+			],
+			"content": "${HtmlDecodeTag.get($!inviteImage[0].imageContent)}"
+		#end
+		},
+		"dealerPicturesInfo":{
+		#if($tagModel.data.imagesDealerList && $tagModel.data.imagesDealerList.size() > 0)
+			#set($inviteImage = $tagModel.data.imagesDealerList)
+			"imageUrlList":[
+				#foreach($image in $tagModel.data.imagesDealerList)
+				#set($imageURL = ${imageRateTag.getData($image.imagePath, "1200","upload/")})
+				{
+					"imageURL": "$!imageURL"
+				}#if($velocityCount < $tagModel.data.imagesDealerList.size()),#end
+			 	#end
+			],
+			"content": "${HtmlDecodeTag.get($!inviteImage[0].imageContent)}"
+		#end
+		},
+		"pushUserList":[
+		#if($tagModel.data.pushUserList && $tagModel.data.pushUserList.size() > 0)
+			#foreach($pushUser in $tagModel.data.pushUserList)
+			{
+				"title": "${HtmlDecodeTag.get($!pushUser.title)}",
+				"content":"${HtmlDecodeTag.get($!pushUser.content)}",
+				"price":"${HtmlDecodeTag.get($!pushUser.description)}",
+			    "sort":"$!pushUser.sort"
+			}#if($velocityCount < $tagModel.data.pushUserList.size()),#end
+		 	#end
+		#end
+		],
+		"pushManagerList":[
+		#if($tagModel.data.pushUserList && $tagModel.data.pushManagerList.size() > 0)
+			#foreach($pushManager in $tagModel.data.pushManagerList)
+			{
+				"title": "${HtmlDecodeTag.get($!pushManager.title)}",
+				"content":"${HtmlDecodeTag.get($!pushManager.content)}",
+				"price":"${HtmlDecodeTag.get($!pushManager.description)}",
+			    "sort":"$!pushManager.sort"
+			}#if($velocityCount < $tagModel.data.pushManagerList.size()),#end
+		 	#end
+		#end
+		],
+		"inviteQuestionList":[
+		#if($tagModel.data.inviteQuestionList && $tagModel.data.inviteQuestionList.size() > 0)
+			#foreach($question in $tagModel.data.inviteQuestionList)
+			{
+				"question": "${HtmlDecodeTag.get($!question.question)}",
+				"content": "${HtmlDecodeTag.get($!question.content)}",
+				"sort": "$!question.sort"
+			}#if($velocityCount < $tagModel.data.inviteQuestionList.size()),#end
+		 	#end
+		#end
+		],
+		"inviteProfitList":[
+		#if($tagModel.data.inviteProfitList && $tagModel.data.inviteProfitList.size() > 0)
+			#foreach($question in $tagModel.data.inviteProfitList)
+			{
+				"question": "${HtmlDecodeTag.get($!question.question)}",
+				"imageUrl":"$requestURL/upload/$!question.imagePath",
+				"sort": "$!question.sort",
+				"textList":[
+             	#if($question.contentList && $!question.contentList.size() > 0)
+              	   #foreach($content in $question.contentList)
+              	   {
+              	    	"content": "${HtmlDecodeTag.get($!content)}"
+              	   }#if($velocityCount < $question.contentList.size()),#end
+              	   #end
+            	#end
+  				]
+			}#if($velocityCount < $tagModel.data.inviteProfitList.size()),#end
+		 	#end
+		#end
+		],
+		"pushManagerImageList":[
+		     #if($tagModel.data.pushCenterImageList && $tagModel.data.pushCenterImageList.size() > 0)
+			    #foreach($image in $tagModel.data.pushCenterImageList)
+			       #set($imageRateVo = ${imageRateTag.getImageRate($image.imagePath, "1200", "upload/")})
+					{
+						"width": "$!imageRateVo.width",
+						"height": "$!imageRateVo.height",
+						"imageUrl": "$!imageRateVo.filePath"
+					}#if($velocityCount < $tagModel.data.pushCenterImageList.size()),#end
+				 	#end
+			 #end
+		]
+	}
+}

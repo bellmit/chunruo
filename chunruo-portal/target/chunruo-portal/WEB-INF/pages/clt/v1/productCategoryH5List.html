@@ -1,0 +1,18 @@
+##商品分类
+
+#set($tagModel = ${productCategoryListTag.getData()})
+{
+    "code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime": "$!systemTime",
+    "categoryList": [
+   	#if($tagModel.data && $tagModel.data.size() > 0)
+   		#foreach($category in $tagModel.data)
+		{
+			"categoryId": "$!category.categoryId",
+            "name": "${HtmlDecodeTag.get($!category.name)}"
+		}#if($velocityCount < $tagModel.data.size()),#end
+		#end
+	#end
+    ]
+}

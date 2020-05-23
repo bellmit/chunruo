@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<Configuration status="debug">
+    <Appenders>
+    	<Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[JKD-PORTAL][%d{yyyy-MM-dd HH:mm:ss SSS}] %p %c{1}.%M(%L) | %m%n"/>
+        </Console>
+    </Appenders>  
+    <Loggers>  
+        <Logger name="org.apache.catalina.util.LifecycleBase" level="error" />  
+        <Logger name="org.apache.coyote.http11.Http11NioProtocol" level="warn" />  
+        <Logger name="org.apache.tomcat.util.net.NioSelectorPool" level="warn" />  
+        <Logger name="org.hibernate.validator.internal.util.Version" level="warn" />  
+        <Logger name="org.hibernate" level="warn" />
+        <Logger name="org.springframework" level="warn" />  
+        <Logger name="com.github" level="debug" />
+        <Logger name="org.quartz.core" level="warn" />
+        <Logger name="httpclient.wire" level="warn" />
+        <Logger name="com.google.code" level="warn" />
+        <logger name="org.tuckey.web.filters.urlrewrite.UrlRewriteFilter" level="INFO" />
+        <Logger name="org.apache.commons" level="warn" />
+        <Logger name="org.apache.commons" level="warn" />
+        <Logger name="com.alibaba.druid.pool" level="warn" />
+        <Logger name="com.chunruo.cache" level="warn" />
+        <Root level="debug">  
+            <AppenderRef ref="Console" /> 
+        </Root>  
+    </Loggers>  
+</Configuration>

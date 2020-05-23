@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OWebOrder>
+	<orderNumber>${order.orderNo}</orderNumber>				
+	<orderDate>${order.createTime?string("yyyy-MM-dd HH:mm:ss")}</orderDate>					
+	<payTime>${order.createTime?string("yyyy-MM-dd HH:mm:ss")}</payTime>						
+	<buyerNick>${order.consignee}</buyerNick>					
+	<totalAmount>${order.orderAmount?string("0.##")}</totalAmount>				
+	<payment>${order.payAmount?string("0.##")}</payment>
+	<discount>${order.totalDiscount?string("0.##")}</discount>							
+	<postAmount>0</postAmount>		
+	<points></points>		
+	<pointsAmount></pointsAmount>		
+	<couponsAmount></couponsAmount>	
+	<virtualAmount></virtualAmount>
+	<fullMinus></fullMinus>
+	<isInvoice></isInvoice>						
+	<invoiceType></invoiceType> 				
+	<invoiceTitle></invoiceTitle> 				
+	<invoiceAddress></invoiceAddress>			
+	<invoiceCode></invoiceCode>				
+	<account></account>						
+	<bank></bank>							
+	<phone></phone>							
+	<invoiceDate></invoiceDate>				
+	<tariff></tariff>							
+	<tradeFrom>官网订单</tradeFrom>
+	<isCrossBorder>${isCrossBorder!''}</isCrossBorder>		
+	<isDeclareSucc>${isDeclareSucc!''}</isDeclareSucc>			
+	<paymentType>${paymentType!''}</paymentType>				
+	<consignee>${order.consignee}</consignee>					
+	<idType>1</idType>							
+	<idCode>${identityNo!''}</idCode>						
+	<payNo>${order.tradeNo!''}</payNo>	
+	<realName>${identityName!''}</realName>								
+	<province>${order.province!''}</province>						
+	<city>${order.city!''}</city>								
+	<cityarea>${order.cityarea!''}</cityarea>						
+	<address>${order.address}</address>						
+	<mobilePhone>${order.consigneePhone}</mobilePhone>				
+	<telephone></telephone>					
+	<zip></zip>								
+	<sellerMemo>${order.remarks!''}</sellerMemo>				
+	<buyerMessage>${order.buyerMessage!''}</buyerMessage>			
+	<logisticCode></logisticCode>
+	<OWebOrderItems>	
+		<#list order.orderItemsList as orderItems>
+		<OWebOrderItem>
+			<productNumber>${orderItems.productCode}</productNumber>		
+			<productName>${orderItems.productName}</productName>			
+			<skuNumber>${orderItems.productSku}</skuNumber>				
+			<skuName>单品</skuName>					
+			<price>${orderItems.price?string("0.####")}</price>						
+			<orderCount>${orderItems.quantity}</orderCount>				
+			<giftCount>0</giftCount>					
+			<amount>${orderItems.amount?string("0.####")}</amount>
+			<discountFee>${orderItems.discountFee?string("0.####")}</discountFee>	
+			<memo>${orderItems.productName}</memo>			
+			<barcode></barcode>					
+		</OWebOrderItem>
+		</#list>
+	</OWebOrderItems>
+</OWebOrder>

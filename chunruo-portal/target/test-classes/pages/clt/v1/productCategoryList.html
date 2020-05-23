@@ -1,0 +1,35 @@
+##商品分类
+
+#set($imageUrlHeader= "http://www.jikeduo.com.cn/")
+
+#set($tagModel = ${productCategoryListTag.getData()})
+{
+    "code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime": "$!systemTime",
+    "list": [
+   	#if($tagModel.data && $tagModel.data.size() > 0)
+   		#foreach($category in $tagModel.data)
+   		#set($catPic = ${imageRateTag.getData($category.imagePath, "1200", "upload/")})
+		{
+			"catId": "$!category.categoryId",
+            "catName": "${HtmlDecodeTag.get($!category.name)}",
+            "catPic": "$!catPic",
+            "childrenList": [
+           	#if($category.childCategoryList && $category.childCategoryList.size() > 0)
+            	#foreach($childCategory in $category.childCategoryList)
+            	#set($imageURL = ${imageRateTag.getData($childCategory.imagePath, "1200", "upload/")})
+            	{
+            	 	"catId": "$!childCategory.categoryId",
+                    "catName": "${HtmlDecodeTag.get($!childCategory.name)}",
+                    "catFid": "$!childCategory.parentId",
+                    "catPic": "$!imageURL"
+            	}#if($velocityCount < $category.childCategoryList.size()),#end
+				#end
+			#end
+           ]
+		}#if($velocityCount < $tagModel.data.size()),#end
+		#end
+	#end
+    ]
+}

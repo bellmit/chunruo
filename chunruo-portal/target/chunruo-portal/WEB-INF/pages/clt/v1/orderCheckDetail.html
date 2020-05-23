@@ -1,0 +1,153 @@
+## 订单确认页面接口
+
+#set($postType = ${StringUtil.null2Str($request.getParameter('postType'))})
+#set($productId = ${StringUtil.null2Str($request.getParameter('productId'))})
+#set($productSpecId = ${StringUtil.null2Str($request.getParameter('productSpecId'))})
+#set($number = ${StringUtil.null2Str($request.getParameter('number'))})
+#set($cartIds = ${StringUtil.null2Str($request.getParameter('cartIds'))})
+#set($addressId = ${StringUtil.null2Str($request.getParameter('addressId'))})
+#set($userCouponId = ${StringUtil.null2Str($request.getParameter('userCouponId'))})
+#set($groupProductInfo = ${StringUtil.null2Str($request.getParameter('groupProductInfo'))})
+#set($orderStackId = ${StringUtil.null2Str($request.getParameter('orderStackId'))})
+
+${orderCheckTag.setRequest($request)}
+#set($tagModel = ${orderCheckTag.getData($postType, $productId, $productSpecId, $number, $cartIds, $orderStackId, $addressId, $userCouponId, $groupProductInfo)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"data":{
+	    "isClosedWechatPay":"0",
+		"storeId": "$!tagModel.data.get("storeId")",
+		"storeName": "${HtmlDecodeTag.get($!tagModel.data.get("storeName"))}",
+		"postType": "$!tagModel.data.get("postType")",
+		"productId": "$!tagModel.data.get("productId")",
+		"productSpecId": "$!tagModel.data.get("productSpecId")",
+		"number": "$!tagModel.data.get("number")",
+		"cartIds": "$!tagModel.data.get("cartIds")",
+		"totalNumber": "$!tagModel.data.get("totalNumber")",
+		"postage": "$!tagModel.data.get("postage")",
+		"tax": "${StringUtil.null2Str($!tagModel.data.get("tax"))}",
+		"goTaxIntro":"${HtmlDecodeTag.get($!tagModel.data.get("goTaxIntro"))}",
+		"productTax": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("productTax"))}",
+		"postageTax": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("postageTax"))}",
+		"isInviteProduct": "${StringUtil.booleanToInt($!tagModel.data.isInviteProduct)}",
+		"orderAmount": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("orderAmount"))}",
+		"productAmount": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("productAmount"))}",
+		"productType": "$!tagModel.data.get("productType")",
+		"preferentialAmount":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("preferentialAmount"))}",
+		"useCouponId":"$!tagModel.data.get("useCouponId")",
+		"couponName":"${HtmlDecodeTag.get($!tagModel.data.get("couponName"))}",
+		"isUserCoupon":"${StringUtil.booleanToInt($!tagModel.data.isUserCoupon)}",
+		"isNeedAuth":"${StringUtil.booleanToInt($!tagModel.data.isNeedAuth)}",
+		"rollingNotice":"${HtmlDecodeTag.get($!tagModel.data.get("rollingNotice"))}",
+		"payAmount":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("payAmount"))}",
+		"realPayAmount":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("realPayAmount"))}",
+		"accountAmount":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("accountAmount"))}",
+		"payAccountAmount":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("payAccountAmount"))}",
+		"isNeedSendCode":"${StringUtil.booleanToInt($!tagModel.data.isNeedSendCode)}",
+		"deliveryIntro": "${HtmlDecodeTag.get($!tagModel.data.get("deliveryIntro"))}",
+		"productList":[
+		#if($tagModel.mapList && $!tagModel.mapList.size() > 0)
+			#foreach($productMap in $tagModel.mapList)
+			#set($imageURL = ${imageRateTag.getData($productMap.get("imageURL"), "1200", "upload/")})
+			{
+				"productId": "$!productMap.get("productId")",
+				"productSpecId": "$!productMap.get("productSpecId")",
+				"productName": "${HtmlDecodeTag.get($!productMap.get("productName"))}",
+				"imageUrl": "$!imageURL",
+				"productNumber": "$!productMap.get("productNumber")",
+				"isSeckillProduct": "$!productMap.get("isSeckillProduct")",
+				"productTags": "${HtmlDecodeTag.get($!productMap.get("productTags"))}",
+				"price": "$!productMap.get("price")"
+			}#if($velocityCount < $tagModel.mapList.size()),#end
+    		#end
+		#end
+		]
+	},
+	"coupon":{
+		"availableCouponList":[
+		#if($tagModel.data.get("couponMap").get("availableCouponList") && $!tagModel.data.get("couponMap").get("availableCouponList").size() > 0)
+			#foreach($availableCouponList in $tagModel.data.get("couponMap").get("availableCouponList"))
+			#set($imageURL = ${imageRateTag.getData($availableCouponList.productImagePath, "1200", "upload/")})
+			{
+				"receiveTime": "$!availableCouponList.receiveTime",
+				"effectiveTime": "$!availableCouponList.effectiveTime",
+				"effectiveTimeFormat": "$!availableCouponList.effectiveTimeFormat",
+				"couponNo": "$!availableCouponList.couponNo",
+				"userCouponId": "$!availableCouponList.userCouponId",
+				"couponName": "${HtmlDecodeTag.get($!availableCouponList.coupon.couponName)}",
+				"couponType": "$!availableCouponList.coupon.couponType",
+				"fullAmount": "$!availableCouponList.coupon.fullAmount",
+				"giveAmount": "$!availableCouponList.coupon.giveAmount",
+				"attribute": "$!availableCouponList.coupon.attribute",
+				"couponStatus":"$!availableCouponList.couponStatus",
+				"typeName": "${HtmlDecodeTag.get($!availableCouponList.coupon.typeName)}",
+				"title": "${HtmlDecodeTag.get($!availableCouponList.coupon.title)}",
+				"bindNames": "${HtmlDecodeTag.get($!availableCouponList.coupon.bindNames)}",
+			    "isRechargeProductCoupon":"${StringUtil.booleanToInt($!availableCouponList.isRechargeProductCoupon)}",
+			    "imageUrl":"$!imageURL",
+			    "bindIntro":"${HtmlDecodeTag.get($!availableCouponList.coupon.bindIntro)}",
+	            "productNames":"${HtmlDecodeTag.get($!availableCouponList.coupon.productNames)}"
+			}#if($velocityCount < $tagModel.data.get("couponMap").get("availableCouponList").size()),#end
+    		#end
+		#end
+		],
+		"unavailableCouponList":[
+		#if($tagModel.data.get("couponMap").get("unavailableCouponList") && $!tagModel.data.get("couponMap").get("unavailableCouponList").size() > 0)
+			#foreach($unavailableCoupon in $tagModel.data.get("couponMap").get("unavailableCouponList"))
+		    #set($imageURL = ${imageRateTag.getData($unavailableCoupon.productImagePath, "1200", "upload/")})
+			{
+				"receiveTime": "$!unavailableCoupon.receiveTime",
+				"effectiveTime": "$!unavailableCoupon.effectiveTime",
+				"effectiveTimeFormat": "$!unavailableCoupon.effectiveTimeFormat",
+				"couponNo": "$!unavailableCoupon.couponNo",
+				"userCouponId": "$!unavailableCoupon.userCouponId",
+				"couponName": "${HtmlDecodeTag.get($!unavailableCoupon.coupon.couponName)}",
+				"couponType": "$!unavailableCoupon.coupon.couponType",
+				"fullAmount": "$!unavailableCoupon.coupon.fullAmount",
+				"giveAmount": "$!unavailableCoupon.coupon.giveAmount",
+				"attribute": "$!unavailableCoupon.coupon.attribute",
+				"couponStatus":"$!unavailableCoupon.couponStatus",
+				"typeName":	"${HtmlDecodeTag.get($!unavailableCoupon.coupon.typeName)}",
+				"title": "${HtmlDecodeTag.get($!unavailableCoupon.coupon.title)}",
+				"bindNames": "${HtmlDecodeTag.get($!userCoupon.coupon.bindNames)}",
+				"isRechargeProductCoupon":"${StringUtil.booleanToInt($!unavailableCoupon.isRechargeProductCoupon)}",
+			    "imageUrl":"$!imageURL",
+			    "bindIntro":"${HtmlDecodeTag.get($!unavailableCoupon.coupon.bindIntro)}",
+	            "productNames":"${HtmlDecodeTag.get($!unavailableCoupon.coupon.productNames)}"
+			}#if($velocityCount < $tagModel.data.get("couponMap").get("unavailableCouponList").size()),#end
+			#end
+		#end
+		]
+	},
+	"addressInfo":{
+		"addressId": "$!tagModel.dataMap.get("addressId")",
+		"name": "${HtmlDecodeTag.get($!tagModel.dataMap.get("name"))}",
+		"provinceId": "$!tagModel.dataMap.get("provinceId")",
+		"cityId": "$!tagModel.dataMap.get("cityId")",
+		"areaId": "$!tagModel.dataMap.get("areaId")",
+		"address": "${HtmlDecodeTag.get($!tagModel.dataMap.get("address"))}",
+		"xaddress": "${HtmlDecodeTag.get($!tagModel.dataMap.get("xaddress"))}",
+		"msg": "${HtmlDecodeTag.get($!tagModel.dataMap.get("msg"))}",
+		"mobile": "${HtmlDecodeTag.get($!tagModel.dataMap.get("mobile"))}",
+		"isEmpty": "$!tagModel.dataMap.get("isEmpty")",
+		"identityNo": "${HtmlDecodeTag.get($!tagModel.dataMap.get("identityNo"))}",
+		"realName": "${HtmlDecodeTag.get($!tagModel.dataMap.get("realName"))}",
+		"isValidIdentity": "$!tagModel.dataMap.get("isValidIdentity")",
+		"isDefault": "$!tagModel.dataMap.get("isDefault")",
+		"identityFront": "$!tagModel.dataMap.get("identityFront")",
+		"identityBack": "$!tagModel.dataMap.get("identityBack")",
+		"identityFrontData": "$!tagModel.dataMap.get("identityFrontData")",
+		"identityBackData": "$!tagModel.dataMap.get("identityBackData")"
+	},
+	"authenticationList":[
+	#if($tagModel.data.get("authenticationList") && $!tagModel.data.get("authenticationList").size() > 0)
+		#foreach($content in $tagModel.data.get("authenticationList"))
+		{
+		    "content":"${HtmlDecodeTag.get($!content)}"
+		}#if($velocityCount < $tagModel.data.get("authenticationList").size()),#end
+		#end
+	#end
+	]
+}

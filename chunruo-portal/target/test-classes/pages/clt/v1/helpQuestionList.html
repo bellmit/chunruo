@@ -1,0 +1,33 @@
+
+${helpQuestionListTag.setRequest($request)}
+#set($tagModel= ${helpQuestionListTag.getData()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"preSaleQuestionList": [
+		#if($tagModel.dataMap.get("preSaleQuestionList") && $!tagModel.dataMap.get("preSaleQuestionList").size() > 0)
+	    	#foreach($question in $tagModel.dataMap.get("preSaleQuestionList"))
+	    	{
+         	   	"questionId":"$!question.questionId",
+				"name":"${HtmlDecodeTag.get($!question.name)}",
+				"questionDesc":"${HtmlDecodeTag.get($!question.questionDesc)}",
+				"isNoteRed": "${StringUtil.booleanToInt($!question.isNoteRed)}"
+			}#if($velocityCount < $tagModel.dataMap.get("preSaleQuestionList").size()),#end
+	    	#end
+	    #end
+	],
+	"afterSaleQuestionList": [
+		#if($tagModel.dataMap.get("afterSaleQuestionList") && $!tagModel.dataMap.get("afterSaleQuestionList").size() > 0)
+	    	#foreach($question in $tagModel.dataMap.get("afterSaleQuestionList"))
+	    	{
+         	   	"questionId":"$!question.questionId",
+				"name":"${HtmlDecodeTag.get($!question.name)}",
+				"questionDesc":"${HtmlDecodeTag.get($!question.questionDesc)}",
+				"isNoteRed": "${StringUtil.booleanToInt($!question.isNoteRed)}"
+			}#if($velocityCount < $tagModel.dataMap.get("afterSaleQuestionList").size()),#end
+	    	#end
+	    #end
+	]
+}

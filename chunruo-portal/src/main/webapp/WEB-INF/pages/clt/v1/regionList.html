@@ -1,0 +1,43 @@
+##地区列表
+
+#set($lastTime = $request.getParameter('lastTime'))
+
+#set($tagModel = ${regionListTag.getData($lastTime)})
+{
+    "code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime": "$!systemTime",
+    "list": [
+   	#if($tagModel.data && $tagModel.data.size() > 0)
+   		#foreach($provinceArea in $tagModel.data)
+		{
+			"areaId": "$!provinceArea.areaId",
+            "areaName": "${HtmlDecodeTag.get($!provinceArea.areaName)}",
+            "parentId": "$provinceArea.parentId",
+            "childrenList": [
+           	#if($provinceArea.childAreaList && $provinceArea.childAreaList.size() > 0)
+            	#foreach($cityArea in $provinceArea.childAreaList)
+            	{
+            	 	"areaId": "$!cityArea.areaId",
+		            "areaName": "${HtmlDecodeTag.get($!cityArea.areaName)}",
+		            "parentId": "$cityArea.parentId",
+		            "childrenList": [
+		           	#if($cityArea.childAreaList && $cityArea.childAreaList.size() > 0)
+		            	#foreach($countryArea in $cityArea.childAreaList)
+		            	{
+		            		"areaId": "$!countryArea.areaId",
+		            		"areaName": "${HtmlDecodeTag.get($!countryArea.areaName)}",
+		            		"parentId": "$countryArea.parentId"
+		            	}#if($velocityCount < $cityArea.childAreaList.size()),#end
+						#end
+					#end
+		           ]
+            	}#if($velocityCount < $provinceArea.childAreaList.size()),#end
+				#end
+			#end
+           ]
+		}#if($velocityCount < $tagModel.data.size()),#end
+		#end
+	#end
+    ]
+}

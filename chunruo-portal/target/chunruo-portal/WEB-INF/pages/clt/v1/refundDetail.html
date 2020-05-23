@@ -1,0 +1,63 @@
+## 退款详情页面
+
+#set($orderItemId = $request.getParameter('itemId'))
+
+${refundDetailTag.setRequest($request)}
+#set($tagModel= ${refundDetailTag.getData($orderItemId)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":$!systemTime,
+	"data":{
+		#if($tagModel.data) 
+			#set($imageURL1 = ${imageRateTag.getData($tagModel.data.image1, "1200", "upload/")})
+			#set($imageURL2 = ${imageRateTag.getData($tagModel.data.image2, "1200", "upload/")})
+			#set($imageURL3 = ${imageRateTag.getData($tagModel.data.image3, "1200", "upload/")})
+			#set($imageURL = ${imageRateTag.getData($tagModel.data.orderItems.productImagePath, "1200", "upload/")})
+		
+			"refundId":"$!tagModel.data.refundId",
+			"refundNumber":"$!tagModel.data.refundNumber",
+			"orderId":"$!tagModel.data.orderId",
+			"orderItemId":"$!tagModel.data.orderItemId",
+			"productId":"$!tagModel.data.productId",
+			"productPrice":"$!tagModel.data.productPrice",
+			"refundCount":"$!tagModel.data.refundCount",
+			"refundAmount":"$!tagModel.data.refundAmount",
+			"refundType":"$!tagModel.data.refundType",
+			"refundStatus":"$!tagModel.data.refundStatus",
+			"refundExplain":"${HtmlDecodeTag.get($!tagModel.data.refundExplain)}",
+			"refundImage1":"$!imageURL1",
+			"refundImage2":"$!imageURL2",
+			"refundImage3":"$!imageURL3",
+			"expressNumber":"${HtmlDecodeTag.get($!tagModel.data.expressNumber)}",
+			"expressCompany":"${HtmlDecodeTag.get($!tagModel.data.expressCompany)}",
+			"isReceive":"$!tagModel.data.isReceive",
+			"refusalReason":"${HtmlDecodeTag.get($!tagModel.data.refusalReason)}",
+			"productName":"${HtmlDecodeTag.get($!tagModel.data.orderItems.productName)}",
+			"productTags":"${HtmlDecodeTag.get($!tagModel.data.orderItems.productTags)}",
+			"image":"$!imageURL",
+			"refundReason":"${HtmlDecodeTag.get($!tagModel.data.reason)}",
+		#end 
+		"rollingNotice":"${HtmlDecodeTag.get($!tagModel.dataMap.rollingNotice)}"
+	},
+	"refundSpeedList":[
+	#if($tagModel.mapList && $!tagModel.mapList.size() > 0)
+    	#foreach($speedMap in $tagModel.mapList)
+    	{
+			"name": "${HtmlDecodeTag.get($!speedMap.name)}",
+			"sort": "$!speedMap.sort",
+			"status": "$!speedMap.status"
+		}#if($velocityCount < $tagModel.mapList.size()),#end
+    	#end
+    #end   
+	],
+	"refundStatusContent":{
+	#if($tagModel.dataMap && $!tagModel.dataMap.size() > 0)
+		"title":"${HtmlDecodeTag.get($!tagModel.dataMap.title)}",
+		"content":"${HtmlDecodeTag.get($!tagModel.dataMap.content)}",
+		"refundTimeTitle":"${HtmlDecodeTag.get($!tagModel.dataMap.refundTimeTitle)}",
+		"highlight":"$!tagModel.dataMap.highlight",
+		"copyAddress":"${HtmlDecodeTag.get($!tagModel.dataMap.copyAddress)}"
+	#end
+	}
+}

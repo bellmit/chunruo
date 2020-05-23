@@ -1,0 +1,47 @@
+##订单包裹列表
+
+#set($orderId = $request.getParameter('orderId'))
+
+${orderPackageListTag.setRequest($request)}
+#set($tagModel= ${orderPackageListTag.getData($orderId)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"packageList":[
+		#if($tagModel.data && $tagModel.data.size() > 0)
+		#foreach($package in $tagModel.data)
+		{
+			"total": "$!package.total",
+			"logistics": "${HtmlDecodeTag.get($!package.expressCompany)}",
+			"expressNo": "${HtmlDecodeTag.get($!package.expressNo)}",
+			"createTime": "${DateUtil.getSeconds($!package.orderCreateTime)}",
+			"productList":[
+				#if($package.orderItemsList && $package.orderItemsList.size() > 0)
+				#foreach($orderItems in $package.orderItemsList)
+				#set($imageURL = ${imageRateTag.getData($orderItems.productImagePath, "1200", "/upload/")})
+				{
+					"imageUrl":"$!imageURL",
+					"productName":"${HtmlDecodeTag.get($!orderItems.productName)}",
+					"productTags": "${HtmlDecodeTag.get($!orderItems.productTags)}",
+					"price":"$!orderItems.price",
+					"productNumber":"$!orderItems.quantity"
+				}#if($velocityCount < $package.orderItemsList.size()),#end
+				#end
+			#end
+			],
+			"dataList":[
+			#if($!package.expressVO.data && $!package.expressVO.data.size() > 0)
+				#foreach($data in $!package.expressVO.data)
+				{
+					"title": "${HtmlDecodeTag.get($!data.context)}",
+					"createTime":"${DateUtil.getSeconds($!data.time, "")}"
+				}#if($velocityCount < $package.expressVO.data.size()),#end
+				#end
+			#end
+			]
+		}#if($velocityCount < $tagModel.data.size()),#end
+		#end
+	#end
+	]
+}

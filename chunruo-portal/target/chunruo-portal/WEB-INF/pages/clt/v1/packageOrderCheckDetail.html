@@ -1,0 +1,55 @@
+## 订单确认页面接口
+
+#set($addressId = ${StringUtil.null2Str($request.getParameter('addressId'))})
+
+${packageOrderCheckTag.setRequest($request)}
+#set($tagModel = ${packageOrderCheckTag.getData($addressId)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"data":{
+	    "isClosedWechatPay":"0",
+		"productId": "$!tagModel.data.get("productId")",
+		"productSpecId": "$!tagModel.data.get("productSpecId")",
+		"number": "$!tagModel.data.get("number")",
+		"postage": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("postage"))}",
+		"tax": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("tax"))}",
+		"isInviteProduct": "${StringUtil.booleanToInt($!tagModel.data.get("isInviteProduct"))}",
+		"orderAmount": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("orderAmount"))}",
+		"productAmount": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("productAmount"))}",
+		"productType": "$!tagModel.data.get("productType")",
+		"preferentialAmount":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("preferentialAmount"))}",
+		"payAmount":"${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("payAmount"))}",
+		"productName": "${HtmlDecodeTag.get($!tagModel.data.get("product").name)}",
+		"price": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("price"))}",
+		"giftName": "${HtmlDecodeTag.get($!tagModel.data.get("giftName"))}",
+		"giftInfo": "${HtmlDecodeTag.get($!tagModel.data.get("giftInfo"))}",
+		#set($imageURL = ${imageRateTag.getData($tagModel.data.get("product").image, "1200", "upload/")})
+		"imageUrl": "$!imageURL"
+	},
+	"productSpecList": [
+		#if($!tagModel.data.get("productSpecList") && $!tagModel.data.get("productSpecList").size() > 0)
+    		#foreach($productSpec in $tagModel.data.get("productSpecList"))
+			{
+	        	"productSpecId": "$!productSpec.productSpecId",
+	        	"discount": "${HtmlDecodeTag.get($!productSpec.discount)}",
+	        	"year": "${HtmlDecodeTag.get($!productSpec.primarySpecName)}",
+	        	"giftName": "${HtmlDecodeTag.get($!productSpec.productTags)}",
+				"price": "${StringUtil.nullToDoubleFormatStr($!productSpec.priceWholesale)}",
+				"postage": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("postage"))}",
+		        "tax": "${StringUtil.nullToDoubleFormatStr($!tagModel.data.get("tax"))}"
+			}#if($velocityCount < $tagModel.data.get("productSpecList").size()),#end
+    		#end
+    	#end
+   	 	],
+	"addressInfo":{
+		"addressId": "$!tagModel.dataMap.get("addressId")",
+		"name": "${HtmlDecodeTag.get($!tagModel.dataMap.get("name"))}",
+		"address": "${HtmlDecodeTag.get($!tagModel.dataMap.get("address"))}",
+		"msg": "${HtmlDecodeTag.get($!tagModel.dataMap.get("msg"))}",
+		"mobile": "${HtmlDecodeTag.get($!tagModel.dataMap.get("mobile"))}",
+		"isEmpty": "$!tagModel.dataMap.get("isEmpty")",
+		"isValidIdentity": "$!tagModel.dataMap.get("isValidIdentity")"
+	}
+}

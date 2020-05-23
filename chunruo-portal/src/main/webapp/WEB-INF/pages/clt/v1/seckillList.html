@@ -1,0 +1,72 @@
+##秒杀场次列表
+
+#set($seckillId = $request.getParameter('seckillId'))
+
+${productSeckillListTag.setRequest($request)}
+#set($tagModel = ${productSeckillListTag.getData($seckillId)})
+{
+    "code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"seckillCode":"$!tagModel.seckillCode",
+	"systemTime": "$!systemTime",
+	"mobile": "${StringUtil.mobileFormat($!tagModel.dataMap.get("mobile"))}",
+	"headerImageList":[
+	#if($tagModel.dataList && $!tagModel.dataList.size() > 0)
+    	#foreach($imagePath in $tagModel.dataList)
+    	#set($imageVo = ${imageRateTag.getImageRate($imagePath, "1200")})
+    	{
+			"imageUrl": "$!imageVo.filePath",
+			"width": "$!imageVo.width",
+			"height": "$!imageVo.height"
+		}#if($velocityCount < $tagModel.dataList.size()),#end
+    	#end
+    #end
+	],
+	"seckillList":[
+	#if($tagModel.mapList && $!tagModel.mapList.size() > 0)
+    	#foreach($seckillMap in $tagModel.mapList)
+    	{
+			"seckillId": "$seckillMap.get("seckillId")",
+			"seckillName": "$seckillMap.get("seckillName")",
+			"seckillStatus": "$seckillMap.get("seckillStatus")",
+			"startTime": "$seckillMap.get("startTime")",
+			"endTime": "$seckillMap.get("endTime")",
+			"isCurrentSeckill": "$seckillMap.get("isCurrentSeckill")"
+		}#if($velocityCount < $tagModel.mapList.size()),#end
+    	#end
+    #end
+	],
+    "dataList": [
+    #if($tagModel.data && $tagModel.data.size() > 0)
+		#foreach($product in $tagModel.data)
+		#set($imageURL = ${imageRateTag.getData($product.image, "1200", "upload/")})
+		#set($isSeckillProduct =${StringUtil.booleanToInt($!product.isSeckillProduct)})
+		#set($level =${StringUtil.nullToInteger($!tagModel.dataMap.get("level"))})
+		{
+			"productId": "$!product.productId",
+			"productName": "${HtmlDecodeTag.get($product.name)}",
+			"imageUrl": "$!imageURL",
+			"price": "${StringUtil.nullToDoubleFormatStr($!product.seckillPrice)}",
+			"originalPrice": "${StringUtil.nullToDoubleFormatStr($!product.paymentOriginalPrice)}",
+			"stockNumber": "${StringUtil.nullToInteger($!product.paymentStockNumber)}",
+			"seckillTotalStock": "${StringUtil.nullToInteger($!product.paymentSeckillTotalStock)}",
+			"isSoldOut": "${StringUtil.booleanToInt($!product.isPaymentSoldout)}",
+			"seckillPrice": "${StringUtil.nullToDoubleFormatStr($!product.paymentPrice)}",
+			"priceRecommend": "${StringUtil.nullToDoubleFormatStr($!product.priceRecommend)}",
+		    "priceWholesale": "${StringUtil.nullToDoubleFormatStr($!product.priceWholesale)}",
+			"v2Price": "${StringUtil.nullToDoubleFormatStr($!product.v2Price)}",
+			"v3Price": "${StringUtil.nullToDoubleFormatStr($!product.v3Price)}",
+			"productProfit": "赚￥${StringUtil.nullToInteger($!product.productProfit)}",
+			"isSeckillProduct": "${StringUtil.booleanToInt($!product.isSeckillProduct)}",
+			"isOpenV2Price": "${StringUtil.booleanToInt($!product.isOpenV2Price)}",
+			"isOpenV3Price": "${StringUtil.booleanToInt($!product.isOpenV3Price)}",
+			"isShowLevelPrice": "${StringUtil.booleanToInt($!product.isShowLevelPrice)}",
+			"isShowV2Price": "${StringUtil.booleanToInt($!product.isShowV2Price)}",
+			"isShowV3Price": "${StringUtil.booleanToInt($!product.isShowV3Price)}",
+			"isProxy": "${StringUtil.nullToInteger($!product.isProxy)}",
+			"seckillNoticeType": "${StringUtil.nullToInteger($!product.seckillNoticeType)}"
+		}#if($velocityCount < $tagModel.data.size()),#end
+	 	#end
+	#end
+    ]
+}

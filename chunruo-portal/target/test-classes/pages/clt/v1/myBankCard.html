@@ -1,0 +1,18 @@
+## 店铺银行卡信息
+
+${myBankCardTag.setRequest($request)}
+#set($tagModel = ${myBankCardTag.getDate()})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"data":{
+		#if($tagModel.data && $tagModel.data.size() > 0)
+			"bankCardUser": "${HtmlDecodeTag.get($!tagModel.data.bankCardUser)}",
+			"bankId": "$!tagModel.data.bankId",
+			"bankName": "${HtmlDecodeTag.get($!tagModel.data.bankName)}",
+			"bankCard": "${HtmlDecodeTag.get($!tagModel.data.bankCard)}",
+			"openingBank": "${HtmlDecodeTag.get($!tagModel.data.openingBank)}"
+		#end
+	}
+}

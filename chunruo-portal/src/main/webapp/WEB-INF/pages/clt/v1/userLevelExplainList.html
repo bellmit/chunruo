@@ -1,0 +1,30 @@
+##店铺等级说明
+
+
+#set($level = $request.getParameter('level'))
+
+${userLevelExplainTag.setRequest($request)}
+#set($tagModel= ${userLevelExplainTag.getData($level)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"explainList":[
+	#if($tagModel.data && $tagModel.data.size() > 0)
+		#foreach($explain in $tagModel.data)
+		{
+			"title":"${HtmlDecodeTag.get($!explain.title)}",
+			"content":"${HtmlDecodeTag.get($!explain.content)}",
+			"level":$!explain.level,
+			"type":"$!explain.type",
+			"sort":"$!explain.sort",
+			#if(${StringUtil.nullToString($!explain.imageUrl)} != "")
+				"imageUrl":"$requestURL/upload/$!explain.imageUrl"
+			#else
+				"imageUrl":""
+			#end
+		}#if($velocityCount < $tagModel.data.size()),#end
+	 	#end
+	#end
+	]
+}

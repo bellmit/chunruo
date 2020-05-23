@@ -1,0 +1,41 @@
+##  退货原因，金额
+#set($orderId = $request.getParameter('orderId'))
+#set($itemId = $request.getParameter('itemId'))
+
+${refundReasonTag.setRequest($request)}
+#set($tagModel= ${refundReasonTag.getData($orderId, $itemId)})
+{
+    "code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"productName":"${HtmlDecodeTag.get($!tagModel.dataMap.get("productName"))}",
+	"productTags":"${HtmlDecodeTag.get($!tagModel.dataMap.get("productTags"))}",
+	"quantity":"${StringUtil.nullToInteger($!tagModel.dataMap.get("quantity"))}",
+	"notice":"${HtmlDecodeTag.get($!tagModel.dataMap.get("notice"))}",
+	#set($imageRateVo = ${imageRateTag.getImageRate($!tagModel.dataMap.get("productImage"), "1200", "upload/")})
+	"productImage":  "$!imageRateVo.filePath",
+    "width": "$!imageRateVo.width",
+	"height": "$!imageRateVo.height",
+	"systemTime": "$!systemTime",
+  	"dataList":[
+		#if($tagModel.data && $tagModel.data.size() > 0)
+	 		#foreach($refundReason in $tagModel.data)
+	 		{
+	 			"reasonId":"$!refundReason.reasonId",
+				"reasonType":"$!refundReason.reasonType",
+				"reason":"${HtmlDecodeTag.get($!refundReason.reason)}",
+				"maxAmount":"$!refundReason.amount"
+			}#if($velocityCount < $tagModel.data.size()),#end
+		 	#end
+		#end
+	],
+	"refundTypeList":[{
+		"refundType":1,
+		"refundName" : "退款"
+	},{
+		"refundType":2,
+		"refundName" : "退货退款"
+	},{
+		"refundType":4,
+		"refundName" : "部分退款"
+	}]
+}
