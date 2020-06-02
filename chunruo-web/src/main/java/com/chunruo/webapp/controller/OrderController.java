@@ -58,6 +58,7 @@ import com.chunruo.core.util.DateUtil;
 import com.chunruo.core.util.FileUtil;
 import com.chunruo.core.util.MyExcelExport;
 import com.chunruo.core.util.StringUtil;
+import com.chunruo.core.util.WxSendUtil;
 import com.chunruo.core.util.XlsUtil;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.core.vo.TModel;
@@ -1950,16 +1951,8 @@ public class OrderController extends BaseController {
 		return resultMap;
 	}
 	
-	
-	
-	
-	/**
-	 * 订单拦截
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/dealWithIntercept")
-	public @ResponseBody Map<String, Object> dealWithIntercept(final HttpServletRequest request) {
+	@RequestMapping(value = "/sentOrder")
+	public @ResponseBody Map<String, Object> sentOrder(final HttpServletRequest request) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		String record = request.getParameter("idListGridJson");
 		List<Long> idList = null;
@@ -1982,340 +1975,55 @@ public class OrderController extends BaseController {
 			boolean isExistError = false;
 			StringBuffer errorBuffer = new StringBuffer();
 			for (Order order : orderList) {
-				// 订单在未结算之前都可以拦截
-				List<Integer> statusList = new ArrayList<Integer> ();
-				statusList.add(OrderStatus.UN_DELIVER_ORDER_STATUS);
-				statusList.add(OrderStatus.DELIVER_ORDER_STATUS);
-				if (!statusList.contains(order.getStatus())) {
-					// 检查订单状态是否有效
+				if(!StringUtil.compareObject(order.getStatus(), OrderStatus.UN_DELIVER_ORDER_STATUS)) {
 					isExistError = true;
 					errorBuffer.append(String.format("<br>订单%s状态错误", order.getOrderNo()));
-				} else if (StringUtil.nullToBoolean(order.getIsCheck())) {
-					// 检查订单是否已结算
+				}else if(!StringUtil.nullToBoolean(order.getIsPaymentSucc())) {
 					isExistError = true;
-					errorBuffer.append(String.format("<br>订单%s已结算", order.getOrderNo()));
-				} else if (StringUtil.nullToBoolean(order.getIsIntercept())) {
-					// 检查订单是否已拦截
-					isExistError = true;
-					errorBuffer.append(String.format("<br>订单%s已拦截", order.getOrderNo()));
+					errorBuffer.append(String.format("<br>订单%s未支付", order.getOrderNo()));
 				}
 			}
 
-			// 订单推送ERP状态错误
 			if (isExistError) {
 				resultMap.put("success", false);
-				resultMap.put("message", String.format("订单拦截错误%s", errorBuffer.toString()));
+				resultMap.put("message", String.format("订单发货错误%s", errorBuffer.toString()));
 				return resultMap;
 			}
 			
-			// 设置拦截状态
 			for (Order order : orderList) {
-				order.setIsIntercept(true);
-				order.setRemarks("手动订单拦截");
+				order.setStatus(OrderStatus.DELIVER_ORDER_STATUS);
+				order.setSentTime(DateUtil.getCurrentDate());
 				order.setUpdateTime(DateUtil.getCurrentDate());
 			}
-			this.orderManager.batchInsert(orderList, orderList.size());
 			
+			orderList = this.orderManager.batchInsert(orderList, orderList.size());
+			
+			try {
+				for(Order order : orderList) {
+					Order orderInfo = this.orderManager.getOrderByOrderId(StringUtil.nullToLong(order.getOrderId()));
+					OrderItems orderItems = orderInfo.getOrderItemsList().get(0);
+					UserInfo userInfo = userInfoManager.get(orderInfo.getUserId());
+					if(userInfo != null 
+							&& userInfo.getUserId() != null 
+							&& userInfo.getOpenId() != null
+							&& orderItems != null && orderItems.getItemId() != null) {
+						WxSendUtil.sentSucc(order, userInfo, StringUtil.null2Str(orderItems.getProductName()));
+					}
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
 			resultMap.put("success", true);
-			resultMap.put("message", getText("order.push.success"));
+			resultMap.put("message", getText("发货成功"));
 			return resultMap;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		resultMap.put("success", false);
-		resultMap.put("message", getText("order.push.failure"));
+		resultMap.put("message", getText("发货失败"));
 		return resultMap;
 	}
 	
 	
-	/**
-	 * 手动导出身份证
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/createIdCardZip")
-	public @ResponseBody Map<String, Object>  createIdCardZip(final HttpServletRequest request, final HttpServletResponse response) {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		String record = StringUtil.null2Str(request.getParameter("idListGridJson"));
-		String columns = StringUtil.nullToString(request.getParameter("columns"));
-		try {
-			User currentUser = this.getCurrentUser(request);
-			if(currentUser == null) {
-				resultMap.put("success", false);
-				resultMap.put("message", getText("用户识别错误"));
-				return resultMap;
-			}
-			
-			List<Long> orderIdList = (List<Long>) StringUtil.getIdLongList(record);
-			if(orderIdList != null && !orderIdList.isEmpty()) {
-				Map<String, List<String>> filePathLitMap = new HashMap<String, List<String>> ();
-				List<Order> orderList = this.orderManager.getByIdList(orderIdList);
-				if(orderList != null && !orderList.isEmpty()) {
-					for(Order order : orderList) {
-						List<String> realFilePathList = new ArrayList<String> ();
-						MsgModel<String> frontModel = checkFileIsExit(StringUtil.null2Str(order.getIdentityFront()));
-						if(!StringUtil.nullToBoolean(frontModel.getIsSucc())) {
-							continue;
-						}
-						MsgModel<String> backModel = checkFileIsExit(StringUtil.null2Str(order.getIdentityBack()));
-						if(!StringUtil.nullToBoolean(backModel.getIsSucc())) {
-							continue;
-						}
-						realFilePathList.add(frontModel.getData());
-						realFilePathList.add(backModel.getData());
-						filePathLitMap.put(StringUtil.null2Str(order.getOrderNo()), realFilePathList);
-					}
-					
-					Map<String, String> columnMap = StringUtil.getColumnsMap(columns);
-					columnMap.put("orderNo", "订单号");
-					// 导出列表头信息
-					List<String> headerList = new ArrayList<String>();
-					for (Entry<String, String> entry : columnMap.entrySet()) {
-						headerList.add(entry.getValue());
-					}
-
-					List<Map<String, String>> objectMapList = new ArrayList<Map<String, String>>();
-					orderList = OrderUtil.getStoreAndUserName(orderList, false);
-					for (int i = 0; i < orderList.size(); i++) {
-						try {
-							Map<String, String> objectMap = new HashMap<String, String>();
-							Map<String, Object> orderMap = StringUtil.objectToMap(orderList.get(i));
-							for (Entry<String, String> entry : columnMap.entrySet()) {
-								if (orderMap.containsKey(entry.getKey())) {
-									objectMap.put(entry.getValue(), StringUtil.null2Str(orderMap.get(entry.getKey())));
-								}
-							}
-							objectMapList.add(objectMap);
-						} catch (Exception e) {
-							e.printStackTrace();
-							continue;
-						}
-					}
-
-					// 导出文件地址
-					String filePath = StringUtil.getUniqueDateFilePath(OrderController.XLS_FILE_NAME);
-					File file = new File(Constants.DEPOSITORY_PATH + filePath);
-					FileUtil.createNewFile(file);
-					XlsUtil.writeFile(headerList, objectMapList, file.getPath());
-//					xlsFilePath = filePath;
-				
-					String zipPath = Constants.DEPOSITORY_PATH + StringUtil.getUniqueDateFilePath(OrderController.ZIP_FILE_NAME); // 压缩文件保存本地地址
-					addZipFile(zipPath, file.getPath(), filePathLitMap,request,response);
-					resultMap.put("filePath", zipPath);
-					resultMap.put("success", true);
-					return resultMap;
-				}
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		resultMap.put("success", false);
-		resultMap.put("message", getText("下载失败"));
-		return resultMap;
-	}
-	
-	
-	private MsgModel<String> checkFileIsExit(String filePath){
-		MsgModel<String> msgModel = new MsgModel<String>();
-		try {
-			String fullFilePath = Constants.EXTERNAL_IMAGE_PATH + StringUtil.null2Str(filePath);
-//			String fullFilePath = "/Users/chunruo/Desktop/abcd/1.jpg";
-			File file = new File(fullFilePath);
-			if(!file.exists()) {
-				//订单身份证信息不存在错误orderNumber
-				msgModel.setIsSucc(false);
-				msgModel.setMessage("身份证图片未找到");
-				return msgModel;
-			}
-			msgModel.setIsSucc(true);
-			msgModel.setData(StringUtil.null2Str(file.getPath()));
-			return msgModel;
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		msgModel.setIsSucc(false);
-		msgModel.setMessage("身份证图片错误");
-		return msgModel;
-	}
-	
-	
-	public static void addZipFile(String filePath, String excelPath, Map<String, List<String>> filePathLitMap,HttpServletRequest request,HttpServletResponse response){
-		ZipOutputStream out = null;
-		try {
-			System.out.println("filePaht==========="+filePath);
-			if(filePathLitMap == null || filePathLitMap.size() <= 0) {
-				return;
-			}
-
-			out = new ZipOutputStream(new FileOutputStream(filePath));
-			out.setEncoding("GBK");
-			
-			// Excel订单列表
-			File excelFile = new File(excelPath);
-			if(excelFile.exists()) {
-				FileInputStream fis = null;
-				ByteArrayOutputStream bos = null;
-				try {
-					bos = new ByteArrayOutputStream();
-					fis = new FileInputStream(excelFile);
-					byte[] b = new byte[1024];
-					int n;
-					while ((n = fis.read(b)) != -1) {
-						bos.write(b, 0, n);
-					}
-					fis.close();
-					bos.close();
-
-					out.putNextEntry(new ZipEntry("/" + excelFile.getName()));
-					out.write(bos.toByteArray());
-				}catch(Exception e) {
-					e.printStackTrace();
-				}finally {
-					if(fis != null) {
-						fis.close();
-					}
-					if(bos != null) {
-						bos.close();
-					}
-				}
-			}
-
-			// 订单管理身份证地址正反面
-			for(Entry<String, List<String>> entry : filePathLitMap.entrySet()) {
-				try {
-					String folderName = "/" + entry.getKey() + "/";
-					out.putNextEntry(new ZipEntry(folderName));
-
-					List<String> filePathLit = entry.getValue();
-					if(filePathLit != null && filePathLit.size() > 0) {
-						for(int i = 0; i < filePathLit.size(); i ++) {
-							FileInputStream fis = null;
-							ByteArrayOutputStream bos = null;
-							try{
-								File file = new File(filePathLit.get(i));
-								if(file.exists()) {
-									bos = new ByteArrayOutputStream();
-									fis = new FileInputStream(file);
-									byte[] b = new byte[1024];
-									int n;
-									while ((n = fis.read(b)) != -1) {
-										bos.write(b, 0, n);
-									}
-									fis.close();
-									bos.close();
-
-									String fileExt = file.getName().substring(file.getName().lastIndexOf("."));
-									String fileName = String.format("%s%s%s", folderName, i+1, fileExt);
-									out.putNextEntry(new ZipEntry(fileName));
-									out.write(bos.toByteArray());
-								}
-							}catch(Exception e) {
-								e.printStackTrace();
-								continue;
-							}finally {
-								if(fis != null) {
-									fis.close();
-								}
-								if(bos != null) {
-									bos.close();
-								}
-							}
-						}
-					}
-				}catch(Exception e) {
-					e.printStackTrace();
-					continue;
-				}
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}finally {
-			if(out != null) {
-				try {
-					out.close();
-				}catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
-//		try {
-//			if (FileUtil.checkFileExists(filePath)) {
-//				File file = new File(filePath);
-//				// 以流的形式下载文件。
-//				InputStream fis = new BufferedInputStream(new FileInputStream(file));
-//				byte[] buffer = new byte[fis.available()];
-//				fis.read(buffer);
-//				fis.close();
-//
-//				String filename = "idCard-" + DateUtil.formatDate("yyyy-MM-dd", DateUtil.getCurrentDate())
-//						+ OrderController.ZIP_FILE_NAME;
-//				// 清空response
-//				response.reset();
-//				// 设置response的Header
-//
-////				if (request.getHeader("User-Agent").toUpperCase().indexOf("MSIE") > 0) {
-////					filename = URLEncoder.encode(filename, "UTF-8");
-////				} else {
-////					filename = new String(filename.getBytes("UTF-8"), "ISO8859-1");
-////				}
-//
-//				response.addHeader("Content-Disposition", "attachment;filename=" +  new String(filename.getBytes()));
-//				response.addHeader("Content-Length", StringUtil.null2Str(file.length()));
-//				OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
-//				response.setContentType("application/octet-stream");
-//				toClient.write(buffer);
-//				toClient.flush();
-//				toClient.close();
-//			}
-//		}catch(Exception e) {
-//			e.printStackTrace();
-//		}
-		
-	}
-	
-	
-	/**
-	 * 手动下载身份证
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/downLoadIdCard")
-	public @ResponseBody void downLoadIdCard(final HttpServletRequest request, final HttpServletResponse response) {
-		try {
-			String filePath = StringUtil.null2Str(request.getParameter("filePath"));
-			if (FileUtil.checkFileExists(filePath)) {
-				File file = new File(filePath);
-				// 以流的形式下载文件。
-				InputStream fis = new BufferedInputStream(new FileInputStream(file));
-				byte[] buffer = new byte[fis.available()];
-				fis.read(buffer);
-				fis.close();
-
-				String filename = "idCard-" + DateUtil.formatDate("yyyy-MM-dd", DateUtil.getCurrentDate())
-						+ OrderController.ZIP_FILE_NAME;
-				// 清空response
-				response.reset();
-				// 设置response的Header
-
-				// if (request.getHeader("User-Agent").toUpperCase().indexOf("MSIE") > 0) {
-				// filename = URLEncoder.encode(filename, "UTF-8");
-				// } else {
-				// filename = new String(filename.getBytes("UTF-8"), "ISO8859-1");
-				// }
-
-				response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes()));
-				response.addHeader("Content-Length", StringUtil.null2Str(file.length()));
-				OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
-				response.setContentType("application/octet-stream");
-				toClient.write(buffer);
-				toClient.flush();
-				toClient.close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }

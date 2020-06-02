@@ -277,18 +277,6 @@ public class RefundController extends BaseController {
 				return resultMap;
 			}
 						
-//			if(result && StringUtil.compareObject(refund.getRefundStatus(), Refund.REFUND_STATUS_FINANCE)) {
-//				//财务同意退款申请
-//				MsgModel<Double> msgModel = RefundUtil.getRefundInfo(refund, amount);
-//				isRefundSucc = StringUtil.nullToBoolean(msgModel.getIsSucc());
-//				if(!isRefundSucc) {
-//					//退款失败原因
-//					resultMap.put("msg", StringUtil.null2Str(msgModel.getMessage()));
-//				}else {
-//					resultMap.put("msg", "退款成功");
-//				}
-//			}
-			
 			this.refundManager.checkRefund(refund, result, reason, address, amount, adminUser.getUserId(), adminUser.getUsername());
 			resultMap.put("success", true);
 			return resultMap;

@@ -2,12 +2,7 @@ var customField = {
     list: function() {
         return [
             { type: "image_ad", val: "图片/广告" },
-            { type: "goods", val: "商品" },
-            { type: "image_nav", val: "图片/导航" },
-            { type: "image_theme", val: "图片/专题" },
-            { type: "image_seckill", val: "集限抢" },
-            { type: "image_module", val: "图片/模块" },
-            { type: "text_module", val: "文本" }
+            { type: "goods", val: "商品" }
             
         ];
     },

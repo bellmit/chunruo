@@ -267,7 +267,6 @@ public class UserProfitRecordManagerImpl extends GenericManagerImpl<UserProfitRe
 				topUserProfitRecord.setOrderId(orderId);
 				topUserProfitRecord.setOrderNo(orderNo);
 				topUserProfitRecord.setIncome(profitTop);
-				topUserProfitRecord.setMtype(UserProfitRecord.DISTRIBUTION_MTYPE_TOP);
 				topUserProfitRecord.setStatus(UserProfitRecord.DISTRIBUTION_STATUS_INIT);
 				topUserProfitRecord.setType(profitType);
 				topUserProfitRecord.setCreateTime(DateUtil.getCurrentDate());
@@ -476,7 +475,6 @@ public class UserProfitRecordManagerImpl extends GenericManagerImpl<UserProfitRe
 			topUserProfitRecord.setOrderId(StringUtil.nullToLong(order.getOrderId()));
 			topUserProfitRecord.setOrderNo(StringUtil.null2Str(order.getOrderNo()));
 			topUserProfitRecord.setIncome(StringUtil.nullToDoubleFormat(profitTop));
-			topUserProfitRecord.setMtype(UserProfitRecord.DISTRIBUTION_MTYPE_TOP);
 			topUserProfitRecord.setStatus(UserProfitRecord.DISTRIBUTION_STATUS_INIT);
 			topUserProfitRecord.setType(UserProfitRecord.DISTRIBUTION_TYPE_VIP);
 			topUserProfitRecord.setCreateTime(DateUtil.getCurrentDate());
@@ -499,62 +497,6 @@ public class UserProfitRecordManagerImpl extends GenericManagerImpl<UserProfitRe
 			lock.unlock();
 		}
 	}
-
-//	@Override
-//	public List<Object[]> getUserProfitRecordListByBdUserIdList(List<Long> bdUserIdList) {
-//		StringBuilder strBulSql = new StringBuilder();
-//		strBulSql.append("select cc.user_id,cc.nick_name,cc.mobile,bb.pay_time,aa.income,bb.status order_status, ");
-//		strBulSql.append("case when aa.mtype = 2 and dd.refund_type in(1,2) then dd.sub_profit when aa.mtype = 2 and dd.refund_type = 3 then bb.profit_sub else dd.top_profit end as refund_profit, ");
-//		strBulSql.append("aa.update_time ,case when aa.mtype = 2 then bb.profit_sub  else bb.profit_top end as order_profit,bb.order_id,aa.bd_user_id,aa.status profit_status,aa.record_id ");
-//		strBulSql.append("from ");
-//		strBulSql.append("( select jupr.*,zz.bd_user_id from jkd_user_profit_record jupr inner join ");
-//		strBulSql.append("( select jbui.user_id,jbui.bd_user_id from jkd_bd_user_invite jbui where jbui.bd_user_id in(%s) ) zz on jupr.from_user_id = zz.user_id  where jupr.type = 5 ) aa ");
-//		strBulSql.append("left join ");
-//		strBulSql.append("jkd_order bb ON aa.order_id = bb.order_id ");
-//		strBulSql.append("left join jkd_user_info cc ");
-//		strBulSql.append("on aa.from_user_id = cc.user_id ");
-//		strBulSql.append(" left join ");
-//		strBulSql.append("(select jr.order_id,sum(joi.profit) sub_profit,sum(joi.top_profit) top_profit,jr.refund_type from jkd_refund jr ");
-//		strBulSql.append("left join ");
-//		strBulSql.append("jkd_order_items joi on joi.item_id = jr.order_item_id  where jr.refund_status = 5 ");
-//		strBulSql.append(" group by jr.order_id ");
-//		strBulSql.append(" ) dd on aa.order_id = dd.order_id order by aa.record_id desc");
-//		log.info(strBulSql.toString());
-//		return this.querySql(String.format(strBulSql.toString(), StringUtil.longListToStr(bdUserIdList)));
-//	
-//	}
-	
-//	@Override
-//	public List<Object[]> getUserProfitRecordListByBdUserIdList(List<Long> bdUserIdList) {
-//		StringBuilder strBulSql = new StringBuilder();
-//		strBulSql.append("SELECT * FROM jkd_bd_user_profit_remote_rebate cc WHERE cc.bd_user_id IN(%s) ");
-//		strBulSql.append("UNION ");
-//		strBulSql.append("SELECT * FROM jkd_bd_user_profit_recent_rebate bb WHERE bb.bd_user_id IN(%s) ");
-//		strBulSql.append("UNION ");
-//		strBulSql.append("SELECT * FROM ");
-//		strBulSql.append("(SELECT aa.record_id ,cc.user_id,cc.nick_name,cc.mobile,bb.pay_time,aa.income,bb.status AS order_status,");
-//		strBulSql.append("CASE WHEN dd.refund_type = 3 THEN bb.profit_top ELSE dd.top_profit END AS refund_profit,");
-//		strBulSql.append("aa.update_time AS complate_time,bb.profit_top  AS order_profit,");
-//		strBulSql.append("bb.order_id,aa.bd_user_id,aa.status AS profit_status FROM ");
-//		strBulSql.append("(SELECT jupr.*,zz.bd_user_id FROM (SELECT vv.* FROM jkd_user_profit_record  vv WHERE  ");
-//		strBulSql.append("vv.type = 5  AND vv.mtype = 3 AND vv.create_time >= DATE_FORMAT(DATE_ADD(NOW(),INTERVAL - 1 DAY),'%%Y-%%m-%%d 23:30:00') GROUP BY vv.from_user_id,vv.order_id) jupr ");
-//		strBulSql.append("INNER JOIN ");
-//		strBulSql.append("(SELECT jbui.user_id,jbui.bd_user_id FROM jkd_bd_user_invite jbui WHERE jbui.bd_user_id IN( ");
-//		strBulSql.append("%s ) ) zz ");
-//		strBulSql.append("ON jupr.from_user_id = zz.user_id ) aa ");
-//		strBulSql.append("INNER JOIN ");
-//		strBulSql.append("jkd_order bb ON aa.order_id = bb.order_id ");
-//		strBulSql.append("LEFT JOIN ");
-//		strBulSql.append("jkd_user_info cc ON aa.from_user_id = cc.user_id ");
-//		strBulSql.append(" LEFT JOIN ");
-//		strBulSql.append("(SELECT jr.order_id,SUM(joi.profit) sub_profit,SUM(joi.top_profit) top_profit,jr.refund_type FROM jkd_refund jr LEFT JOIN ");
-//		strBulSql.append("jkd_order_items joi ON joi.item_id = jr.order_item_id  WHERE jr.refund_status = 5  GROUP BY jr.order_id  ) dd ON aa.order_id = dd.order_id ");
-//		strBulSql.append("ORDER BY aa.record_id DESC");
-//		strBulSql.append(" ) gg");
-//		log.info(strBulSql.toString());
-//		return this.querySql(String.format(strBulSql.toString(), StringUtil.longListToStr(bdUserIdList), StringUtil.longListToStr(bdUserIdList), StringUtil.longListToStr(bdUserIdList)));
-//	}
-	
 	@Override
 	public List<Object[]> getUserProfitRecordListByCondition(List<Long> bdUserIdList,Integer status,String keyword,String beginTime ,String endTime) {
 	    if(bdUserIdList == null || bdUserIdList.size() <= 0 ) {

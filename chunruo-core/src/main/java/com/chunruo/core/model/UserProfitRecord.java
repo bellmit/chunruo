@@ -32,10 +32,6 @@ public class UserProfitRecord {
 	public final static Integer DISTRIBUTION_TYPE_FX = 5;			//分销
 	public final static Integer DISTRIBUTION_TYPE_VIP = 6;			//购买vip
 	
-	//收益归属
-	public final static Integer DISTRIBUTION_MTYPE_TOP = 3;			//上线
-	public final static Integer DISTRIBUTION_MTYPE_DOWN = 2;		//分享收益
-	
     private Long recordId;			//序号
     private Long userId;			//用户ID
     private Long fromUserId;       	//来源用户ID
@@ -43,13 +39,12 @@ public class UserProfitRecord {
     private String orderNo;			//订单号
     private Double income;			//收入(负值为支出)
     private Integer type;			//类型(5:分销,6购买vip)
-    private Integer mtype;          //收益类型(3:上线,2:分享收益)
     private Integer status;			//状态(1:进行中;2:退款;3:已结算;4:失败)
     private Date createTime;		//创建时间
     private Date updateTime;		//更新时间
    
     @Transient
-    private String storeName;
+    private String nickName;
     private String fromStoreName;
     private Double orderAmount;
     private List<OrderItems> orderItemsList;
@@ -121,15 +116,6 @@ public class UserProfitRecord {
         this.type = type;
     }
 
-    @Column(name="mtype",length=1)
-    public Integer getMtype() {
-		return mtype;
-	}
-
-	public void setMtype(Integer mtype) {
-		this.mtype = mtype;
-	}
-
 	@Column(name="status",length=1)
     public Integer getStatus() {
         return status;
@@ -157,13 +143,14 @@ public class UserProfitRecord {
 		this.updateTime = updateTime;
 	}
 
+	
 	@Transient
-	public String getStoreName() {
-		return storeName;
+	public String getNickName() {
+		return nickName;
 	}
 
-	public void setStoreName(String storeName) {
-		this.storeName = storeName;
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
 	}
 	
 	@Transient

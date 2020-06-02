@@ -2,11 +2,11 @@
 #set($pageidx = $request.getParameter('pageidx'))
 #set($pagesize = $request.getParameter('pagesize'))
 #set($lastId = $request.getParameter('lastId'))
-#set($type = $request.getParameter('type'))
+#set($status = $request.getParameter('status'))
 
 
 ${withdrawalListTag.setRequest($request)}
-#set($tagModel= ${withdrawalListTag.getData($pageidx, $pagesize, $lastId,$type)})
+#set($tagModel= ${withdrawalListTag.getData($pageidx, $pagesize, $lastId,$status)})
 {
 	"code":"$!tagModel.code",
 	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
@@ -15,29 +15,16 @@ ${withdrawalListTag.setRequest($request)}
 	"dataList":[
 	 #if($tagModel.data && $tagModel.data.size() > 0)
 		#foreach($record in $tagModel.data)
-		#set($isFreeTax = ${StringUtil.booleanToInt($!record.isFreeTax)})
-		#set($withdrawalType = ${StringUtil.nullToInteger($!record.type)})
-		
 		{
 			"createTime": "${DateUtil.getSeconds($!record.createTime)}",
-			"withdrawalAmount": "${StringUtil.nullToDoubleFormatStr($!record.amount)}",
-			"amount": "${StringUtil.nullToDoubleFormatStr($!record.realAmount)}",
+			"amount": "${StringUtil.nullToDoubleFormatStr($!record.amount)}",
 			"status": "$!record.status",
 			#if($!record.complateTime)
 				"complateTime": "${DateUtil.getSeconds($!record.complateTime)}",
 			#else
 				"complateTime": "",
 			#end
-			"remarks": "${HtmlDecodeTag.get($!record.remarks)}",
-			"reason":"${HtmlDecodeTag.get($!record.reason)}",
-			"isFreeTax": "${StringUtil.booleanToInt($!record.isFreeTax)}",
-			#if($!isFreeTax == "1" && $!withdrawalType == "1")
-				"taxIntro": "纯若已为您代缴个税",
-			#else
-				"taxIntro": "",
-			#end
-			"personalTax": "${StringUtil.nullToDoubleFormatStr($!record.personalTax)}",
-			"type": "${StringUtil.nullToInteger($!record.type)}"
+			"name": "${HtmlDecodeTag.get($!record.name)}"
 		}#if($velocityCount < $tagModel.data.size()),#end
 	 	#end
 	#end

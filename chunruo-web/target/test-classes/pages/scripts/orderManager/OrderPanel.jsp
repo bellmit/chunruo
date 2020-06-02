@@ -378,82 +378,13 @@ Ext.define('MyExt.orderManager.OrderPanel', {
 	    this.tbar = [
 	    <jkd:haveAuthorize access="/order/dealWithIntercept.json">
 	    {
-        	text: '<fmt:message key="order.dealWithIntercept"/>', 
-        	iconCls: 'Arrowinlonger', 	
-        	handler: this.dealWithInterceptOrder, 
+        	text: '<fmt:message key="order.sent"/>', 
+        	iconCls: 'add', 	
+        	handler: this.sent, 
         	scope: this
         }
         <c:set var="isHaveAuthorize" value="true" />
 		</jkd:haveAuthorize>
-		<jkd:haveAuthorize access="/order/orderRemarks.json">
-		<c:if test="${isHaveAuthorize}">,</c:if>
-        {
-        	text: '<fmt:message key="order.button.remarks"/>', 
-        	iconCls: 'app_manager', 	
-        	handler: this.orderRemarks, 
-        	scope: this
-        }
-        <c:set var="isHaveAuthorize" value="true" />
-		</jkd:haveAuthorize>
-		<jkd:haveAuthorize access="/order/orderSettlement.json">
-		<c:if test="${isHaveAuthorize}">,</c:if>
-        '-',{
-        	text: '<fmt:message key="order.button.settlement"/>', 
-        	iconCls: 'app_manager', 	
-        	handler: this.orderSettlement, 
-        	scope: this
-        }
-        <c:set var="isHaveAuthorize" value="true" />
-		</jkd:haveAuthorize>
-		<jkd:haveAuthorize access="/order/createIdCardZip.json">
-		<c:if test="${isHaveAuthorize}">,</c:if>
-	   '-', {
-        	text: '<fmt:message key="order.downLoadIdCard"/>', 
-        	iconCls: 'excel', 	
-        	handler: this.downLoadIdCard, 
-        	scope: this
-        }
-        <c:set var="isHaveAuthorize" value="true" />
-		</jkd:haveAuthorize>
-		<jkd:haveAuthorize access="/order/list.json?isExporter=true">
-		<c:if test="${isHaveAuthorize}">,</c:if>
-        '->',{
-        	text: '<fmt:message key="button.exporter.xls"/>', 
-        	iconCls: 'excel', 	
-        	handler: this.exporter,
-        	scope:this
-        }
-        <c:set var="isHaveAuthorize" value="true" />
-		</jkd:haveAuthorize>
-		<jkd:haveAuthorize access="/order/list.json?isExporter=true">
-		<c:if test="${isHaveAuthorize}">,</c:if>
-        {
-        	text: '<fmt:message key="order.saler.xls"/>',
-        	iconCls: 'excel', 	
-        	handler: this.exportSaleOrder,
-        	scope: this
-        }
-        <c:set var="isHaveAuthorize" value="true" />
-		</jkd:haveAuthorize>
-		<jkd:haveAuthorize access="/order/exportOrderExcel.json">
-		<c:if test="${isHaveAuthorize}">,</c:if>
-        '-',{
-            text: '<fmt:message key="order.team.xls"/>', 
-        	iconCls: 'excel', 	
-        	handler: this.exportTeam, 
-        	scope: this
-        }
-        <c:set var="isHaveAuthorize" value="true" />
-		</jkd:haveAuthorize>
-		<jkd:haveAuthorize access="/order/exportOrderExcel.json">
-		<c:if test="${isHaveAuthorize}">,</c:if>
-        '-',{
-            text: '<fmt:message key="order.exporter.xls"/>', 
-        	iconCls: 'excel', 	
-        	handler: this.exportOrder, 
-        	scope: this
-        }
-        </jkd:haveAuthorize>
         ];
         
         this.east =  Ext.create('MyExt.orderManager.OrderTabPanel', {
@@ -798,7 +729,7 @@ Ext.define('MyExt.orderManager.OrderPanel', {
 	 	}, this) 
     },
     
-    dealWithInterceptOrder : function(){
+    sent : function(){
 		var rowsData = [];		
 		var records = this.gsm.getSelection();
 		if(records.length == 0){
@@ -812,7 +743,7 @@ Ext.define('MyExt.orderManager.OrderPanel', {
 		Ext.Msg.confirm('<fmt:message key="ajax.confirm"/>', '<fmt:message key="order.dealWithIntercept.confirm"/>', function(e){
 			if(e == 'yes'){
 				Ext.Ajax.request({
-		        	url: '<c:url value="/order/dealWithIntercept.json"/>',
+		        	url: '<c:url value="/order/sentOrder.json"/>',
 		         	method: 'post',
 					scope: this,
 					params:{idListGridJson: Ext.JSON.encode(rowsData)},

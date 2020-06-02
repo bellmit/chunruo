@@ -22,10 +22,14 @@ import com.chunruo.cache.portal.impl.UserProfitByUserIdCacheManager;
 import com.chunruo.core.Constants;
 import com.chunruo.core.Constants.PaymentType;
 import com.chunruo.core.model.Order;
+import com.chunruo.core.model.OrderItems;
+import com.chunruo.core.model.UserInfo;
 import com.chunruo.core.model.WeChatAppConfig;
 import com.chunruo.core.service.OrderManager;
+import com.chunruo.core.service.UserInfoManager;
 import com.chunruo.core.util.FileIO;
 import com.chunruo.core.util.StringUtil;
+import com.chunruo.core.util.WxSendUtil;
 import com.chunruo.core.util.XmlParseUtil;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.portal.BaseController;
@@ -59,6 +63,7 @@ public class OrderPayNotifyController extends BaseController{
 			OrderManager orderManager = Constants.ctx.getBean(OrderManager.class);
 
 			OrderByIdCacheManager orderByIdCacheManager = Constants.ctx.getBean(OrderByIdCacheManager.class);
+			UserInfoManager userInfoManager = Constants.ctx.getBean(UserInfoManager.class);
 			UserInfoByIdCacheManager userInfoByIdCacheManager = Constants.ctx.getBean(UserInfoByIdCacheManager.class);
 			UserProfitByUserIdCacheManager userProfitByUserIdCacheManager = Constants.ctx.getBean(UserProfitByUserIdCacheManager.class);
 			OrderListByStoreIdCacheManager orderListByStoreIdCacheManager = Constants.ctx.getBean(OrderListByStoreIdCacheManager.class);
@@ -86,6 +91,19 @@ public class OrderPayNotifyController extends BaseController{
 						}catch(Exception e){
 							continue;
 						}
+					}
+				}
+				
+				OrderItems orderItems = order.getOrderItemsList().get(0);
+				UserInfo userInfo = userInfoManager.get(order.getUserId());
+				if(userInfo != null 
+						&& userInfo.getUserId() != null 
+						&& userInfo.getOpenId() != null
+						&& orderItems != null && orderItems.getItemId() != null) {
+					if(StringUtil.nullToBoolean(order.getIsInvitationAgent())) {
+						WxSendUtil.memberSucc(userInfo);
+					}else {
+						WxSendUtil.succOrder(order, userInfo, StringUtil.null2Str(orderItems.getProductName()));
 					}
 				}
 			}

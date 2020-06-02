@@ -366,11 +366,6 @@ public class UserController extends BaseController {
 	}
 
 
-	/**
-	 * 销售额
-	 * @param request
-	 * @return
-	 */
 	@RequestMapping(value = "/getUserStandard")
 	public @ResponseBody Map<String, Object> getUserStandard(final HttpServletRequest request, final HttpServletResponse response)
 			throws UnsupportedEncodingException {
@@ -390,120 +385,6 @@ public class UserController extends BaseController {
 		return resultMap;
 	}
 
-
-
-
-	/**
-	 * 批量注册用户
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/batchRegisterUser")
-	public @ResponseBody Map<String, Object> batchRegisterUser(final HttpServletRequest request) {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		String inviterCode = StringUtil.null2Str(request.getParameter("inviterCode")).toUpperCase();
-		String headerGridJson = StringUtil.null2Str(request.getParameter("headerGridJson"));
-		String dataGridJson = StringUtil.null2Str(request.getParameter("dataGridJson"));
-		List<Map<String, String>> objectMapList = new ArrayList<Map<String, String>>();
-		try {
-
-			if (StringUtil.isNull(inviterCode) || inviterCode.length() < 5) {
-				resultMap.put("success", false);
-				resultMap.put("message", getText("邀请码无效"));
-				return resultMap;
-			}
-			UserInfo inviterUserInfo = this.userInfoManager.getUserInfoByInviterCode(inviterCode);
-			if (inviterUserInfo == null || inviterUserInfo.getUserId() == null
-					|| !StringUtil.nullToBoolean(inviterUserInfo.getIsAgent())
-					|| !StringUtil.nullToBoolean(inviterUserInfo.getStatus())) {
-				resultMap.put("success", false);
-				resultMap.put("message", getText("邀请人信息错误"));
-				return resultMap;
-			}
-
-			// 检查导入数据是否有效
-			List<Object> headerListMap = StringUtil.jsonDeserialize(headerGridJson);
-			if (headerListMap == null || headerListMap.size() <= 0) {
-				resultMap.put("success", false);
-				resultMap.put("message", getText("errors.select.object"));
-				return resultMap;
-			}
-
-			// 检查导入数据是否有效
-			List<Object> dataListMap = StringUtil.jsonDeserialize(dataGridJson);
-			if (dataListMap == null || dataListMap.size() <= 0) {
-				resultMap.put("success", false);
-				resultMap.put("message", getText("errors.select.object"));
-				return resultMap;
-			}
-
-			objectMapList = ImportFileController.importDataToMapList(dataListMap, headerListMap);
-			if (objectMapList == null || objectMapList.size() <= 0) {
-				resultMap.put("success", false);
-				resultMap.put("message", getText("errors.select.object"));
-				return resultMap;
-			}
-
-			// 判断该手机号码是否有效
-			int index = 0;
-			boolean isExitError = false;
-			StringBuffer errorBuffer = new StringBuffer();
-			Set<String> mobileSet = new HashSet<String>();
-			for (Map<String, String> map : objectMapList) {
-				String mobile = StringUtil.null2Str(map.get("手机号码"));
-				++index;
-				if (StringUtil.isMobileNumber(mobile)) {
-					UserInfo userInfo = this.userInfoManager.getUserInfoByMobile(mobile, UserInfo.DEFUALT_COUNTRY_CODE);
-					if (userInfo != null && userInfo.getUserId() != null) {
-						isExitError = true;
-						errorBuffer.append(String.format("<br/>第%s行,手机号码已存在", index));
-					}
-					mobileSet.add(mobile);
-				} else {
-					isExitError = true;
-					errorBuffer.append(String.format("<br/>第%s行,手机号码错误", index));
-				}
-			}
-
-			if (isExitError) {
-				resultMap.put("success", false);
-				resultMap.put("message", "错误,以下导入信息存在错误:" + errorBuffer.toString());
-				return resultMap;
-			}
-
-			resultMap.put("error", false);
-			resultMap.put("success", true);
-			resultMap.put("message", this.getText("注册成功"));
-			return resultMap;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		resultMap.put("success", false);
-		resultMap.put("message", getText("errors.nuKnow"));
-		return resultMap;
-	}
-
-
-
-	@RequestMapping(value = "/updateTopUser")
-	public @ResponseBody Map<String, Object> updateTopUser(HttpServletRequest request) {
-		Map<String, Object> resultMap = new HashMap<>();
-		String newMobile = StringUtil.nullToString(request.getParameter("newMobile"));
-		Long userId = StringUtil.nullToLong(request.getParameter("userId"));
-		try {
-			MsgModel<Void> msgModel = this.userInfoManager.updateTopUser(userId,newMobile);
-			resultMap.put("success", StringUtil.nullToBoolean(msgModel.getIsSucc()));
-			resultMap.put("message", StringUtil.null2Str(msgModel.getMessage()));
-			return resultMap;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		resultMap.put("success", false);
-		resultMap.put("message", "错误，更改失败");
-		return resultMap;
-	}
-	
 	
 	/**
 	 * 升级代理列表
@@ -569,6 +450,40 @@ public class UserController extends BaseController {
 		resultMap.put("data", userInviteRecordList);
 		resultMap.put("totalCount", count);
 		resultMap.put("filters", filtersMap);
+		return resultMap;
+	}
+	
+	
+	
+	
+	@RequestMapping(value = "/updateUserLevel")
+	public @ResponseBody Map<String, Object> updateUserLevel(HttpServletRequest request) {
+		Map<String, Object> resultMap = new HashMap<>();
+		String userId = StringUtil.nullToString(request.getParameter("userId"));
+		String level = StringUtil.nullToString(request.getParameter("level"));
+		try {
+			if (StringUtil.isNull(userId) || StringUtil.isNull(level)) {
+				resultMap.put("success", false);
+				resultMap.put("message", this.getText("权限过期时间和级别为必填"));
+				return resultMap;
+			}
+
+			UserInfo user = this.userInfoManager.get(StringUtil.nullToLong(userId));
+			if (StringUtil.isNumber(level)) {
+				user.setLevel(StringUtil.nullToInteger(level));
+			}
+			
+			user.setUpdateTime(DateUtil.getCurrentDate());
+			this.userInfoManager.save(user);
+			resultMap.put("success", true);
+			resultMap.put("message", "操作成功");
+			return resultMap;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		resultMap.put("success", false);
+		resultMap.put("message", "错误，更改失败");
 		return resultMap;
 	}
 	

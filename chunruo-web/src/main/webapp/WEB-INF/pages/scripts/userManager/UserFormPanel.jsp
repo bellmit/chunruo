@@ -146,26 +146,24 @@ Ext.define('MyExt.userManager.UserFormPanel', {
         }]; 
         
         
+        this.tbar = [
+        {
+	        text: '<fmt:message key="user.level.management"/>',
+	        iconCls: 'add',
+	        handler : this.editUserInfo,
+	       	scope: this
+	    }
+	    ];
+        
     	this.callParent();
 	},
     
     editUserInfo : function(){
     	var level=Ext.getCmp('grade').getRawValue();
-    	var pushLevel=Ext.getCmp('push').getRawValue();
-    	var expireEndDate=Ext.getCmp('expireEndDate').getValue();
-    	var v1ExpireEndDate=Ext.getCmp('v1ExpireEndDate').getValue();
-    	var v2ExpireEndDate=Ext.getCmp('v2ExpireEndDate').getValue();
-    	var v3ExpireEndDate=Ext.getCmp('v3ExpireEndDate').getValue();
-    	var inviteCount=0;
     	var userEditPanel = Ext.create('MyExt.userManager.UserEditPanel', {
 			id: 'userEditPanel@' + this.id,
     		viewer: this.viewer,
-    		level: level,
-    		pushLevel:pushLevel,
-    		expireEndDate:expireEndDate,
-    		v1ExpireEndDate:v1ExpireEndDate,
-    		v2ExpireEndDate:v2ExpireEndDate,
-    		v3ExpireEndDate:v3ExpireEndDate
+    		level: level
    	 	});
    	 	
     	var buttons = [{
@@ -174,19 +172,11 @@ Ext.define('MyExt.userManager.UserFormPanel', {
 				var isCheckSucc = true;
 				var expressMap = [];
 				var level='';
-				var expireTime='';
-				var v2ExpireTime='';
-				var v3ExpireTime='';
-				var pushLevel = '';
 		    	userEditPanel.items.each(function(form) {
 	        		if(!form.isValid()){
 	        			isCheckSucc = false;
 	        		}else{
 	        		     level=form.down('[name=level]').getValue();
-	        		     pushLevel=form.down('[name=pushLevel]').getValue();
-	        			 expireTime =Ext.util.Format.date(form.down('[name=expireEndDate]').getValue(),'Y-m-d H:i:s');
-	        			 v2ExpireTime =Ext.util.Format.date(form.down('[name=v2ExpireEndDate]').getValue(),'Y-m-d H:i:s');
-	        			 v3ExpireTime =Ext.util.Format.date(form.down('[name=v3ExpireEndDate]').getValue(),'Y-m-d H:i:s');
 	        		}
 				}, this);
 				if(!isCheckSucc){
@@ -200,7 +190,7 @@ Ext.define('MyExt.userManager.UserFormPanel', {
 				        	url: '<c:url value="/user/updateUserLevel.json"/>',
 				         	method: 'post',
 							scope: this,
-							params:{userId: this.record.data.userId,level: level,expireTime:expireTime,pushLevel:pushLevel,v2ExpireTime:v2ExpireTime,v3ExpireTime:v3ExpireTime},
+							params:{userId: this.record.data.userId,level: level},
 				          	success: function(response){
 		          				var responseObject = Ext.JSON.decode(response.responseText);
 		          				if(responseObject.success == true){

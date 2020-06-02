@@ -92,32 +92,10 @@ Ext.define('MyExt.orderManager.OrderFormPanel', {
 				    anchor:'97%'
 				},{
 				    xtype:'textfield',
-				    fieldLabel: '<fmt:message key="order.cancelMethod"/>',
-				    labelWidth: 85,
-				    readOnly: true,
-				    name: 'cancelMethod',
-				    anchor:'97%'
-				},{
-				    xtype:'textfield',
-				    fieldLabel: '<fmt:message key="order.isCheck"/>',
-				    labelWidth: 85,
-				    readOnly: true,
-				    name: 'isCheck',
-				    anchor:'97%'
-				},{
-				    xtype:'textfield',
 				    fieldLabel: '<fmt:message key="order.updateTime"/>',
 				    labelWidth: 85,
 				    readOnly: true,
 				    name: 'updateTime',
-				    anchor:'97%'
-				 
-				},{
-				    xtype:'textfield',
-				    fieldLabel: '<fmt:message key="order.acceptPayName"/>',
-				    labelWidth: 85,
-				    readOnly: true,
-				    name: 'acceptPayName',
 				    anchor:'97%'
 				 
 				}]
@@ -145,13 +123,6 @@ Ext.define('MyExt.orderManager.OrderFormPanel', {
 				    labelWidth: 85,
 				    readOnly: true,
 				    name: 'profitTop',
-				    anchor:'97%'
-				},{
-				    xtype:'textfield',
-				    fieldLabel: '<fmt:message key="order.isSyncExpress"/>',
-				    labelWidth: 85,
-				    readOnly: true,
-				    name: 'isSyncExpress',
 				    anchor:'97%'
 				},{
 				    xtype:'textfield',
@@ -201,20 +172,6 @@ Ext.define('MyExt.orderManager.OrderFormPanel', {
 				    labelWidth: 85,
 				    readOnly: true,
 				    name: 'createTime',
-				    anchor:'97%'
-				},  {
-				    xtype:'textfield',
-				    fieldLabel: '<fmt:message key="order.interuptedStatus"/>',
-				    labelWidth: 85,
-				    readOnly: true,
-				    name: 'interuptedStatus',
-				    anchor:'97%'
-				}, {
-				    xtype:'textfield',
-				    fieldLabel: '<fmt:message key="order.interuptedReason"/>',
-				    labelWidth: 85,
-				    readOnly: true,
-				    name: 'interuptedReason',
 				    anchor:'97%'
 				}]
 			   }]

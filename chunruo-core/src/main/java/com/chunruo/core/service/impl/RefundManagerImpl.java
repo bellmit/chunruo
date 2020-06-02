@@ -18,21 +18,28 @@ import com.chunruo.core.model.Order;
 import com.chunruo.core.model.OrderItems;
 import com.chunruo.core.model.Refund;
 import com.chunruo.core.model.RefundHistory;
+import com.chunruo.core.model.UserInfo;
 import com.chunruo.core.model.UserProfitRecord;
 import com.chunruo.core.repository.RefundRepository;
 import com.chunruo.core.service.OrderManager;
 import com.chunruo.core.service.RefundHistoryManager;
 import com.chunruo.core.service.RefundManager;
+import com.chunruo.core.service.UserInfoManager;
 import com.chunruo.core.service.UserSaleRecordManager;
 import com.chunruo.core.util.DateUtil;
 import com.chunruo.core.util.RefundUtil;
 import com.chunruo.core.util.StringUtil;
+import com.chunruo.core.util.WeiXinPayUtil;
+import com.chunruo.core.util.WxSendUtil;
 import com.chunruo.core.vo.MsgModel;
 
 @Transactional
 @Component("refundManager")
 public class RefundManagerImpl extends GenericManagerImpl<Refund, Long> implements RefundManager {
 	private RefundRepository refundRepository;
+	
+	@Autowired
+	private UserInfoManager userInfoManager;
 	@Autowired
 	private OrderManager orderManager;
 	@Autowired
@@ -162,9 +169,19 @@ public class RefundManagerImpl extends GenericManagerImpl<Refund, Long> implemen
 			
 			//全部退款时，更新订单状态为关闭
 			if(isNeedUpdateOrderStatus){
-				//部分退款不操作订单
 				if(!StringUtil.compareObject(StringUtil.nullToInteger(refund.getRefundType()), Refund.REFUND_TYPE_PART)) {
 					this.checkIsCloseOrder(refund.getOrderId(), userId);
+				}
+				
+				try {
+					Order order = this.orderManager.get(StringUtil.nullToLong(refund.getOrderId()));
+					UserInfo userInfo = this.userInfoManager.get(StringUtil.nullToLong(refund.getUserId()));
+					if(order != null && order.getOrderId() != null
+							&& userInfo != null && userInfo.getUserId() != null) {
+						WxSendUtil.refundSucc(refund, order, userInfo);
+					}
+				}catch(Exception e) {
+					e.printStackTrace();
 				}
 			}
 			

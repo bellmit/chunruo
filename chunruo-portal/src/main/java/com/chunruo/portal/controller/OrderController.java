@@ -1,6 +1,7 @@
 package com.chunruo.portal.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,10 +82,10 @@ public class OrderController extends BaseController{
 			UserInfo userInfo = PortalUtil.getCurrentUserInfo(request);
 			
 			if(!StringUtil.compareObject(userInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
-				List<Order> orderList = orderListByUserIdCacheManager.getSession(userInfo.getUserId());
-				if(orderList != null && orderList.size() >= OrderController.COMMON_MAX_NUMBER ) {
+			    Date expireDate = DateUtil.getMonthAfterByDay(userInfo.getCreateTime(), 6);
+				if(expireDate.before(DateUtil.getCurrentDate())) {
 					resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
-					resultMap.put(PortalConstants.MSG, "请前往购买会员才可继续下单");
+					resultMap.put(PortalConstants.MSG, "半年体验期已过，请前往购买会员才可继续下单");
 					resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
 					return resultMap;
 				}
@@ -140,10 +141,10 @@ public class OrderController extends BaseController{
 			// 查找用户购物车信息
 			UserInfo userInfo = PortalUtil.getCurrentUserInfo(request);
 			if(!StringUtil.compareObject(userInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
-				List<Order> orderList = orderListByUserIdCacheManager.getSession(userInfo.getUserId());
-				if(orderList != null && orderList.size() >= OrderController.COMMON_MAX_NUMBER ) {
+			    Date expireDate = DateUtil.getMonthAfterByDay(userInfo.getCreateTime(), 6);
+				if(expireDate.before(DateUtil.getCurrentDate())) {
 					resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
-					resultMap.put(PortalConstants.MSG, "请前往购买会员才可继续下单");
+					resultMap.put(PortalConstants.MSG, "半年体验期已过，请前往购买会员才可继续下单");
 					resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
 					return resultMap;
 				}
@@ -206,10 +207,10 @@ public class OrderController extends BaseController{
 			}
 			
 			if(!StringUtil.compareObject(userInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
-				List<Order> orderList = orderListByUserIdCacheManager.getSession(userInfo.getUserId());
-				if(orderList != null && orderList.size() >= OrderController.COMMON_MAX_NUMBER ) {
+			    Date expireDate = DateUtil.getMonthAfterByDay(userInfo.getCreateTime(), 6);
+				if(expireDate.before(DateUtil.getCurrentDate())) {
 					resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
-					resultMap.put(PortalConstants.MSG, "请前往购买会员才可继续下单");
+					resultMap.put(PortalConstants.MSG, "半年体验期已过，请前往购买会员才可继续下单");
 					resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
 					return resultMap;
 				}

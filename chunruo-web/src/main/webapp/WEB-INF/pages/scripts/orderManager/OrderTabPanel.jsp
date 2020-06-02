@@ -96,9 +96,6 @@ Ext.define('MyExt.orderManager.OrderTabPanel', {
 			},{
 				xtype: 'orderHistoryList',
 				title: '<fmt:message key="order.history"/>'
-			},{
-				xtype: 'orderPackageList',
-				title: '<fmt:message key="order.express.info"/>'
 			}]
 		});
 		this.items = [this.tabPanel];
@@ -119,9 +116,6 @@ Ext.define('MyExt.orderManager.OrderTabPanel', {
     	this.tabPanel.down('orderHistoryList').store.removeAll();
     	this.tabPanel.down('orderHistoryList').record = this.record;
     	this.tabPanel.down('orderHistoryList').tabPanel = this;
-    	this.tabPanel.down('orderPackageList').store.removeAll();
-    	this.tabPanel.down('orderPackageList').record = this.record;
-    	this.tabPanel.down('orderPackageList').tabPanel = this;
     	
     	Ext.Ajax.request({
        		url: '<c:url value="/order/getOrderById.json"/>',
@@ -151,12 +145,7 @@ Ext.define('MyExt.orderManager.OrderTabPanel', {
        					}
        				}
        				
-       				if(responseObject.orderPackageList != null && responseObject.orderPackageList.length > 0){
-       					for(var i = 0; i < responseObject.orderPackageList.length; i ++){
-       						var orderPackage = Ext.create('OrderPackage', responseObject.orderPackageList[i]);
-       						this.tabPanel.down('orderPackageList').store.insert(i, orderPackage);
-       					}
-       				}
+       				
        			}else{
        				//showFailMsg(responseObject.message, 4);
        			}

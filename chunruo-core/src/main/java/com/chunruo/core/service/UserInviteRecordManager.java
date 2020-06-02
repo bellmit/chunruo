@@ -14,7 +14,7 @@ public interface UserInviteRecordManager extends GenericManager<UserInviteRecord
 	
 	public UserInviteRecord getUserInviteRecordByRecordNo(String recordNo);
 	
-	public List<UserInviteRecord> getUserInviteRecordByUserId(Long userId, Integer inviteType);
+	public List<UserInviteRecord> getUserInviteRecordByUserId(Long userId);
 	
 	public List<UserInviteRecord> getValidInvitNumberByTopUserId(Long topUserId, Integer inviteType);
 	

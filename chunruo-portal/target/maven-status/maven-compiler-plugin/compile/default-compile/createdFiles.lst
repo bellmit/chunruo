@@ -1,6 +1,7 @@
 com\chunruo\portal\tag\ChannelDetailTag$1.class
 com\chunruo\portal\tag\WithdrawalListTag.class
 com\chunruo\portal\util\VerifyCodeUtil.class
+com\chunruo\portal\job\AutoRefreshTokenTask.class
 com\chunruo\portal\tag\ProductCategoryV2ListTag$1.class
 com\chunruo\portal\util\ProductUtil$2.class
 com\chunruo\portal\util\ProductUtil$5.class
@@ -20,6 +21,7 @@ com\chunruo\portal\controller\RegionController.class
 com\chunruo\portal\controller\OrderEvaluateController.class
 com\chunruo\portal\util\NetImageDownloadCallable.class
 com\chunruo\portal\vo\ProductGroupVo.class
+com\chunruo\portal\tag\UserProfitListTag$2.class
 com\chunruo\portal\tag\ProductCategoryV2ListTag.class
 com\chunruo\portal\controller\WeiXinOauthController.class
 com\chunruo\portal\tag\WithdrawalListTag$2.class
@@ -38,12 +40,14 @@ com\chunruo\portal\tag\CartListTag.class
 com\chunruo\portal\util\ProductUtil$7.class
 com\chunruo\portal\tag\CountryListTag$1.class
 com\chunruo\portal\util\ProductUtil$16.class
+com\chunruo\portal\tag\InviteHistoryTag$1.class
 com\chunruo\portal\vo\AlipayRefund.class
 com\chunruo\portal\util\HtmlContParserUtil.class
 com\chunruo\portal\tag\RegionListTag.class
 com\chunruo\portal\tag\WithdrawalListTag$1.class
 com\chunruo\portal\vo\UpgradeConditionVo.class
 com\chunruo\portal\tag\ProductCategoryV2ListTag$2.class
+com\chunruo\portal\tag\UserProfitListTag$1.class
 com\chunruo\portal\controller\MemberController.class
 com\chunruo\portal\controller\OrderStackController.class
 com\chunruo\portal\tag\CountryListTag.class
@@ -52,7 +56,6 @@ com\chunruo\portal\SpringServletContext.class
 com\chunruo\portal\util\ProductProxyUtil$1.class
 com\chunruo\portal\util\ProductUtil$15.class
 com\chunruo\portal\tag\AddressListTag$1.class
-com\chunruo\portal\tag\WithdrawalDetailTag.class
 com\chunruo\portal\util\StopWatch.class
 com\chunruo\portal\vo\IdCardNoQueryVo.class
 com\chunruo\portal\util\PurchaseLimitUtil.class
@@ -69,6 +72,7 @@ com\chunruo\portal\tag\OrderDetailTag.class
 com\chunruo\portal\vo\BuyNumberVo.class
 com\chunruo\portal\vo\UserSaleRecordVo.class
 com\chunruo\portal\PortalConstants.class
+com\chunruo\portal\tag\InviteHistoryTag$2.class
 com\chunruo\portal\controller\UploadController.class
 com\chunruo\portal\util\ProductUtil$14.class
 com\chunruo\portal\TracksMediaTypeConverter.class
@@ -78,6 +82,7 @@ com\chunruo\portal\tag\CartListTag$1.class
 com\chunruo\portal\controller\UserInfoController.class
 com\chunruo\portal\controller\RefundController.class
 com\chunruo\portal\filter\GzipFilter.class
+com\chunruo\portal\job\AutoOrderCompletedScheduler.class
 com\chunruo\portal\util\ProductUtil$11.class
 com\chunruo\portal\tag\RefundReasonTag.class
 com\chunruo\portal\tag\OrderWaitEvaluateListTag.class
@@ -127,6 +132,8 @@ com\chunruo\portal\util\WeiXinPayUtil$1.class
 com\chunruo\portal\util\OrderUtil$2.class
 com\chunruo\portal\util\WeiNiUtil.class
 com\chunruo\portal\vo\AwardVo.class
+com\chunruo\portal\tag\InviteHistoryTag.class
+com\chunruo\portal\tag\UserProfitListTag.class
 com\chunruo\portal\vo\ProductVerifyVo.class
 com\chunruo\portal\tag\BaseTag.class
 com\chunruo\portal\util\OrderUtil$3.class
@@ -140,6 +147,7 @@ com\chunruo\portal\util\StopWatch$TaskInfo.class
 com\chunruo\portal\controller\WeiXinAppletController.class
 com\chunruo\portal\tag\RefundDetailTag.class
 com\chunruo\portal\util\ProductUtil.class
+com\chunruo\portal\job\AutoOrderCompletedScheduler$1.class
 com\chunruo\portal\tag\ProductDescWebViewTag.class
 com\chunruo\portal\util\ProductUtil$9.class
 com\chunruo\portal\tag\OrderUserEvaluateListTag$2.class

@@ -18,7 +18,10 @@ import com.chunruo.core.service.UserInfoManager;
 import com.chunruo.core.service.UserSocietyManager;
 import com.chunruo.core.util.AESUtil;
 import com.chunruo.core.util.DateUtil;
+import com.chunruo.core.util.HttpClientUtil;
+import com.chunruo.core.util.SHA1Util;
 import com.chunruo.core.util.StringUtil;
+import com.chunruo.core.util.WxSendUtil;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.portal.BaseController;
 import com.chunruo.portal.PortalConstants;
@@ -41,6 +44,73 @@ public class WeiXinAppletController extends BaseController{
 	private UserInfoManager userInfoManager;
 	@Autowired
 	private UserInfoByIdCacheManager userInfoByIdCacheManager;
+	
+	
+	@LoginInterceptor(value=LoginInterceptor.LOGIN)
+	@RequestMapping(value="/getQrCode")
+	public @ResponseBody Map<String, Object> getQrCode(final HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> resultMap = new HashMap<String, Object> ();
+		try{		
+			WeChatAppConfig weChatAppConfig = Constants.WECHAT_CONFIG_ID_MAP.get(Constants.MINI_PROGRAM_WECHAT_CONFIG_ID);
+			String token = WxSendUtil.getWeiXinToken(weChatAppConfig.getAppId(), weChatAppConfig.getAppSecret());
+			if(!StringUtil.isNull(token)){
+				UserInfo userInfo = PortalUtil.getCurrentUserInfo(request);
+				Map<String, String> headers = new HashMap<String, String> ();
+				headers.put("Content-Type", "application/json;charset=utf-8");
+
+				Map<String, Object> params = new HashMap<String, Object> ();
+				params.put("scene", userInfo.getUserId());
+				params.put("width", 100);
+				params.put("page", "pages/openMember/openMember");
+				String url = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=" + token;
+				byte[] result = HttpClientUtil.postInputStream(url, headers, params);
+
+				// 对字节数组Base64编码
+				String base64 = new String(Base64.encodeBase64(result));
+				if(base64 != null && base64.length() > 1000){
+					resultMap.put("qrCode", String.format("data:image/jpeg;base64,%s", base64));
+					resultMap.put(PortalConstants.MSG, "请求成功");
+					resultMap.put(PortalConstants.CODE, PortalConstants.CODE_SUCCESS);
+					resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
+					return resultMap;
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
+		resultMap.put(PortalConstants.MSG, "请求失败");
+		resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
+		resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
+		return resultMap;
+	}
+	
+	/**
+	 * 微信URL接入验证
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/checkSiginature")
+	public @ResponseBody String checkSiginature(final HttpServletRequest request) {
+		String signature = StringUtil.null2Str(request.getParameter("signature"));
+		String timestamp = StringUtil.null2Str(request.getParameter("timestamp"));
+		String nonce = StringUtil.null2Str(request.getParameter("nonce"));
+		String echostr = StringUtil.null2Str(request.getParameter("echostr"));
+		
+		try {
+			String token = StringUtil.null2Str(Constants.conf.getProperty("miniProgram.url.token"));
+			String localSignature = SHA1Util.getSHA1(token, timestamp, nonce);
+			log.debug(String.format("validate---[localSignature=%s, signature=%s]", localSignature, signature));
+			if(StringUtil.compareObject(localSignature, signature)) {
+				log.debug("validate=result->" + echostr);
+				return echostr;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+        return null;
+	}
 
 	@RequestMapping(value="/getToken")
 	public @ResponseBody Map<String, String>  getToken(final HttpServletRequest request, HttpServletResponse response) {

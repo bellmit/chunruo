@@ -538,7 +538,6 @@ public class OrderManagerImpl extends GenericManagerImpl<Order, Long> implements
 		// 加锁
 		lock.lock();
 		try{
-			log.info("=================="+orderId);
 			Map<String, List<Long>> listMap = new HashMap<String, List<Long>>();
 			List<Integer> orderStatusList = new ArrayList<Integer>();
 			orderStatusList.add(OrderStatus.NEW_ORDER_STATUS);       //未支付
@@ -548,75 +547,45 @@ public class OrderManagerImpl extends GenericManagerImpl<Order, Long> implements
 					&& order.getOrderId() != null
 					&& orderStatusList.contains(StringUtil.nullToInteger(order.getStatus()))
 					&& !StringUtil.nullToBoolean(order.getIsPaymentSucc())) {
-			
-				log.info("-------------------"+orderId);
 
-				// 主订单状态更新
 				List<Order> orderList = new ArrayList<Order>();
-				order.setPaymentType(paymentType); 						// 支付方式 0:微信支付;1:支付宝支付
-				order.setWeChatConfigId(weChatConfigId); 				// 微信支付编号，区别微信支付、公众号支付
-				order.setTradeNo(transactionId); 						// 支付机构流水号
-				order.setIsPaymentSucc(true); 							// 支付成功
+				order.setPaymentType(paymentType); 						
+				order.setWeChatConfigId(weChatConfigId); 				
+				order.setTradeNo(transactionId); 						
+				order.setIsPaymentSucc(true); 	
+				order.setStatus(OrderStatus.UN_DELIVER_ORDER_STATUS); 	
 				if(StringUtil.nullToBoolean(order.getIsInvitationAgent())) {
-					order.setStatus(OrderStatus.OVER_ORDER_STATUS); 		// 不必发货的地址进入完成状态
-				}else {
-					order.setStatus(OrderStatus.UN_DELIVER_ORDER_STATUS); 	// 订单状态进入待发货
+					order.setStatus(OrderStatus.OVER_ORDER_STATUS); 		
 				}
 
-				order.setUnDeliverStatus(UnDeliverStatus.UN_DELIVER_STATUS);//待发货订单
-				order.setPayTime(DateUtil.getCurrentDate()); 			// 支付时间
+				order.setPayTime(DateUtil.getCurrentDate()); 			
 				order.setUpdateTime(DateUtil.getCurrentDate());
 				orderList.add(order);
 
-				// 检查订单是否有子订单
-				if (StringUtil.nullToBoolean(order.getIsSplitSingle())) {
-					List<Order> childOrderList = this.getOrderSubListByParentOrderId(order.getOrderId());
-					if (childOrderList != null && childOrderList.size() > 0) {
-						for (Order childOrder : childOrderList) {
-							childOrder.setPaymentType(order.getPaymentType()); // 支付方式 0:微信支付;1:支付宝支付
-							childOrder.setWeChatConfigId(order.getWeChatConfigId()); // 微信支付编号，区别微信支付、公众号支付
-							childOrder.setTradeNo(order.getTradeNo()); // 支付机构流水号
-							childOrder.setIsPaymentSucc(order.getIsPaymentSucc()); // 支付成功
-							childOrder.setStatus(order.getStatus()); // 订单状态进入待发货
-							order.setUnDeliverStatus(UnDeliverStatus.UN_DELIVER_STATUS);//待发货订单
-							childOrder.setPayTime(order.getPayTime()); // 支付时间
-							childOrder.setUpdateTime(order.getUpdateTime()); // 更新时间
-							orderList.add(childOrder);
-						}
-					}
-				}
 
-				// 订单支付成功保存支付回调记录
 				OrderPaymentRecord record = this.orderPaymentRecordManager.getByOrderIdAndPaymentType(orderId,order.getOrderNo(), paymentType, weChatConfigId);
 				if(record != null && record.getRecordId() != null){
 					record.setIsPaymentSucc(true);
 					record.setResponseData(responseData);
 					record.setUpdateTime(DateUtil.getCurrentDate());
 
-					// 订单支付人信息补充
 					order.setPaymentRecordId(record.getRecordId());
 
-					//删除订单对应的支付方式记录
 					this.orderPaymentRecordManager.save(record);
 					this.orderPaymentRecordManager.deleteOtherByOrderId(orderId);
 				}
 
-				// 批量更新订单支付状态
 				this.batchInsert(orderList, orderList.size());
 
-				// 订单存在,且订单状态是为支付成功状态进行分成
 				if(StringUtil.nullToBoolean(order.getIsInvitationAgent())) {
-					//会员礼包订单
 					this.userProfitRecordManager.insertProfitRecordsByIsInvitationAgent(order);
 				}else {
-					//订单下单上线级返利
 					listMap = this.userProfitRecordManager.batchInsertProfitRecords(order);
 
 				}
 			}
 			return listMap;
 		}catch(Exception e) {
-			log.info("*************************");
 			throw e;
 		} finally {
 			// 释放锁

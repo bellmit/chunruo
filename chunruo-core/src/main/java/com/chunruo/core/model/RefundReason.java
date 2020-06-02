@@ -16,8 +16,8 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "jkd_refund_reason")
 public class RefundReason {
-	public static final Long REFUND_REASON_OTHER  = 17L; // 其他原因
-	public static final Long REFUND_REASON_ACCOUNT_ERROR  = 20L; // 使用余额退款
+	public static final Long REFUND_REASON_OTHER  = 17L;
+	public static final Long REFUND_REASON_ACCOUNT_ERROR  = 20L; 
 	
 	public static final Integer REFUND_REASON_MONEY = 1;    //退款
 	public static final Integer REFUND_REASON_GOODS = 2;    //退货退款

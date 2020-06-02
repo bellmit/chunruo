@@ -548,7 +548,7 @@ function link_box(dom,type, typeArr, after_obj) {
                   }else if(type == 3){
                   	domHtml = $('<ul class="dropdown-menu" style="display:block;"><li><a data-type="good_only" href="javascript:;">商品</a></li></ul>');
                   }else{
-                  	domHtml = $('<ul class="dropdown-menu" style="display:block;"><li><a data-type="theme_only" href="javascript:;">专题</a></li><li><a data-type="good_only" href="javascript:;">商品</a></li><li> <a data-type="page_only" href="javascript:;">页面</a></li><li><a data-type="package_only" href="javascript:;">礼包</a></li><li><a data-type="category_only" href="javascript:;">分类</a></li><li><a data-type="award_only" href="javascript:;">奖励中心</a></li><li><a data-type="mini_only" href="javascript:;">小程序</a></li><li><a data-type="web_only" href="javascript:;">H5</a></li><li><a data-type="discovery_only" href="javascript:;">发现详情</a></li><li><a data-type="discoveryCreater_only" href="javascript:;">发现主体</a></li><li><a data-type="discoveryModule_only" href="javascript:;">发现话题标签</a></li><li><a data-type="brand_only" href="javascript:;">品牌详情</a></li><li><a data-type="invite_only" href="javascript:;">邀请有礼</a></li></ul>');
+                  	domHtml = $('<ul class="dropdown-menu" style="display:block;"><li><a data-type="good_only" href="javascript:;">商品</a></li><li><a data-type="category_only" href="javascript:;">分类</a></li></ul>');
                   }
                 
             } else {

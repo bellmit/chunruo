@@ -18,7 +18,7 @@ ${inviteHistoryTag.setRequest($request)}
 		    "userId": "$!user.userId",
 			"logo": "$!user.logo",
 			"nickName": "${HtmlDecodeTag.get($!user.nickname)}",
-			"upgradeTime": "${DateUtil.getSeconds($!userTeam.upgradeTime)}"
+			"upgradeTime": "${DateUtil.getSeconds($!userTeam.upgradeTime)}",
 			"registerTime": "${DateUtil.getSeconds($!userTeam.registerTime)}"
 		}#if($velocityCount < $tagModel.data.dataList.size()),#end
 	 	#end

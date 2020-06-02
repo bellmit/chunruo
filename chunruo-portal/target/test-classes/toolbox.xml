@@ -299,8 +299,13 @@
         <class>com.chunruo.portal.tag.WithdrawalListTag</class>
     </tool>
      <tool>
-        <key>inviteTag</key>
+        <key>inviteHistoryTag</key>
         <scope>request</scope>
         <class>com.chunruo.portal.tag.InviteHistoryTag</class>
+    </tool>
+     <tool>
+        <key>userProfitListTag</key>
+        <scope>request</scope>
+        <class>com.chunruo.portal.tag.UserProfitListTag</class>
     </tool>
 </toolbox>

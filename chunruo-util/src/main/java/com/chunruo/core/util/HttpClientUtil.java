@@ -1,7 +1,9 @@
 package com.chunruo.core.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 
@@ -48,6 +51,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import com.google.gson.Gson;
+
 /**
  * HttpClient工具类
  * @author chunruo
@@ -74,6 +79,62 @@ public class HttpClientUtil {
 				.setConnectTimeout(timeOut).setSocketTimeout(timeOut).build();
 		httpRequestBase.setConfig(requestConfig);
 	}
+	
+	
+	/**
+	 * POST请求URL获取内容
+	 * @param url
+	 * @param headers
+	 * @param body
+	 * @return
+	 */
+	public static byte[] postInputStream(String url, Map<String, String> headers, Map<String, Object> params) {
+		CloseableHttpResponse response = null;
+		try {
+			HttpPost httppost = new HttpPost(url);
+			config(httppost);
+
+			// post请求头信息
+			if(headers != null && headers.size() > 0){
+				try {
+					for(Entry<String, String> entry : headers.entrySet()){
+						httppost.setHeader(entry.getKey(), entry.getValue());
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+			httppost.setEntity(new StringEntity(new Gson().toJson(params), Consts.UTF_8));
+			response = getHttpClient(url).execute(httppost, HttpClientContext.create());
+			HttpEntity entity = response.getEntity();
+			
+			InputStream inputStream = entity.getContent();
+			if(inputStream != null){
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	            byte[] buffer = new byte[1024];
+	            int num = inputStream.read(buffer);
+	            while (num != -1) {
+	                baos.write(buffer, 0, num);
+	                num = inputStream.read(buffer);
+	            }
+	            baos.flush();
+	            return baos.toByteArray();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (response != null){
+					response.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
 
 	/**
 	 * 创建HttpClient对象

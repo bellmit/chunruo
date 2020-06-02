@@ -63,25 +63,10 @@ public class UserAmountUtil {
 				}
 				
 				UserProfitRecord record = entry.getValue();
-				if(StringUtil.compareObject(record.getMtype(),UserProfitRecord.DISTRIBUTION_MTYPE_TOP)) {
-					//上级返利
-					if(StringUtil.compareObject(record.getStatus(), UserProfitRecord.DISTRIBUTION_STATUS_INIT)){
-						//交易中
-						groupUnbalance = groupUnbalance + StringUtil.nullToDouble(record.getIncome());
-					}else if (StringUtil.compareObject(record.getStatus(), UserProfitRecord.DISTRIBUTION_STATUS_SUCC)){
-						//已结算
-						groupBalance = groupBalance + StringUtil.nullToDouble(record.getIncome());
-					}
-				}else if (StringUtil.compareObject(record.getMtype(), UserProfitRecord.DISTRIBUTION_MTYPE_DOWN)){
-					//如果是分销收益
-					// 交易中的金额
-					if(StringUtil.compareObject(record.getStatus(), UserProfitRecord.DISTRIBUTION_STATUS_INIT)){
-						//交易中
-						unbalance = unbalance + StringUtil.nullToDouble(record.getIncome());
-					}else if (StringUtil.compareObject(record.getStatus(), UserProfitRecord.DISTRIBUTION_STATUS_SUCC)){
-						//已结算
-						balance = balance + StringUtil.nullToDouble(record.getIncome());
-					}
+				if(StringUtil.compareObject(record.getStatus(), UserProfitRecord.DISTRIBUTION_STATUS_INIT)){
+					unbalance = unbalance + StringUtil.nullToDouble(record.getIncome());
+				}else if (StringUtil.compareObject(record.getStatus(), UserProfitRecord.DISTRIBUTION_STATUS_SUCC)){
+					balance = balance + StringUtil.nullToDouble(record.getIncome());
 				}
 			}
 		}

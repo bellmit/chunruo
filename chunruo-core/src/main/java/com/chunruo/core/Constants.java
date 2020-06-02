@@ -336,21 +336,7 @@ public class Constants {
 		public static final String WHITE_TYPE = "white"; ////辅助空白
 		public static final String SPECIAL_SUBJECT_TYPE = "special"; //产品
 	}
-	
-	/**微信通知模板*/
-	public static class WexXinCircularTemplate{
-		//模板ID
-		public static final String ORDER_PAY_SUCC_TEMPLATE_ID; 			//订单支付成功_通知模板ID
-		public static final String ORDER_CANCEL_TEMPLATE_ID; 		    //订单取消_通知模板ID
-		public static final String ORDER_SENT_TEMPLATE_ID; 				//订单已发货_通知模板ID
-		
-		static {
-			//模板ID
-			ORDER_PAY_SUCC_TEMPLATE_ID = StringUtil.null2Str(Constants.conf.getProperty("order.pay.succ.template.id"));
-			ORDER_CANCEL_TEMPLATE_ID = StringUtil.null2Str(Constants.conf.getProperty("order.cancel.template.id"));
-			ORDER_SENT_TEMPLATE_ID = StringUtil.null2Str(Constants.conf.getProperty("order.sent.template.id"));
-		}
-	}
+
 	//财务导出excel列名
 	public static String[] ORDER_REPORT_COLUMN_NAME = new String[] {
 		"订单号","商户订单号", "商品名称", "规格名称","商品编码", "商品大类", "商品小类", "数量", "单价", "是否分享订单","上级利润","分享利润","分享人ID","买家", "订单状态", "收货人",

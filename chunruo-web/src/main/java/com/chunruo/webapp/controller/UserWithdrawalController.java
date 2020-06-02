@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.chunruo.core.model.Order;
 import com.chunruo.core.model.UserInfo;
 import com.chunruo.core.model.UserWithdrawal;
 import com.chunruo.core.model.UserWithdrawalHistory;
@@ -24,6 +26,7 @@ import com.chunruo.core.util.CoreInitUtil;
 import com.chunruo.core.util.DateUtil;
 import com.chunruo.core.util.StringUtil;
 import com.chunruo.core.util.WeiXinPayUtil;
+import com.chunruo.core.util.WxSendUtil;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.webapp.BaseController;
 
@@ -187,6 +190,13 @@ public class UserWithdrawalController extends BaseController {
 				String title = "提现成功";
 				String message = String.format("[%s]操作提现记录，提现成功状态", StringUtil.null2Str(this.getUserName(request)));
 				this.userWithdrawalManager.saveUserWithdrawal(userWithdrawal, userId, title, message);
+				
+				
+				try {
+					WxSendUtil.withdrawalSucc(StringUtil.nullToDoubleFormat(userWithdrawal.getAmount()), userWithdrawal.getTradeNo(), userInfo);
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 			
 			resultMap.put("success", true);

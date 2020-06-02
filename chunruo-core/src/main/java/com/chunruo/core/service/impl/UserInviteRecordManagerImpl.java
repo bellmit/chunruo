@@ -32,8 +32,6 @@ public class UserInviteRecordManagerImpl extends GenericManagerImpl<UserInviteRe
 	@Autowired
 	private UserInfoManager userInfoManager;
 	@Autowired
-	private UserTeamManager userTeamManager;
-	@Autowired
 	private UserInviteMemberManager userInviteMemberManager;
 
 	@Autowired
@@ -49,8 +47,8 @@ public class UserInviteRecordManagerImpl extends GenericManagerImpl<UserInviteRe
 	}
 
 	@Override
-	public List<UserInviteRecord> getUserInviteRecordByUserId(Long userId, Integer inviteType) {
-		return this.userInviteRecordRepository.getUserInviteRecordByUserId(userId, inviteType);
+	public List<UserInviteRecord> getUserInviteRecordByUserId(Long userId) {
+		return this.userInviteRecordRepository.getUserInviteRecordByUserId(userId);
 	}
 
 	@Override
@@ -60,133 +58,49 @@ public class UserInviteRecordManagerImpl extends GenericManagerImpl<UserInviteRe
 
 	@Override
 	public MsgModel<Map<String, List<Long>>> insertInviteRecordByOrder(Order order){
-		// 检查代理商续费
-		String lastRenewEndDate = null;
-		//默认普通或者店长升级
-		int recordType = UserInviteRecord.RECORD_TYPE_FIRST; 
-
+		List<Long> userIdList = new ArrayList<Long>();
+		List<UserInfo> userInfoList = new ArrayList<UserInfo>();
 		// 检查当前用户是否为代理
 		UserInfo userInfo = this.userInfoManager.get(order.getUserId());
-		//购买大礼包总件数
-		String dateFormat = DateUtil.DATE_FORMAT_YEAR;   
-		Double packageQuantity = StringUtil.nullToDouble(order.getPackageYearNumber()); //大礼包年份
-		if(StringUtil.nullToBoolean(userInfo.getIsAgent())){
+		if(userInfo != null && userInfo.getUserId() != null) {
+			
+			userInfo.setIsAgent(true);
+			userInfo.setUpgradeTime(DateUtil.getCurrentDate());
+			userInfo.setLevel(UserLevel.USER_LEVEL_DEALER);
+			userInfo.setUpdateTime(DateUtil.getCurrentDate());
+			userInfoList.add(userInfo);
+			userIdList.add(userInfo.getUserId());
+			
+			
+			List<UserInviteRecord> recordList = this.getUserInviteRecordByUserId(StringUtil.nullToLong(userInfo.getUserId()));
+			if(recordList == null || recordList.isEmpty()){
+				// 会员升级和续费记录
+				UserInviteRecord inviteRecord = new UserInviteRecord ();
+				inviteRecord.setRecordNo(CoreInitUtil.getRandomNo());		
+				inviteRecord.setOrderNo(order.getOrderNo());			    
+				inviteRecord.setUserId(userInfo.getUserId());				
+				inviteRecord.setNumber(1D);                   	
+				inviteRecord.setTopUserId(order.getTopUserId());		    
+				inviteRecord.setIsPaymentSucc(true);						
+				inviteRecord.setCostAmount(order.getOrderAmount());			
+				inviteRecord.setProfitAmount(order.getProfitTop());			
+				inviteRecord.setTradeNo(order.getTradeNo()); 				
+				inviteRecord.setPaymentType(order.getPaymentType()); 		
+				inviteRecord.setCreateTime(DateUtil.getCurrentDate());		
+				inviteRecord.setUpdateTime(inviteRecord.getCreateTime());
+				this.save(inviteRecord);
 
-			// 检查是否包含升级和续费记录
-			List<UserInviteRecord> recordList = this.getUserInviteRecordByUserId(order.getUserId(), UserInviteRecord.VIP_TYPE_AGENT);
-			if(recordList != null && recordList.size() > 0){
-				for(UserInviteRecord inviteRecord : recordList){
-					if(StringUtil.nullToBoolean(inviteRecord.getIsPaymentSucc())){
-						// 本次充值为续费操作
-						recordType = UserInviteRecord.RECORD_TYPE_RENEW;
-						// 检查最后一次续费为有效日期
-						if(DateUtil.isEffectiveTime(dateFormat, inviteRecord.getEndDate())
-								|| DateUtil.isEffectiveTime(DateUtil.DATE_FORMAT_YEAR, inviteRecord.getEndDate())){
-							if(lastRenewEndDate == null 
-									|| StringUtil.null2Str(inviteRecord.getEndDate()).compareTo(lastRenewEndDate) > 0){
-								// 找最大的截止时间
-								lastRenewEndDate = inviteRecord.getEndDate();
-							}
-						}
-						
-						//经销商时间已过期，被降级为vip0
-						if(StringUtil.compareObject(UserLevel.USER_LEVEL_BUYERS, StringUtil.nullToInteger(userInfo.getLevel()))) {
-							//当前时间为开始时间
-							lastRenewEndDate = DateUtil.formatDate(dateFormat, DateUtil.getCurrentDate());
+				// 批量保存变更用户信息
+				userInfoList = this.userInfoManager.batchInsert(userInfoList, userInfoList.size());
+				if(userInfoList != null && userInfoList.size() > 0){
+					for(UserInfo user : userInfoList){
+						if(!userIdList.contains(user.getUserId())){
+							userIdList.add(user.getUserId());
 						}
 					}
 				}
 			}
-
-			List<Integer> vipLevelList = new ArrayList<Integer>();
-			vipLevelList.add(UserLevel.USER_LEVEL_DEALER);
-			vipLevelList.add(UserLevel.USER_LEVEL_AGENT);
-			vipLevelList.add(UserLevel.USER_LEVEL_V2);
-			vipLevelList.add(UserLevel.USER_LEVEL_V3);
-			if(vipLevelList.contains(StringUtil.nullToInteger(userInfo.getLevel()))){
-				// 本次充值为续费操作
-				recordType = UserInviteRecord.RECORD_TYPE_RENEW;
-				String defulatStartDate = DateUtil.formatDate(dateFormat, DateUtil.getCurrentDate());
-
-				// 检查最后截止时间是否有效
-				lastRenewEndDate = userInfo.getExpireEndDate();
-				if(!DateUtil.isEffectiveTime(dateFormat, lastRenewEndDate)
-						&& !DateUtil.isEffectiveTime(DateUtil.DATE_FORMAT_YEAR, lastRenewEndDate)){
-					// 设置当前为开始时间
-					lastRenewEndDate = defulatStartDate;
-				}
-
-				// 最后结算时间比当前时间要小,使用当前时间
-				if(StringUtil.null2Str(defulatStartDate).compareTo(lastRenewEndDate) == 1){
-					lastRenewEndDate = defulatStartDate;
-				}
-			}
 		}
-
-		String startDate = null;
-		String endDate = null;
-		List<UserInfo> userInfoList = new ArrayList<UserInfo> ();
-		if(StringUtil.compareObject(recordType, UserInviteRecord.RECORD_TYPE_FIRST)){
-			// 会员升级
-			startDate = DateUtil.formatDate(dateFormat, DateUtil.getCurrentDate());
-			endDate =DateUtil.formatDate(dateFormat, DateUtil.getYearAfterDay(DateUtil.getCurrentDate(),StringUtil.nullToDouble(Math.ceil(packageQuantity * 366)).intValue()));
-
-			// 升级代理商
-			userInfo.setIsAgent(true);
-			userInfo.setLevel(UserLevel.USER_LEVEL_DEALER);
-			userInfo.setExpireEndDate(endDate);
-			this.userTeamManager.changeUserTeamRecord(userInfo);
-		}else{
-			// 会员续费
-			Date lastRenewDate = DateUtil.parseDate(dateFormat, lastRenewEndDate);   
-			startDate = DateUtil.formatDate(dateFormat, lastRenewDate);
-			endDate =DateUtil.formatDate(dateFormat, DateUtil.getYearAfterDay(lastRenewDate,StringUtil.nullToDouble(Math.ceil(packageQuantity * 366)).intValue()));  //恢复
-
-			// 代理商续费
-			userInfo.setIsAgent(true);
-			userInfo.setExpireEndDate(endDate);
-			userInfo.setLevel(UserLevel.USER_LEVEL_DEALER);
-		}
-		
-		// 当前用户更新时间
-		userInfo.setUpdateTime(DateUtil.getCurrentDate());
-		userInfoList.add(userInfo);
-
-		// 缓存信息处理
-		List<Long> userIdList = new ArrayList<Long> ();
-		userIdList.add(userInfo.getUserId());
-
-		// 会员升级和续费记录
-		UserInviteRecord inviteRecord = new UserInviteRecord ();
-		inviteRecord.setRecordNo(CoreInitUtil.getRandomNo());		//记录编号
-		inviteRecord.setOrderNo(order.getOrderNo());			    //关联订单编号
-		inviteRecord.setUserId(userInfo.getUserId());				//用户id
-		inviteRecord.setNumber(packageQuantity);                   	//数量
-		inviteRecord.setTopUserId(order.getTopUserId());		    //上级店铺id
-		inviteRecord.setRecordType(recordType);						//记录类型 1-续费 2-首次购买
-		inviteRecord.setInviteType(UserInviteRecord.VIP_TYPE_AGENT);//vip类型 1-普通代理 2-总代
-		inviteRecord.setIsPaymentSucc(true);						//是否支付成功(false 未支付 true 已支付)
-		inviteRecord.setCostAmount(order.getOrderAmount());			//费用金额
-		inviteRecord.setProfitAmount(order.getProfitTop());			//返利金额
-		inviteRecord.setTradeNo(order.getTradeNo()); 				//商家交易流水号(纯若)
-		inviteRecord.setPaymentType(order.getPaymentType()); 		//支付方式(0:微信支付;1:支付宝支付)
-		inviteRecord.setStartDate(startDate);						//有效期开始时间
-		inviteRecord.setEndDate(endDate);							//有效期结束时间
-		inviteRecord.setCreateTime(DateUtil.getCurrentDate());		//创建时间
-		inviteRecord.setUpdateTime(inviteRecord.getCreateTime());//更新时间
-		this.save(inviteRecord);
-
-		// 批量保存变更用户信息
-		userInfoList = this.userInfoManager.batchInsert(userInfoList, userInfoList.size());
-		if(userInfoList != null && userInfoList.size() > 0){
-			for(UserInfo user : userInfoList){
-				if(!userIdList.contains(user.getUserId())){
-					userIdList.add(user.getUserId());
-				}
-			}
-		}
-		
-
 		MsgModel<Map<String, List<Long>>> msgModel = new MsgModel<Map<String, List<Long>>> ();
 		Map<String, List<Long>> resultMap = new HashMap<String, List<Long>> ();
 		resultMap.put("userIdList", userIdList);
@@ -207,7 +121,7 @@ public class UserInviteRecordManagerImpl extends GenericManagerImpl<UserInviteRe
 				&& StringUtil.nullToBoolean(topUserInfo.getIsAgent()) 
 				&& StringUtil.compareObject(StringUtil.nullToInteger(topUserInfo.getLevel()), UserLevel.USER_LEVEL_DEALER)){
 			// 注册店长记录
-			List<UserInviteRecord> recordList = this.getUserInviteRecordByUserId(userInfo.getUserId(), UserInviteRecord.VIP_TYPE_BUYERS);
+			List<UserInviteRecord> recordList = this.getUserInviteRecordByUserId(userInfo.getUserId());
 			if(recordList != null && recordList.size() > 0){
 				// 已存在错误
 				msgModel.setMessage("店长已存在错误");

@@ -23,12 +23,8 @@ Ext.define('MyExt.userManager.UserEditPanel', {
         	autoDestroy: true,
         	model: 'InitModel',
         	data: [
-        	    {id: '5', name: '<fmt:message key="user.level5"/>'},
-        	    {id: '4', name: '<fmt:message key="user.level4"/>'},
-        	    {id: '3', name: '<fmt:message key="user.level3"/>'},
         		{id: '2', name: '<fmt:message key="user.level2"/>'},
         		{id: '1', name: '<fmt:message key="user.level1"/>'},
-        		{id: '0', name: '<fmt:message key="user.level0"/>'},
         	]});
         	
         	this.rendererPushLevelStore = Ext.create('Ext.data.Store', {
@@ -72,72 +68,6 @@ Ext.define('MyExt.userManager.UserEditPanel', {
 			        anchor: '99%' ,
 			        value: this.level,
 			        name: 'level'
-				},{
-	        		width: 250,
-	        		labelWidth: 70,
-					xtype: 'combobox',
-					fieldLabel: '<fmt:message key="user.pushLevel" />',
-			        displayField: 'name',
-			        valueField: 'id',
-			        store: this.rendererPushLevelStore,
-			        style: 'padding: 0px 4px',
-			        editable: false,
-			        allowBlank: false,
-			        queryMode: 'local',
-			        typeAhead: true,
-			        anchor: '99%' ,
-			        value: this.pushLevel,
-			        name: 'pushLevel'
-				},{
-				    width:250,
-				    xtype:'datefield',
-				    fieldLabel: '<fmt:message key="user.expireTime"/>',
-				    labelWidth: 70,
-				    readOnly: false,
-				    format: 'Y-m-d',
-				    name: 'expireEndDate',
-				    id:'endTime',		    
-				    value:Ext.Date.add(new Date(),Ext.Date.YEAR,1),
-				    anchor:'99%',
-				    style: 'padding: 0px 4px',
-				    value:this.expireEndDate
-				},{
-				    width:250,
-				    xtype:'datefield',
-				    fieldLabel: '<fmt:message key="user.expireTime.v1"/>',
-				    labelWidth: 70,
-				    readOnly: true,
-				    format: 'Y-m-d',
-				    name: 'v1ExpireEndDate',
-				    id:'v1Expire',		    
-				    value:Ext.Date.add(new Date(),Ext.Date.YEAR,1),
-				    anchor:'99%',
-				    style: 'padding: 0px 4px',
-				    value:this.v1ExpireEndDate
-				},{
-				    width:250,
-				    xtype:'datefield',
-				    fieldLabel: '<fmt:message key="user.expireTime.v2"/>',
-				    labelWidth: 70,
-				    format: 'Y-m-d',
-				    name: 'v2ExpireEndDate',
-				    id:'v2Expire',		    
-				    value:Ext.Date.add(new Date(),Ext.Date.YEAR,1),
-				    anchor:'99%',
-				    style: 'padding: 0px 4px',
-				    value:this.v2ExpireEndDate
-				},{
-				    width:250,
-				    xtype:'datefield',
-				    fieldLabel: '<fmt:message key="user.expireTime.v3"/>',
-				    labelWidth: 70,
-				    format: 'Y-m-d',
-				    name: 'v3ExpireEndDate',
-				    id:'v3Expire',		    
-				    value:Ext.Date.add(new Date(),Ext.Date.YEAR,1),
-				    anchor:'99%',
-				    style: 'padding: 0px 4px',
-				    value:this.v3ExpireEndDate
 				}]
         	}]
     	});

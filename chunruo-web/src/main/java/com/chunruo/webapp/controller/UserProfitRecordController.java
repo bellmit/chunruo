@@ -101,7 +101,7 @@ public class UserProfitRecordController extends BaseController {
 						
 						// 店铺信息
 						if(userInfoMap.containsKey(userProfitRecord.getUserId())){
-							userProfitRecord.setStoreName(userInfoMap.get(userProfitRecord.getUserId()).getStoreName());
+							userProfitRecord.setNickName(userInfoMap.get(userProfitRecord.getUserId()).getNickname());
 						}
 						
 						// 来源店铺信息

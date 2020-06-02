@@ -11,9 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-/**
- * @author chunruo
- */
 @Entity
 @Table(name = "jkd_user_withdrawal")
 public class UserWithdrawal implements Serializable {

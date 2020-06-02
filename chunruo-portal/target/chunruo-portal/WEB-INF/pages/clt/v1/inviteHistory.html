@@ -1,0 +1,27 @@
+##邀请记录
+
+#set($pageidx_1 = $request.getParameter('pageidx'))
+#set($pagesize_1 = $request.getParameter('pagesize'))
+#set($lastId_1 = $request.getParameter('lastId'))
+
+${inviteHistoryTag.setRequest($request)}
+#set($tagModel= ${inviteHistoryTag.getData($pageidx_1, $pagesize_1, $lastId_1)})
+{
+	"code":"$!tagModel.code",
+	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
+	"systemTime":"$!systemTime",
+	"nextPageURL":"$!tagModel.nextPageURL",
+	"dataList":[
+	#if($tagModel.data.dataList && $tagModel.data.dataList.size() > 0)
+		#foreach($user in $tagModel.data.dataList)
+		{
+		    "userId": "$!user.userId",
+			"logo": "$!user.logo",
+			"nickName": "${HtmlDecodeTag.get($!user.nickname)}",
+			"upgradeTime": "${DateUtil.getSeconds($!userTeam.upgradeTime)}",
+			"registerTime": "${DateUtil.getSeconds($!userTeam.registerTime)}"
+		}#if($velocityCount < $tagModel.data.dataList.size()),#end
+	 	#end
+	#end
+	]
+}

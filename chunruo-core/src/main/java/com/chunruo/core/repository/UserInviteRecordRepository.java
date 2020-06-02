@@ -15,8 +15,8 @@ public interface UserInviteRecordRepository extends GenericRepository<UserInvite
 	@Query("from UserInviteRecord where recordNo=:recordNo")
 	public List<UserInviteRecord> getUserInviteRecordByRecordNo(@Param("recordNo") String recordNo);
 	
-	@Query("from UserInviteRecord where userId=:userId and inviteType=:inviteType")
-	public List<UserInviteRecord> getUserInviteRecordByUserId(@Param("userId") Long userId, @Param("inviteType")Integer inviteType);
+	@Query("from UserInviteRecord where userId=:userId")
+	public List<UserInviteRecord> getUserInviteRecordByUserId(@Param("userId") Long userId);
 	
 	@Query("from UserInviteRecord where topUserId=:topUserId and invitationType=:inviteType and isValidInvitNumber = true order by recordId")
 	public List<UserInviteRecord> getValidInvitNumberByTopUserId(@Param("topUserId") Long topUserId, @Param("inviteType")Integer inviteType);
