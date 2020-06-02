@@ -12,19 +12,15 @@ import com.chunruo.cache.portal.impl.FxChannelListMapByIdCacheManager;
 import com.chunruo.cache.portal.impl.FxChildrenListByPageIdCacheManager;
 import com.chunruo.cache.portal.impl.FxPageByIdCacheManager;
 import com.chunruo.cache.portal.impl.FxPageListByChannelIdCacheManager;
-import com.chunruo.cache.portal.impl.UserInfoByIdCacheManager;
 import com.chunruo.core.Constants;
 import com.chunruo.core.model.FxChannel;
 import com.chunruo.core.model.FxChildren;
 import com.chunruo.core.model.FxPage;
 import com.chunruo.core.model.Keywords;
 import com.chunruo.core.model.Product;
-import com.chunruo.core.model.UserInfo;
 import com.chunruo.core.util.StringUtil;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.portal.PortalConstants;
-import com.chunruo.portal.util.PortalUtil;
-import com.chunruo.portal.util.ProductCheckUtil;
 import com.chunruo.portal.util.ProductUtil;
 import com.chunruo.portal.vo.TagModel;
 
@@ -51,32 +47,21 @@ public class ChannelDetailTag extends BaseTag {
 		TagModel<List<FxChildren>> tagModel = new TagModel<List<FxChildren>> ();
 		Map<String, Object> resultMap = new HashMap<String, Object> ();
 		try{
-//			UserInfo userInfo = PortalUtil.getCurrentUserInfo(request);
-//			if(userInfo == null || userInfo.getUserId() == null){
-//				tagModel.setCode(PortalConstants.CODE_NOLOGIN);
-//				tagModel.setMsg("用户未登陆");
-//				return tagModel;
-//			}
 		
 			
 			DateCacheManager dateCacheManager = Constants.ctx.getBean(DateCacheManager.class);
 			FxPageByIdCacheManager fxPageByIdCacheManager = Constants.ctx.getBean(FxPageByIdCacheManager.class);
-			UserInfoByIdCacheManager userInfoByIdCacheManager = Constants.ctx.getBean(UserInfoByIdCacheManager.class);
 			FxChannelListMapByIdCacheManager fxChannelListMapByIdCacheManager = Constants.ctx.getBean(FxChannelListMapByIdCacheManager.class);
 			FxPageListByChannelIdCacheManager fxPageListByChannelIdCacheManager = Constants.ctx.getBean(FxPageListByChannelIdCacheManager.class);
 			FxChildrenListByPageIdCacheManager fxChildrenListByPageIdCacheManager = Constants.ctx.getBean(FxChildrenListByPageIdCacheManager.class);
 			
 
-			//从缓存重新读取用户信息
-//			userInfo = userInfoByIdCacheManager.getSession(userInfo.getUserId());
 			
-			//如果频道id不存在 判断内页id是否存在
 			if (StringUtil.isNull(channelId) || StringUtil.compareObject(channelId, 0)){
 				FxPage page = null;
 				if (!StringUtil.isNull(pageId) && !StringUtil.compareObject(0, pageId)){
 					page = fxPageByIdCacheManager.getSession(pageId);
 					if (page == null || page.getPageId() == null || StringUtil.nullToBoolean(page.getIsDelete())){
-						//不存在或者已删除
 						tagModel.setCode(PortalConstants.CODE_ERROR);
 						tagModel.setMsg("内页或专题不存在");
 						return tagModel;
@@ -90,19 +75,16 @@ public class ChannelDetailTag extends BaseTag {
 				
 			}
 
-			// 市场列表最后更新时间
 			String cacheName = fxChannelListMapByIdCacheManager.getCacheName();
 			Long sessionNextLastTime = dateCacheManager.getSession(cacheName);
 			tagModel.setObjectId(sessionNextLastTime);
 
 			Long firstChannelId = 0L;
 			boolean isFirstStart = false;
-			// 分销市场频道列表
 			Map<String, FxChannel> fxChannelListMap = fxChannelListMapByIdCacheManager.getSession();
 			if(fxChannelListMap != null && fxChannelListMap.size() > 0){
 				List<Map.Entry<String, FxChannel>> mappingList = new ArrayList<Map.Entry<String, FxChannel>> (fxChannelListMap.entrySet());
 				Collections.sort(mappingList, new Comparator<Map.Entry<String, FxChannel>>(){
-					// 排序
 					public int compare(Map.Entry<String, FxChannel> obj1, Map.Entry<String, FxChannel> obj2){
 						int stor1 = StringUtil.nullToInteger(obj1.getValue().getSort());
 						int stor2 = StringUtil.nullToInteger(obj2.getValue().getSort());
@@ -111,23 +93,15 @@ public class ChannelDetailTag extends BaseTag {
 				});
 
 				if(mappingList != null && mappingList.size() > 0){
-					// 秒杀频道ID
-					Long channelSeckillId = StringUtil.nullToLong(Constants.conf.getProperty("jkd.seckill.channel.id"));
 					List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>> ();
 					for(Map.Entry<String, FxChannel> entry : mappingList){
 						FxChannel fxChannel = entry.getValue();
-						// 检查是否秒杀
-						Integer isSeckill = Constants.NO;
-						if(StringUtil.compareObject(channelSeckillId, fxChannel.getChannelId())){
-							isSeckill = Constants.YES;
-						}
 						
 						Map<String, Object> objectMap = new HashMap<String, Object> ();
 						objectMap.put("channelId", fxChannel.getChannelId());				//序号
 						objectMap.put("channelName", fxChannel.getChannelName());			//渠道名称
 						objectMap.put("status", fxChannel.getStatus());						//状态(0:停止;1:启用;2:删除)
 						objectMap.put("sort", fxChannel.getSort());							//排序
-						objectMap.put("isSeckill", StringUtil.nullToInteger(isSeckill));	//是否秒杀
 						if(StringUtil.compareObject(fxChannel.getChannelName(), "首页")) {
 							firstChannelId = fxChannel.getChannelId();
 							objectMap.put("isHomeChannel", Constants.YES);	//是否首页频道
@@ -309,8 +283,6 @@ public class ChannelDetailTag extends BaseTag {
 	 * @return
 	 */
 	public Map<String, Object> getDetailMap(Product product){
-		// 秒杀商品即将开始状态
-		ProductCheckUtil.checkSeckillProductPriceReadStatus(product);
 		
 		Map<String, Object> detailMap = new HashMap<String, Object> ();
 		detailMap.put("productId", product.getProductId());

@@ -1,7 +1,6 @@
 package com.chunruo.portal;
 
 import java.util.Collections;
-import javax.servlet.DispatcherType;
 import javax.servlet.MultipartConfigElement;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import com.chunruo.core.Constants;
 import com.chunruo.core.util.Configuration;
-import com.chunruo.portal.filter.GzipFilter;
 import com.chunruo.portal.filter.PortalFilter;
 import com.chunruo.portal.interceptor.LoginHandlerInterceptor;
 
@@ -74,7 +72,6 @@ public class SpringBootPortalApplication extends SpringBootServletInitializer im
 			@Override
 			public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		        //第一个方法设置访问路径前缀，第二个方法设置资源路径
-		        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
 				registry.addResourceHandler("/upload/**").addResourceLocations("file:" + Constants.EXTERNAL_IMAGE_PATH + "/upload/");
 				registry.addResourceHandler("/chunruo/**").addResourceLocations("file:" + Constants.EXTERNAL_IMAGE_PATH + "/chunruo/");
 				registry.addResourceHandler("/depository/**").addResourceLocations("file:" + Constants.EXTERNAL_IMAGE_PATH + "/depository/");
@@ -90,8 +87,6 @@ public class SpringBootPortalApplication extends SpringBootServletInitializer im
 		factory.setMaxFileSize("50MB"); //KB,MB  
 		/// 设置总上传数据总大小  
 		factory.setMaxRequestSize("50MB");   
-		//Sets the directory location where files will be stored.  
-		//factory.setLocation("路径地址");  
 		return factory.createMultipartConfig();   
 	} 
 
@@ -103,7 +98,6 @@ public class SpringBootPortalApplication extends SpringBootServletInitializer im
         config.addAllowedOrigin(CorsConfiguration.ALL);  
         config.addAllowedHeader(CorsConfiguration.ALL);  
         config.addAllowedMethod(CorsConfiguration.ALL);  
-        config.addExposedHeader(PortalConstants.X_STORE_ID);
         config.addExposedHeader(PortalConstants.X_TOKEN);
         config.addExposedHeader("Accept");
         config.addExposedHeader("Authorization");
@@ -124,19 +118,6 @@ public class SpringBootPortalApplication extends SpringBootServletInitializer im
 		registration.setOrder(0);
 		return registration;
 	} 
-
-
-	@Bean
-	public FilterRegistrationBean gzipFilterRegistration() {
-		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(new GzipFilter());
-		registration.addUrlPatterns("/*");
-		registration.setDispatcherTypes(DispatcherType.REQUEST);
-		registration.setDispatcherTypes(DispatcherType.FORWARD);
-		return registration;
-	}
-
-
 }
 
 class TracksMediaTypeConverter extends MappingJackson2HttpMessageConverter {

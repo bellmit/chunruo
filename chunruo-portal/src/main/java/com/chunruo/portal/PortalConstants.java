@@ -12,9 +12,9 @@ public class PortalConstants {
 	public static final String CODE_ERROR = "0";
 	public static final String MOBILE_ERROR = "-1";
 	public static final String CODE_ERROR_NOTAGENT = "2";
-	public static final String CODE_NOLOGIN = "-1";			//用户未登陆
-	public static final String CODE_NOSTORE = "-2";			//店铺不存在
-	public static final String CODE_NOAUTH_PAYMENT = "-3";	//余额是否未认证
+	public static final String CODE_NOLOGIN = "-1";			
+	public static final String CODE_NOSTORE = "-2";			
+	public static final String CODE_NOAUTH_PAYMENT = "-3";	
 	public static final String CODE = "code";
 	public static final String MOBILE_CODE = "mobileCode";
 	public static final String MSG = "msg";

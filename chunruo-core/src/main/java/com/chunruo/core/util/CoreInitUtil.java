@@ -12,16 +12,12 @@ import com.chunruo.core.Constants;
 import com.chunruo.core.model.Area;
 import com.chunruo.core.model.Country;
 import com.chunruo.core.model.ProductCategory;
-import com.chunruo.core.model.ProductIntro;
-import com.chunruo.core.model.PurchaseDoubt;
 import com.chunruo.core.model.RefundReason;
 import com.chunruo.core.model.WeChatAppConfig;
 import com.chunruo.core.repository.RefundReasonRepository;
 import com.chunruo.core.service.AreaManager;
 import com.chunruo.core.service.CountryManager;
 import com.chunruo.core.service.ProductCategoryManager;
-import com.chunruo.core.service.ProductIntroManager;
-import com.chunruo.core.service.PurchaseDoubtManager;
 import com.chunruo.core.service.WeChatAppConfigManager;
 import com.chunruo.core.util.DateUtil;
 import com.chunruo.core.util.StringUtil;
@@ -33,33 +29,9 @@ public class CoreInitUtil {
 	 * 更新系统缓存
 	 */
 	public static void init() {
-//		CoreInitUtil.initBankList();
 		CoreInitUtil.initAreaConstantsList();
-//		CoreInitUtil.initProductIntroConstantsList();
-//		CoreInitUtil.initProductCountryConstantsList();
 		CoreInitUtil.initProductCategoryConstantsList();
 		CoreInitUtil.initWeChatAppConfigConstantsList();
-//		CoreInitUtil.initUserLevelExplainConstantsList();
-//		CoreInitUtil.initCouponTaskConstantsList();
-//		CoreInitUtil.initCouponConstantsList();
-//		CoreInitUtil.initRollingNotice();
-//		CoreInitUtil.initPurchaseDoubtConstantsList();
-//		CoreInitUtil.initDefKeywords();
-//		CoreInitUtil.initApplyAgentProfession();
-//		CoreInitUtil.initSignImageText();
-//		CoreInitUtil.initActivity();
-//		CoreInitUtil.initActivityPizeConstantsList();
-//		CoreInitUtil.initActivityInfoConstantsList();
-//		CoreInitUtil.initLuckDrawPrizeConstantsMap();
-//		CoreInitUtil.initTeamRuleExplainConstantsList();
-//		CoreInitUtil.initProductGiftList();
-//		CoreInitUtil.initCategoryBrandList();
-//		CoreInitUtil.initDiscovery();
-//		CoreInitUtil.initInvitesCourtesy();
-//		CoreInitUtil.initGuideProduct();
-//		CoreInitUtil.initTrainTeacher();
-//		CoreInitUtil.initUserSaleStandard();
-//		CoreInitUtil.initAdviserUser();
 	}
 
 	/**
@@ -301,33 +273,6 @@ public class CoreInitUtil {
 		}
 	}
 
-	/**
-	 * 商品说明列表
-	 */
-	public static void initProductIntroConstantsList() {
-		ProductIntroManager productIntroManager = Constants.ctx.getBean(ProductIntroManager.class);
-		List<ProductIntro> productIntroList = productIntroManager.getAll();
-		if (productIntroList != null && productIntroList.size() > 0) {
-			Constants.PRODUCT_INTRO_MAP.clear();
-			for (ProductIntro productIntro : productIntroList) {
-				Constants.PRODUCT_INTRO_MAP.put(productIntro.getIntroId(), productIntro);
-			}
-		}
-	}
-	
-	/**
-	 * 购买答疑列表
-	 */
-	public static void initPurchaseDoubtConstantsList() {
-		PurchaseDoubtManager purchaseDoubtManager = Constants.ctx.getBean(PurchaseDoubtManager.class);
-		List<PurchaseDoubt> purchaseDoubtList = purchaseDoubtManager.getAll();
-		if (purchaseDoubtList != null && purchaseDoubtList.size() > 0) {
-			Constants.PURCHASE_DOUBT_MAP.clear();
-			for (PurchaseDoubt purchaseDoubt : purchaseDoubtList) {
-				Constants.PURCHASE_DOUBT_MAP.put(purchaseDoubt.getDoubtId(), purchaseDoubt);
-			}
-		}
-	}	
 
 	/**
 	 * 商品国家归属列表

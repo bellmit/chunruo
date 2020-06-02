@@ -13,7 +13,6 @@ import com.chunruo.core.model.CouponTask;
 import com.chunruo.core.model.ExpressCode;
 import com.chunruo.core.model.Keywords;
 import com.chunruo.core.model.PostageTemplate;
-import com.chunruo.core.model.Product;
 import com.chunruo.core.model.ProductBrand;
 import com.chunruo.core.model.ProductCategory;
 import com.chunruo.core.model.ProductGift;
@@ -24,10 +23,8 @@ import com.chunruo.core.model.RefundReason;
 import com.chunruo.core.model.RollingNotice;
 import com.chunruo.core.model.SignImageText;
 import com.chunruo.core.model.UserLevelExplain;
-import com.chunruo.core.model.UserSaleStandard;
 import com.chunruo.core.model.WeChatAppConfig;
 import com.chunruo.core.util.Configuration;
-import com.chunruo.core.util.StringUtil;
 
 public class Constants {
 	public static volatile String DEPOSITORY = "depository";
@@ -80,18 +77,12 @@ public class Constants {
 	public static final String PRODUCT_INTRO_MAPS = "allProductIntroMaps";
 	public static final String PURCHASE_DOUBT_MAPS = "allPurchaseDoubtMaps";
 	public static final String PRODUCT_COUNTRY_MAPS = "allProductCountryMaps";
-	public static final String BANK_MAPS = "allBankMaps";
 	public static final String PRODUCT_CATEGORY_LISTS = "allProductCategoryLists";
 	public static final String PRODUCT_WAREHOUSE_MAPS = "allProductWarehouseLists";
 	public static final String HANDER_WAREHOUSE_MAPS = "allHanderWarehouseLists";
 	public static final String NOFree_POSTAGE_TEMPLATE_MAPS="allNoFreePostageTemplateMaps";
 	public static final String EXPRESS_CODE_MAPS = "allExpressCodeMaps";
 	public static final String WEIXIN_TOKEN_MAP_KEY = "token";
-	public static final String PRODUCT_BRAND_MAPS = "allProductBrandMaps";
-	public static final String DISCOVERY_CREATER_MAPS = "allDiscoveryCreaterMaps";
-	public static final String DISCOVERY_MODULE_MAPS = "allDiscoveryModuleMaps";
-    public static final String TX_IM_USER_SIG = "userSig";
-    public static String BAIDU_ACCESS_TOKEN = "";
 	//系统缓存对象
 	public static Map<Long, ProductWarehouse> PRODUCT_WAREHOUSE_MAP = new HashMap<Long, ProductWarehouse> ();
 	public static Map<Long, ProductWarehouse> HANDER_WAREHOUSE_MAP = new HashMap<Long, ProductWarehouse> ();
@@ -128,8 +119,6 @@ public class Constants {
 	public static List<SignImageText> SIGN_IMAGE_TEXT_LIST = new ArrayList<SignImageText>();
 	public static List<ProductGift> PRODUCT_GIFT_LIST = new ArrayList<ProductGift> ();
 	public static List<Object[]> CATEGORY_BRAND_LIST = new ArrayList<Object[]> ();
-	public static Product GUIDE_PRODUCT = null;
-	public static UserSaleStandard USER_SALE_STANDARD = null;
 	
 	public static class WechatOautType{
 		public final static int WECHAT_OAUTH_TYPE_LOGIN = 0;	//微信授权登陆成功

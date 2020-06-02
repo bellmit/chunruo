@@ -18,7 +18,7 @@ public class SpringServletContext implements ServletContextAware{
 		SpringServletContext.context = servletContext;
 		try{
 			Constants.SERVER_REAL_PATH = servletContext.getRealPath("/");
-			Constants.EXTERNAL_IMAGE_PATH = Constants.conf.getProperty("jkd.external.image.path");
+			Constants.EXTERNAL_IMAGE_PATH = Constants.conf.getProperty("chunruo.default.image.path");
 			Constants.IMAGE_MAGICK_CONVERT_PATH = Constants.conf.getProperty("jkd.image.magick.convert.path");
 			Constants.MINI_PROGRAM_WECHAT_CONFIG_ID = StringUtil.nullToLong(Constants.conf.getProperty("chunruo.mini.program.configId"));
 			CoreInitUtil.init();

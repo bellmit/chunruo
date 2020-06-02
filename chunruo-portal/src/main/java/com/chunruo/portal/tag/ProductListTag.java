@@ -7,32 +7,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import com.chunruo.cache.portal.impl.FxChannelListMapByIdCacheManager;
 import com.chunruo.cache.portal.impl.ProductListByBrandIdCacheManager;
 import com.chunruo.cache.portal.impl.ProductListByCatIdCacheManager;
 import com.chunruo.cache.portal.impl.ProductListByCouponIdCacheManager;
 import com.chunruo.cache.portal.vo.ProductSortVo;
 import com.chunruo.core.Constants;
-import com.chunruo.core.model.FxChannel;
 import com.chunruo.core.model.Product;
-import com.chunruo.core.model.UserInfo;
 import com.chunruo.core.util.DoubleUtil;
 import com.chunruo.core.util.ListPageUtil;
 import com.chunruo.core.util.StringUtil;
 import com.chunruo.core.util.vo.ListPageVo;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.portal.PortalConstants;
-import com.chunruo.portal.util.PortalUtil;
-import com.chunruo.portal.util.ProductCheckUtil;
 import com.chunruo.portal.util.ProductUtil;
 import com.chunruo.portal.vo.TagModel;
 
-/**
- * 按分类查询供货商商品列表
- * 增加排序条件:人气|利润|价格
- * @author chunruo
- *
- */
+
 public class ProductListTag extends BaseTag {
 	public final static int PRODUCT_SORT_SN = 1;  //销量(综合)
 	public final static int PRODUCT_SORT_FX	= 2;  //人气(利润)
@@ -238,8 +228,6 @@ public class ProductListTag extends BaseTag {
 					// 返回对象自定义
 					if(realProductMap.containsKey(objectId)){
 						Product product = realProductMap.get(objectId);
-						// 秒杀商品即将开始状态
-						ProductCheckUtil.checkSeckillProductPriceReadStatus(product);
 						return product;
 					}
 					return null;
@@ -265,17 +253,6 @@ public class ProductListTag extends BaseTag {
 				tagModel.setNextPageURL(urls.toString());
 			}
 
-			Map<String,Object> dataMap = new HashMap<String,Object>();
-			//检查是否开启推荐价显示
-			FxChannelListMapByIdCacheManager fxChannelListMapByIdCacheManager  = Constants.ctx.getBean(FxChannelListMapByIdCacheManager.class);
-			Map<String,FxChannel> fxChannelListMap =  fxChannelListMapByIdCacheManager.getSession();
-			if(fxChannelListMap != null && fxChannelListMap.size() > 0) {
-				if(fxChannelListMap.containsKey(StringUtil.null2Str(Constants.conf.getProperty("jkd.price.recommend.id")))) {
-					dataMap.put("isOpenPriceRecommend", true);
-				}
-			}
-	
-			tagModel.setDataMap(dataMap);
 			Long total = Long.parseLong(productIdList.size() + "");
 			Integer totalPage = ProductListTag.getPageNumber(total, pagesize);
 			tagModel.setData(listPageVo.getDataList());

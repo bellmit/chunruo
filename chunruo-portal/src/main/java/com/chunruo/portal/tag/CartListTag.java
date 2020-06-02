@@ -6,22 +6,17 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.chunruo.cache.portal.impl.UserCartListByUserIdCacheManager;
 import com.chunruo.core.Constants;
 import com.chunruo.core.Constants.GoodsType;
 import com.chunruo.core.model.Product;
 import com.chunruo.core.model.UserCart;
 import com.chunruo.core.model.UserInfo;
-import com.chunruo.core.service.UserCartManager;
-import com.chunruo.core.util.DateUtil;
 import com.chunruo.core.util.StringUtil;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.portal.PortalConstants;
 import com.chunruo.portal.util.PortalUtil;
-import com.chunruo.portal.util.ProductCheckUtil;
 import com.chunruo.portal.util.ProductUtil;
-import com.chunruo.portal.util.PurchaseLimitUtil;
 import com.chunruo.portal.vo.TagModel;
 
 /**
@@ -44,8 +39,6 @@ public class CartListTag extends BaseTag {
 			}
 
 			final UserCartListByUserIdCacheManager userCartListByUserIdCacheManager = Constants.ctx.getBean(UserCartListByUserIdCacheManager.class);
-
-
 
 			final Map<String, UserCart> cartIdMap = userCartListByUserIdCacheManager.getSession(userInfo.getUserId());
 			if(cartIdMap != null && cartIdMap.size() > 0){
@@ -72,18 +65,6 @@ public class CartListTag extends BaseTag {
 					MsgModel<Product> msgModel = ProductUtil.getProductByUserLevel(userCart.getProductId(), userCart.getProductSpecId(), userInfo, false);
 					if(StringUtil.nullToBoolean(msgModel.getIsSucc())){
 						Product product = msgModel.getData();
-						// 检查秒杀商品即将开始状态
-						ProductCheckUtil.checkSeckillProductStatusReadStatus(product);
-						//检查用户商品限购
-						checkProductLimit(product, userInfo, userCart);
-						// 组合商品合并
-						if(StringUtil.nullToBoolean(product.getIsGroupProduct())){
-							MsgModel<Product> xmsgModel = ProductCheckUtil.checkGroupProductByUserLevel(product, userCart.getGroupProductInfo(), userCart.getQuantity(), false, userInfo);
-							if(!StringUtil.nullToBoolean(xmsgModel.getIsSucc())){
-								// 组合商品解析错误
-								continue;
-							}
-						}
 
 						if(!StringUtil.nullToBoolean(product.getIsFreeTax()) && StringUtil.compareObject(product.getProductType(), GoodsType.GOODS_TYPE_CROSS)) {
 							Double taxAmount = StringUtil.nullToDoubleFormat(product.getPaymentPrice() * Product.TAXRATE  ); 
@@ -114,43 +95,5 @@ public class CartListTag extends BaseTag {
 
 		tagModel.setCode(PortalConstants.CODE_SUCCESS);
 		return tagModel;
-	}
-	
-	/**
-	 * 检查商品限购
-	 * @param product
-	 * @param userInfo
-	 */
-	private void checkProductLimit(Product product,UserInfo userInfo,UserCart userCart) {
-		try {
-			UserCartManager userCartManager = Constants.ctx.getBean(UserCartManager.class);
-			UserCartListByUserIdCacheManager userCartListByUserIdCacheManager = Constants.ctx.getBean(UserCartListByUserIdCacheManager.class);
-			MsgModel<Integer> limitModel = PurchaseLimitUtil.checkUserLimitByProduct(product, userInfo, 0);
-			
-			Integer remainNumber = StringUtil.nullToInteger(limitModel.getData());  //用户限购数量
-			Integer stockNumber = StringUtil.nullToInteger(product.getPaymentStockNumber());
-			
-			if(StringUtil.nullToBoolean(product.getIsSeckillProduct())
-					&&  !StringUtil.nullToBoolean(product.getIsSeckillReadStatus())
-					&& StringUtil.nullToBoolean(product.getIsSeckillLimit())) {
-				stockNumber = StringUtil.nullToInteger(product.getSeckillTotalStock());
-			}
-			if(remainNumber < stockNumber && remainNumber != -1) {
-				stockNumber = remainNumber;
-			}
-			if(stockNumber > 0 && StringUtil.nullToInteger(userCart.getQuantity()) > stockNumber) {
-				userCart.setQuantity(stockNumber);
-				userCart.setUpdateTime(DateUtil.getCurrentDate());
-				userCart = userCartManager.update(userCart);
-				try {
-					userCartListByUserIdCacheManager.removeSession(StringUtil.nullToLong(userInfo.getUserId()));
-				}catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
 	}
 }

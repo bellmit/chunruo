@@ -1,7 +1,5 @@
 package com.chunruo.portal.controller;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -33,7 +31,6 @@ import com.chunruo.core.util.WxSendUtil;
 import com.chunruo.core.util.XmlParseUtil;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.portal.BaseController;
-import com.chunruo.portal.util.AliPayUtil;
 import com.chunruo.portal.util.WeiXinPayUtil;
 
 @Controller
@@ -46,22 +43,12 @@ public class OrderPayNotifyController extends BaseController{
 	private OrderManager orderManager;
 
 
-	/**
-	 * 更新订单支付成功信息
-	 * @param orderId
-	 * @param outTradeNo
-	 * @param transactionId
-	 * @param paymentType
-	 * @param weChatConfigId
-	 * @return
-	 */
 	public static MsgModel<Map<String, List<Long>>> updateOrderPaymentSuccStatus(Order order, String transactionId, Integer paymentType, Long weChatConfigId, String paymentResponseData){
 		MsgModel<Map<String, List<Long>>> msgModel = new MsgModel<Map<String, List<Long>>> ();
 		// 加锁
 		lock.lock();
 		try {
 			OrderManager orderManager = Constants.ctx.getBean(OrderManager.class);
-
 			OrderByIdCacheManager orderByIdCacheManager = Constants.ctx.getBean(OrderByIdCacheManager.class);
 			UserInfoManager userInfoManager = Constants.ctx.getBean(UserInfoManager.class);
 			UserInfoByIdCacheManager userInfoByIdCacheManager = Constants.ctx.getBean(UserInfoByIdCacheManager.class);
@@ -172,58 +159,5 @@ public class OrderPayNotifyController extends BaseController{
 		}
 		this.writeTextResponse(response, "<xml><return_code><![CDATA[FAIL]]></return_code></xml>");
 	}
-
-	/**
-	 * 支付宝支付回调通知
-	 * @param request
-	 * @param response
-	 */
-	@RequestMapping(value="/alipayNotify")
-	public void alipayNotify(final HttpServletRequest request, HttpServletResponse response) {
-		Map<String, String> params = new HashMap<String, String>(); //将异步通知中收到的待验证所有参数都存放到map中
-		Map<String, String[]> requestParams = request.getParameterMap();
-		StringBuffer paramBuffer = new StringBuffer();
-		if(requestParams != null && requestParams.size() > 0){
-			for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
-				String name = iter.next();
-				String[] values = (String[])requestParams.get(name);
-				String valueStr = "";
-				for (int i = 0; i < values.length; i++) {
-					valueStr = i == values.length - 1 ? new StringBuilder().append(valueStr).append(values[i]).toString() : new StringBuilder().append(valueStr).append(values[i]).append(",").toString();
-				}
-
-				params.put(name, valueStr);
-				paramBuffer.append(new StringBuilder().append(StringUtil.null2Str(name)).append("=").append(StringUtil.null2Str(valueStr)).append(",").toString());
-			}
-		}
-
-		String out_trade_no = StringUtil.null2Str(params.get("out_trade_no"));
-		String trade_status = StringUtil.null2Str(params.get("trade_status"));
-		log.debug(String.format("QuickCardment[record]==>[%s]", paramBuffer.toString()));
-
-		boolean verify = AliPayUtil.verify(params);
-		if(verify){
-			try{
-				if(trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")){
-					Order order = this.orderManager.getOrderByOrderNo(out_trade_no);
-					if(order != null && order.getOrderId() != null){
-						//根据支付流水号获取支付信息
-						MsgModel<String> msModel = AliPayUtil.getQueryAliPayInfo(out_trade_no, null);
-						if(StringUtil.nullToBoolean(msModel.getIsSucc()) && StringUtil.compareObject(msModel.getData(), StringUtil.nullToDoubleFormatStr(order.getPayAmount()))){
-							OrderPayNotifyController.updateOrderPaymentSuccStatus(order, msModel.getTransactionId(), PaymentType.PAYMENT_TYPE_ALIPAY, null, msModel.getPaymentBody());
-							this.writeTextResponse(response, "success");
-							return;
-						}
-					}
-				}
-			}catch(Exception ex){
-				ex.printStackTrace();
-			}
-		}
-		this.writeTextResponse(response, "fail");
-	}
-
-
-
 
 }

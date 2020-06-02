@@ -117,7 +117,6 @@ public class WeiXinAppletController extends BaseController{
 		String url = StringUtil.null2Str(request.getParameter("url"));
 		Map<String, String> signMap = new HashMap<String, String> ();
 		try{
-			// 默认订单微管家微信小程序
 			Long configId = Constants.MINI_PROGRAM_WECHAT_CONFIG_ID;
 			url = url.replaceAll("%26", "&");
 			WeChatAppConfig weChatAppConfig = Constants.WECHAT_CONFIG_ID_MAP.get(configId);
