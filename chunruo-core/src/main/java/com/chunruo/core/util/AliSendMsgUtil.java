@@ -1,10 +1,8 @@
 package com.chunruo.core.util;
 
 import java.util.UUID;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
@@ -13,9 +11,6 @@ import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.chunruo.core.Constants;
-import com.chunruo.core.model.SmsSendRecord;
-import com.chunruo.core.service.SmsSendRecordManager;
-import com.chunruo.core.util.DateUtil;
 import com.chunruo.core.util.StringUtil;
 
 /**
@@ -44,10 +39,6 @@ public class AliSendMsgUtil {
 	 */
 	public static boolean sendMessage(String mobile, String templateId, String tplParam, String signName){
 		try{
-//			boolean isTest = StringUtil.nullToBoolean(Constants.conf.getProperty("IS_TEST_ENV"));
-//			if(StringUtil.nullToBoolean(isTest) && !StringUtil.compareObject("13095520537", mobile)) {
-//				return true;
-//			}
 			//设置超时时间-可自行调整
 			System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
 			System.setProperty("sun.net.client.defaultReadTimeout", "10000");

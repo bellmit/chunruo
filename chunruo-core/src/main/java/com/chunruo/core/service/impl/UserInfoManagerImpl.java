@@ -19,7 +19,6 @@ import com.chunruo.core.Constants.UserLevel;
 import com.chunruo.core.Constants.WechatOautType;
 import com.chunruo.core.base.GenericManagerImpl;
 import com.chunruo.core.model.Bank;
-import com.chunruo.core.model.Order;
 import com.chunruo.core.model.UserAmountChangeRecord;
 import com.chunruo.core.model.UserInfo;
 import com.chunruo.core.model.UserSociety;
@@ -29,11 +28,9 @@ import com.chunruo.core.repository.UserInfoRepository;
 import com.chunruo.core.service.BankManager;
 import com.chunruo.core.service.UserAmountChangeRecordManager;
 import com.chunruo.core.service.UserInfoManager;
-import com.chunruo.core.service.UserInviteRecordManager;
 import com.chunruo.core.service.UserSocietyManager;
 import com.chunruo.core.service.UserWithdrawalManager;
 import com.chunruo.core.util.CoreInitUtil;
-import com.chunruo.core.util.SensorsAnalyticUtil;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.core.vo.TeamDataVo;
 import com.chunruo.core.util.DateUtil;
@@ -46,8 +43,6 @@ public class UserInfoManagerImpl extends GenericManagerImpl<UserInfo, Long> impl
 	private Lock lock = new ReentrantLock();
 	@Autowired
 	private UserSocietyManager userSocietyManager;
-	@Autowired
-	private UserInviteRecordManager userInviteRecordManager;
 	@Autowired
 	private BankManager bankManager;
 	
@@ -391,64 +386,6 @@ public class UserInfoManagerImpl extends GenericManagerImpl<UserInfo, Long> impl
 	@Override
 	public List<UserInfo> getUserInfoByTopUserIdList(List<Long> topUserIdList) {
 		return this.userInfoRepository.getUserInfoByTopUserIdList(topUserIdList);
-	}
-	
-	@Override
-	public MsgModel<UserInfo> checkUserNoStoreBuyAgent(Order order) {
-		MsgModel<UserInfo> msgModel = new MsgModel<UserInfo> ();
-		try{
-			UserInfo userInfo = this.get(StringUtil.nullToLong(order.getUserId()));
-			if(userInfo != null 
-					&& userInfo.getUserId() != null
-					&& !StringUtil.nullToBoolean(userInfo.getIsAgent())){
-				//创建用户等级以及店铺
-				userInfo.setIsAgent(true);
-				userInfo.setLevel(UserLevel.USER_LEVEL_BUYERS);                    //默认用户等级为vip
-				userInfo.setMobile(StringUtil.null2Str(order.getNoStoreByMobile()));  
-				userInfo.setStoreName(StringUtil.null2Str(userInfo.getNickname()));
-				userInfo.setTopUserId(StringUtil.nullToLong(order.getTopUserId()));
-
-				//生成邀请码
-				userInfo.setInviterCode(StringUtil.null2Str(this.getInveterCodeList(1).get(0)));
-				userInfo.setRegisterTime(DateUtil.getCurrentDate());
-				userInfo.setUpdateTime(DateUtil.getCurrentDate());
-				userInfo = this.save(userInfo);
-
-				// 必须为代理用户
-				MsgModel<UserInfo> topModel = this.getTopUserInfoByTopUserId(order.getTopUserId());
-				if(StringUtil.nullToBoolean(topModel.getIsSucc())){
-					UserInfo topUserInfo = topModel.getData();
-					StringBuffer contentBuffer = new StringBuffer ("邀请下线成功：您成功邀请%s加入纯若");
-
-					// 邀请店长插入vip记录
-					if(StringUtil.compareObject(StringUtil.nullToInteger(userInfo.getLevel()), UserLevel.USER_LEVEL_BUYERS)){
-						MsgModel<String> inviteModel = this.userInviteRecordManager.insertBuyInviteRecord(userInfo);
-						if(StringUtil.nullToBoolean(inviteModel.getIsSucc())){
-							contentBuffer.append(inviteModel.getData()); 
-						}
-					}
-					
-					// 统计分析
-					Map<String, Object> map = new HashMap<String, Object>();
-				    map.put("inviteUserType", topUserInfo.getLevel());
-				    map.put("inviteCode", StringUtil.null2Str(topUserInfo.getInviterCode()));
-				    map.put("signChannel", "邀请经销商注册");
-				    map.put("signType", "经销商注册");
-				    map.put("inviteSource", "邀请分享");
-				    SensorsAnalyticUtil.pushMegToSensorsAnalytics(map,null, "signUp", StringUtil.null2Str(userInfo.getUserId()), null); 
-				}
-				
-				msgModel.setIsSucc(true);
-			    msgModel.setData(userInfo);
-			    msgModel.setObjectId(userInfo.getTopUserId());
-				return msgModel;
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		msgModel.setIsSucc(false);
-		return msgModel;
 	}
 
 	@Override

@@ -236,7 +236,7 @@ public class WidgetController {
 			int limit = SplitPageUtil.getEnd(currentPage, currentLimit);
     		PageObjcet<ProductCategory> page = new PageObjcet<ProductCategory> ();
     		Map<String, Object> paramMap = new HashMap<String, Object>();
-    		paramMap.put("level", 2);
+    		paramMap.put("level", 1);
     		paramMap.put("status", 1);
     		Long count = this.productCategoryManager.countHql(paramMap);
     		List<ProductCategory> productCategoryList = this.productCategoryManager.getHqlPages(paramMap, start, limit,"createTime","desc");

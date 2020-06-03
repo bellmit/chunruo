@@ -28,7 +28,6 @@ com\chunruo\webapp\vo\FxChildrenFieldVo.class
 com\chunruo\webapp\vo\AssemblyContVo.class
 com\chunruo\webapp\LocaleMessageSource.class
 com\chunruo\webapp\controller\security\GroupSysController.class
-com\chunruo\webapp\util\AliPayUtil.class
 com\chunruo\webapp\vo\OrderExportVo.class
 com\chunruo\webapp\controller\ProductTaskController.class
 com\chunruo\webapp\config\MyUserDetailsService.class

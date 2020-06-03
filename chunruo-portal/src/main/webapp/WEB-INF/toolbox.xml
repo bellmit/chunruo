@@ -258,11 +258,6 @@
         <scope>application</scope>
         <class>com.chunruo.portal.tag.UserInfoTag</class>
     </tool>
-    <tool>
-        <key>productCategoryV2ListTag</key>
-        <scope>request</scope>
-        <class>com.chunruo.portal.tag.ProductCategoryV2ListTag</class>
-    </tool>
       <tool>
         <key>productDescWebViewTag</key>
         <scope>application</scope>

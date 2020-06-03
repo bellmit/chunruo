@@ -37,7 +37,6 @@ D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\StartImag
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\impl\OrderLockStockManagerImpl.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\model\SignRecord.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\repository\OrderSyncListRepository.java
-D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\util\SensorsAnalyticUtil.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\model\UserSaleStandard.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\AreaManager.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\impl\CountryManagerImpl.java
@@ -65,7 +64,6 @@ D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\repository\HotSal
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\impl\ProductBrandManagerImpl.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\model\UserBankCard.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\UserAdviserTagManager.java
-D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\util\ServletUtils.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\HotSaleRecordManager.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\model\UserProfitRecord.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\repository\CouponRepository.java
@@ -248,7 +246,6 @@ D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\CountryMa
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\OrderSyncListManager.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\util\WxSendUtil.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\repository\UserAuthOrderRepository.java
-D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\util\PortalUtil.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\ProductSoldOutNoticeManager.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\vo\UserInfoVo.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\util\LogisticsUtil.java
@@ -269,7 +266,6 @@ D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\UserWithd
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\util\Configuration.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\easypay\EasyDesUtils.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\repository\UserWithdrawalRepository.java
-D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\util\PushConstants.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\model\Identification.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\UserRechargeManager.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\repository\PostageTemplateRepository.java
@@ -376,7 +372,6 @@ D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\impl\Help
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\UserProfitRecordManager.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\repository\RefundReasonRepository.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\impl\WeiNiProductManagerImpl.java
-D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\util\AliPayUtil.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\repository\FeedbackRepository.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\util\PushThreadPool.java
 D:\chunruo\chunruo\chunruo-core\src\main\java\com\chunruo\core\service\impl\ProductSpecModelManagerImpl.java

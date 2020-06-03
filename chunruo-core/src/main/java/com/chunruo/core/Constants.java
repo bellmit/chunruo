@@ -325,59 +325,5 @@ public class Constants {
 		public static final String WHITE_TYPE = "white"; ////辅助空白
 		public static final String SPECIAL_SUBJECT_TYPE = "special"; //产品
 	}
-
-	//财务导出excel列名
-	public static String[] ORDER_REPORT_COLUMN_NAME = new String[] {
-		"订单号","商户订单号", "商品名称", "规格名称","商品编码", "商品大类", "商品小类", "数量", "单价", "是否分享订单","上级利润","分享利润","分享人ID","买家", "订单状态", "收货人",
-		"收货联系电话", "支付方式", "下单时间", "付款时间", "发货时间", "收货时间", "取消时间", "订单完成时间", "退款时间", "实际付款金额",
-		"订单取消方式", "所属等级","商品分销商", "销售联系人", "卖家账号","用户ID","用户身份","是否占用名额","上线用户ID", "上线用户名称","是否对账", 
-		"商品金额", "订单金额","优惠金额","运单号", "收货地址","订单地址（省）", "订单地址（市）", "订单地址（区）" ,"注册时间","仓库名称"
-	};
-	
-	//退款导出excel列名
-	public static String[] REFUND_REPORT_COLUMN_NAME = new String[] {"订单号","退款号","退款商品","退款原因","支付方式","店铺名称","客户姓名","退款金额","审核通过时间"};
-	
-	//提现记录导出excel列名
-	public static String[] WITHDRAWAL_Record_Status_NAME = new String[] {"交易流水号","支付宝账号","支付宝收款人姓名","提现状态","金额","申请时间","身份证姓名","身份证号码","提现类型","税费","完成时间"};
-
-	//经销商导出excel列名
-	public static String[] USER_LEVEL_DOWNLINE_NAME = new String[] {"用户ID","账号","推手等级","总人数","经销商人数","VIP人数","上级账号","上级推手等级","上级用户ID"};
-	
-	//团队导出excel列名
-	public static String[] USER_LEVEL_TEAMLINE_NAME = new String[] {"用户ID","等级","推手等级","账号","VIP人数","经销商人数","总代人数","所属级别"};
-	
-	//vip购买记录excel列名
-	public static String[] USER_VIP_RECORD_NAME = new String[] {"序号","关联订单编号","商品编码","用户id","用户账号","注册时间","记录编号","上级店铺名称","上级用户ID","上级用户手机号","上级用户等级","上级用户推手等级","记录类型","VIP类型","是否支付","费用金额","返利金额","商家交易流水号","支付方式","有效期开始时间","有效期结束时间","开始时间","更新时间","购买年限","年限名称","赠品名称"};
-
-	//退款导出excel列名
-	public static String[] REFUND_EXPORT_COLUMN_NAME = new String[] {"订单号","退款类型","申请日期","原因","金额","退款状态","完成时间","退款备注","退款单号","用户id","用户账号","商品名称","商品数量"};
-	
-	//新增vip用户导出
-	public static String[] USER_VIP_ADD_NAME = new String[] {"账号","用户等级","推手等级","注册时间","上线ID","上线账号","上级推手等级"};
-	
-	//新增vip用户导出
-	public static String[] VOTER_LUCK_PRIZE_RECORD = new String[] {"序号","用户ID","投票人ID","姓名","奖品ID","奖品","电话","地址","创建时间","更新时间"};
-
-	//经销商团队任务导出excel列名
-	public static String[] TEAM_TASK_RECORD_DECLARE = new String[] {"序号","用户ID","用户账号","任务等级","下线数量","任务状态","备注","审核时间","创建时间","更新时间"};
-
-	//总代团队任务导出excel列名
-	public static String[] TEAM_TASK_RECORD_AGENT = new String[] {"序号","用户ID","用户账号","任务等级","下线数量","任务状态","是否签约","备注","升级总代时间","创建时间","更新时间"};
-   
-	//经销商导出excel列名
-	public static String[] USER_SIGN_RECORD_NAME = new String[] {"序号","用户ID","用户账号","用户等级","积分","用户昵称","创建时间","更新时间"};
-
-	//总代新增经销商导出excel列名
-	public static String[] USER_DEALER_NEW_ADD = new String[] {"总代ID","总代账号","银行名称","银行卡开户行","银行卡开户人","银行卡号","团队邀请经销商总人数","总代直接邀请经销商人数","团队其他人间接邀请经销商人数"};
- 
-	public static String[] USER_PUSH_RECORD_NAME = new String[] {"用户ID","用户级别","推手级别","用户手机号","实习邀请V1人数","实习一年人数","实习两年人数","实习三年人数","邀请V1人数","一年人数","两年人数","三年人数","银行卡号","银行卡开户行","银行卡开户人"};
-
-	//用户充值里路导出excel列名
-    public static String[] USER_RECHARGE_RECORD_NAME = new String[] {"用户ID","用户账号","用户姓名","充值金额","当前状态","申请原因"};
-
-    public static String[] PRODUCT_CONSULTATION_RECORD_NAME = new String[] {"序号","用户ID","用户账号","用户等级","商品ID","商品名称","咨询时间"};
- 
-    //优惠券导出excel列名
-  	public static String[] COUPON_REPORT_COLUMN_NAME = new String[] {"优惠券ID","优惠券名称","用户ID","手机号码","优惠券状态","领取时间","是否赠品"};
   	
 }

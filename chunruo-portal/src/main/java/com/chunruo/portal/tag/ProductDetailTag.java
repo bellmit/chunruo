@@ -4,12 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
-
-import com.chunruo.cache.portal.impl.CountryListCacheManager;
 import com.chunruo.core.Constants;
-import com.chunruo.core.model.Country;
 import com.chunruo.core.model.Product;
-import com.chunruo.core.model.ProductBrand;
 import com.chunruo.core.model.ProductCategory;
 import com.chunruo.core.model.UserInfo;
 import com.chunruo.core.util.StringUtil;
@@ -46,37 +42,18 @@ public class ProductDetailTag extends BaseTag {
 				return tagModel;
 			}
 
-			// 商品详情
 			Product product = msgModel.getData();
 			Map<String, Object> objectMap = new HashMap<String,Object>();
 
-			// 用户购物车数量
 			Integer cartProductNumbers = UserCartUtil.getUserCartProductNumbers(userInfo);
 			product.setPaymentCartNumbers(cartProductNumbers);
 
-		// 商品banner图片列表
 			List<Map<String, Object>> imageMapList = ProductUtil.getProductImageList(product);
 			if(!CollectionUtils.isEmpty(imageMapList)){
 				String minImagePath = StringUtil.null2Str(imageMapList.get(0).get("imageURL"));
 				tagModel.setMinImagePath(ImageRateTag.getData(minImagePath, "300", "upload/"));
 			}
 			tagModel.setMapList(imageMapList);
-
-			// 国家名称
-			ProductBrand brand= ProductUtil.getProductBrandByBrandId(product.getBrandId());
-			if(brand != null && brand.getBrandId() != null) {
-				String countryName = StringUtil.null2Str(ProductDetailTag.getCountryName(StringUtil.nullToLong(brand.getCountryId())));
-				brand.setCountryName(countryName);
-			}
-			product.setBarrageVoList(ProductUtil.getProductInfoList(product.getProductType(),brand));
-
-			//用户等级
-			objectMap.put("level", StringUtil.nullToString(userInfo.getLevel()));
-
-			//分类名称
-			product.setCategoryFidName(StringUtil.null2Str(getCategoryName(product.getCategoryFidList())));
-			product.setCategoryIdName(StringUtil.null2Str(getCategoryName(product.getCategoryIdList())));
-			
 
 			tagModel.setDataMap(objectMap);
 			// 在上架商品中，供货商取消分销后，商品显示已售罄
@@ -91,28 +68,6 @@ public class ProductDetailTag extends BaseTag {
 
 		tagModel.setCode(PortalConstants.CODE_SUCCESS);
 		return tagModel;
-	}
-
-	/**
-	 * 商品生产地址
-	 * @param countryListCacheManager
-	 * @param countryId
-	 * @return
-	 */
-	public static String getCountryName(Long countryId) {
-		String countryName = null;
-		try{
-			if (countryId != null) {
-				CountryListCacheManager countryListCacheManager = Constants.ctx.getBean(CountryListCacheManager.class);
-				Country country = countryListCacheManager.getSession(countryId);
-				if(country != null && country.getCountryId() != null){
-					countryName = StringUtil.null2Str(country.getCountryName());
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return StringUtil.null2Str(countryName);
 	}
 
 
@@ -142,6 +97,5 @@ public class ProductDetailTag extends BaseTag {
 		}
 		return null;
 	}
-	
 	
 } 

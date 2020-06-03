@@ -53,7 +53,7 @@ public interface UserInfoRepository extends GenericRepository<UserInfo, Long> {
 	@Query("update UserInfo set mobile=:newMobile,updateTime=NOW() WHERE mobile=:oldMobile")
 	public void editUserMobile(@Param("oldMobile") String oldMobile, @Param("newMobile") String newMobile);
 
-	@Query("from UserInfo where topUserId =:topUserId and isAgent = true")
+	@Query("from UserInfo where topUserId =:topUserId")
 	public List<UserInfo> getUserInfoListByTopUserId(@Param("topUserId")Long topUserId);
 	
 	@Query("from UserInfo where inviterCode =:inviterCode")

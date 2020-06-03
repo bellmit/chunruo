@@ -28,7 +28,7 @@ import com.chunruo.portal.vo.TagModel;
 public class UserProfitListTag extends BaseTag {
 
 	public TagModel<List<UserProfitRecord>> getData(Object status_1, Object pageidx_1, Object pagesize_1, Object lastId_1){
-		Integer status = StringUtil.nullToInteger(status_1); 		//结算状态(1:交易中;3:已结算)
+		Integer status = UserProfitRecord.DISTRIBUTION_STATUS_SUCC; 		//结算状态(1:交易中;3:已结算)
 		Integer pageidx = StringUtil.nullToInteger(pageidx_1); 
 		Integer pagesize = StringUtil.nullToInteger(pagesize_1);
 		Long lastId = StringUtil.nullToLong(lastId_1);
@@ -49,10 +49,6 @@ public class UserProfitListTag extends BaseTag {
 				return tagModel;
 			}
 			
-			//默认为未结算
-			if (StringUtil.isNull(status) || StringUtil.compareObject(status, 0)){
-				status = UserProfitRecord.DISTRIBUTION_STATUS_INIT;
-			}
 			
 			final OrderByIdCacheManager orderByIdCacheManager = Constants.ctx.getBean(OrderByIdCacheManager.class);
 			final UserInfoByIdCacheManager userInfoByIdCacheManager = Constants.ctx.getBean(UserInfoByIdCacheManager.class);
@@ -80,8 +76,6 @@ public class UserProfitListTag extends BaseTag {
 			for(Map.Entry<String, UserProfitRecord> entry : mappingList){
 				UserProfitRecord storeProfitRecord = entry.getValue();
 				if(storeProfitRecord == null || storeProfitRecord.getRecordId() == null){
-					continue;
-				}else if(StringUtil.compareObject(UserProfitRecord.DISTRIBUTION_TYPE_VIP, storeProfitRecord.getType())) {
 					continue;
 				}
 				
@@ -113,9 +107,6 @@ public class UserProfitListTag extends BaseTag {
 			final String requestURL = this.getRequestURL(request);
 			final Map<Long, UserProfitRecord> recordIdBeanMapBak = recordIdBeanMap;
 			
-			Map<String, Object> objectMap = new HashMap<String, Object>();
-			objectMap.put("balance", StringUtil.nullToDoubleFormatStr(totalBalance));
-			tagModel.setDataMap(objectMap);
 			
 			/**
 			 * 自动List分页工具
@@ -158,7 +149,6 @@ public class UserProfitListTag extends BaseTag {
 							}
 						}
 						
-						// 查询真实出售订单店铺信息
 						String nickName = "未知名";
 						UserInfo userInfo = userInfoByIdCacheManager.getSession(userProfitRecord.getFromUserId());
 						if(userInfo != null && userInfo.getUserId() != null){

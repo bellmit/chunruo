@@ -2,6 +2,7 @@ var customField = {
     list: function() {
         return [
             { type: "image_ad", val: "图片/广告" },
+            { type: "image_nav", val: "图片/导航" },
             { type: "goods", val: "商品" }
             
         ];

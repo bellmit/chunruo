@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.chunruo.core.Constants;
 import com.chunruo.core.Constants.GoodsType;
 import com.chunruo.core.Constants.OrderStatus;
@@ -41,7 +40,6 @@ import com.chunruo.core.service.UserCouponManager;
 import com.chunruo.core.service.UserProductTaskItemManager;
 import com.chunruo.core.service.UserProfitRecordManager;
 import com.chunruo.core.service.UserSaleRecordManager;
-import com.chunruo.core.util.PortalUtil;
 import com.chunruo.core.vo.ChilderOrderVo;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.core.util.DateUtil;
@@ -167,21 +165,9 @@ public class OrderManagerImpl extends GenericManagerImpl<Order, Long> implements
 			this.userCartRepository.deleteByIdList(userCartIdList);
 		}
 
-		// 检查订单是否需要推送海关支付
-		boolean isDirectPushErp = false;
-		boolean isPushCustoms = false;
-		MsgModel<ProductWarehouse> warehouseModel = PortalUtil.checkProductWarehouse(order.getWareHouseId());
-		if(StringUtil.nullToBoolean(warehouseModel.getIsSucc())){
-			// 非推送支付信息订单可以直接推送ERP
-			ProductWarehouse warehouse = warehouseModel.getData();
-			isDirectPushErp = StringUtil.nullToBoolean(warehouse.getIsDirectPushErp());
-			isPushCustoms = StringUtil.nullToBoolean(warehouse.getIsPushCustoms());
-		}
 
 		// 推送ERP同步记录信息
 		order.setIsSyncExpress(false);
-		order.setIsDirectPushErp(isDirectPushErp);
-		order.setIsPushCustoms(isPushCustoms);
 		order.setSyncTime(DateUtil.getCurrentDate());
 		order.setSyncNumber(0);
 		order.setIsRequestPushCustoms(false);           // 是否请求支付报关
@@ -248,27 +234,6 @@ public class OrderManagerImpl extends GenericManagerImpl<Order, Long> implements
 				childerOrder.setIsNoStoreBuyAgent(order.getIsNoStoreBuyAgent()); 			// 是否普通用户购买代理
 				childerOrder.setStatus(OrderStatus.NEW_ORDER_STATUS); 						// 订单状态(1:未支付;2:未发货;3:已发货;4:已完成;5:已取消;6:退款中;7:买家确认收货)
 
-				// 检查订单是否需要推送海关支付
-				boolean isSubDirectPushErp = false;
-				MsgModel<ProductWarehouse> subWarehouseModel = PortalUtil.checkProductWarehouse(childerOrderVo.getWareHouseId());
-				if(StringUtil.nullToBoolean(subWarehouseModel.getIsSucc())){
-					// 非推送支付信息订单可以直接推送ERP
-					ProductWarehouse warehouse = subWarehouseModel.getData();
-					isSubDirectPushErp = StringUtil.nullToBoolean(warehouse.getIsDirectPushErp());
-
-					// 需要推送海关仓库(拆单子订单直接推送ERP)
-					if(StringUtil.nullToBoolean(warehouse.getIsPushCustoms())) {
-						isSubDirectPushErp = true;
-					}
-				}
-
-				// 推送ERP同步记录信息
-				childerOrder.setIsSyncExpress(false); 						// 是已同步快递信息
-				childerOrder.setIsPushErp(false); 							// 订单是否推送ERP
-				childerOrder.setIsDirectPushErp(isSubDirectPushErp); 		// 是否可以直接同步ERP(子订单直推ERP)
-				childerOrder.setIsPushCustoms(false); 						// 是否需要推送海关支付信息(子订单不走支付报关)
-				childerOrder.setSyncTime(order.getSyncTime());
-				childerOrder.setSyncNumber(0);
 
 				// 上级店铺利润
 				childerOrder.setTopUserId(order.getTopUserId());											// 上线店铺ID

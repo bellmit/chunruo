@@ -1,6 +1,5 @@
 package com.chunruo.webapp.controller;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,13 +25,9 @@ import com.chunruo.core.service.RefundHistoryManager;
 import com.chunruo.core.service.RefundManager;
 import com.chunruo.core.service.UserInfoManager;
 import com.chunruo.core.util.DateUtil;
-import com.chunruo.core.util.MyExcelExport;
-import com.chunruo.core.util.RefundUtil;
 import com.chunruo.core.util.StringUtil;
-import com.chunruo.core.vo.MsgModel;
 import com.chunruo.security.model.User;
 import com.chunruo.webapp.BaseController;
-import com.chunruo.webapp.util.OrderUtil;
 
 @Controller
 @RequestMapping("/refund/")
@@ -357,44 +351,7 @@ public class RefundController extends BaseController {
 		return resultMap;
 	}
 	
-	@RequestMapping(value = "/exportRefundExcel")
-	public @ResponseBody void exportExcel(final HttpServletRequest request, final HttpServletResponse response)
-			throws UnsupportedEncodingException {
-		String beginTime = request.getParameter("beginTime");
-		String endTime = request.getParameter("endTime");
-		String record = request.getParameter("idListGridJson");
-
-		List<Long> idList = null;
-		try {
-			idList = (List<Long>) StringUtil.getIdLongList(record);
-			if(idList != null && idList.size() > 0){
-				List<Object[]> dataList = OrderUtil.refundReport(beginTime, endTime, idList);
-				MyExcelExport myExcel = new MyExcelExport("RefundReport", Constants.REFUND_REPORT_COLUMN_NAME, dataList, response);
-				myExcel.export();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 	
-	/**
-	 * 退款信息导出
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/exportRefund")
-	public @ResponseBody void exportRefund(final HttpServletRequest request, final HttpServletResponse response)
-			throws UnsupportedEncodingException {
-		try {
-			String beginTime = request.getParameter("beginTime");
-			String endTime = request.getParameter("endTime");
-			List<Object[]> dataList = RefundUtil.refundExport(beginTime,endTime);
-			MyExcelExport myExcel = new MyExcelExport("RefundInfo", Constants.REFUND_EXPORT_COLUMN_NAME, dataList, response);
-			myExcel.export();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 	
 	/**
 	 * 退款备注

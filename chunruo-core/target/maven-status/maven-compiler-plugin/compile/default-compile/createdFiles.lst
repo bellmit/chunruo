@@ -29,7 +29,6 @@ com\chunruo\core\model\PurchaseDoubt.class
 com\chunruo\core\service\impl\OrderPaymentRecordManagerImpl.class
 com\chunruo\core\model\FxChannel.class
 com\chunruo\core\base\GenericRepositoryFactoryBean.class
-com\chunruo\core\util\MapToStringStyle.class
 com\chunruo\core\repository\ScheduleTaskRepository.class
 com\chunruo\core\repository\SmsSendRecordRepository.class
 com\chunruo\core\service\impl\OrderLockStockManagerImpl.class
@@ -46,7 +45,6 @@ com\chunruo\core\repository\OrderSyncStoreRepository.class
 com\chunruo\core\service\UserPoolManager.class
 com\chunruo\core\repository\PostageConfigRepository.class
 com\chunruo\core\service\impl\HelpQuestionManagerImpl.class
-com\chunruo\core\util\PushConstants.class
 com\chunruo\core\service\impl\ProductAnswerManagerImpl.class
 com\chunruo\core\repository\HomePopupRepository.class
 com\chunruo\core\base\GenericRepositoryFactoryBean$BaseRepositoryFactory.class
@@ -55,7 +53,6 @@ com\chunruo\core\service\impl\StartImageTemplateManagerImpl.class
 com\chunruo\core\model\SignRecord.class
 com\chunruo\core\repository\RechargeTemplateRepository.class
 com\chunruo\core\Constants$OrderStatus.class
-com\chunruo\core\util\ServletUtils.class
 com\chunruo\core\model\ProductGroup.class
 com\chunruo\core\service\impl\PaymentVerifyRecordManagerImpl.class
 com\chunruo\core\repository\CountryRepository.class
@@ -90,7 +87,6 @@ com\chunruo\core\repository\HelpQuestionRepository.class
 com\chunruo\core\service\UserSaleStandardManager.class
 com\chunruo\core\vo\ProductOrderVo.class
 com\chunruo\core\vo\SendVo.class
-com\chunruo\core\util\SensorsAnalyticUtil.class
 com\chunruo\core\repository\ProductGiftRepository.class
 com\chunruo\core\model\ProductWarehouse.class
 com\chunruo\core\model\RefundReason.class
@@ -208,7 +204,6 @@ com\chunruo\core\repository\KeywordsRepository.class
 com\chunruo\core\repository\CouponTaskRepository.class
 com\chunruo\core\service\SignImageTextManager.class
 com\chunruo\core\service\OrderLockStockManager.class
-com\chunruo\core\util\PortalUtil.class
 com\chunruo\core\util\MyExcelExport.class
 com\chunruo\core\repository\UserWithdrawalRepository.class
 com\chunruo\core\repository\UserBankCardRepository.class
@@ -273,7 +268,6 @@ com\chunruo\easypay\EasySignUtils$1.class
 com\chunruo\core\model\UserInfo.class
 com\chunruo\core\Constants$CustomType.class
 com\chunruo\core\service\impl\CountryManagerImpl.class
-com\chunruo\core\util\SensorsAnalyticUtil$1.class
 com\chunruo\core\service\impl\HotSaleRecordManagerImpl.class
 com\chunruo\core\service\impl\UserAddressManagerImpl.class
 com\chunruo\core\service\NoviceGuideManager.class
@@ -379,7 +373,6 @@ com\chunruo\core\model\OrderItems.class
 com\chunruo\core\repository\TagModelRepository.class
 com\chunruo\core\service\UserInfoManager.class
 com\chunruo\core\model\Order.class
-com\chunruo\core\util\AliPayUtil.class
 com\chunruo\core\service\impl\ProductGiftManagerImpl.class
 com\chunruo\core\model\PageView.class
 com\chunruo\core\vo\CommodityPriceVo.class

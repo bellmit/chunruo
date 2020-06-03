@@ -67,8 +67,6 @@ public interface UserInfoManager extends GenericManager<UserInfo, Long>{
 	
 	public MsgModel<UserInfo> getTopUserInfoByTopUserId(Long topUserId);
 	
-	public MsgModel<UserInfo> checkUserNoStoreBuyAgent(Order order);
-	
 	public List<UserInfo> getUserInfoListByTopUserId(Long topUserId);
 	
 	public UserInfo getUserInfoByInviterCode(String inviterCode);

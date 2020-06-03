@@ -2,12 +2,10 @@ com\chunruo\portal\tag\ChannelDetailTag$1.class
 com\chunruo\portal\tag\WithdrawalListTag.class
 com\chunruo\portal\util\VerifyCodeUtil.class
 com\chunruo\portal\job\AutoRefreshTokenTask.class
-com\chunruo\portal\tag\ProductCategoryV2ListTag$1.class
 com\chunruo\portal\util\ProductUtil$2.class
 com\chunruo\portal\util\ProductUtil$5.class
 com\chunruo\portal\util\PortalUtil.class
 META-INF\spring-configuration-metadata.json
-com\chunruo\portal\util\AliPayUtil.class
 com\chunruo\portal\vo\ProductVo.class
 com\chunruo\portal\tag\OrderUserEvaluateListTag.class
 com\chunruo\portal\util\ProductCheckUtil.class
@@ -22,7 +20,6 @@ com\chunruo\portal\controller\OrderEvaluateController.class
 com\chunruo\portal\util\NetImageDownloadCallable.class
 com\chunruo\portal\vo\ProductGroupVo.class
 com\chunruo\portal\tag\UserProfitListTag$2.class
-com\chunruo\portal\tag\ProductCategoryV2ListTag.class
 com\chunruo\portal\controller\WeiXinOauthController.class
 com\chunruo\portal\tag\WithdrawalListTag$2.class
 com\chunruo\portal\util\OrderUtil$1.class
@@ -46,10 +43,8 @@ com\chunruo\portal\util\HtmlContParserUtil.class
 com\chunruo\portal\tag\RegionListTag.class
 com\chunruo\portal\tag\WithdrawalListTag$1.class
 com\chunruo\portal\vo\UpgradeConditionVo.class
-com\chunruo\portal\tag\ProductCategoryV2ListTag$2.class
 com\chunruo\portal\tag\UserProfitListTag$1.class
 com\chunruo\portal\controller\MemberController.class
-com\chunruo\portal\controller\OrderStackController.class
 com\chunruo\portal\tag\CountryListTag.class
 com\chunruo\portal\vo\OrderItemVo.class
 com\chunruo\portal\SpringServletContext.class
@@ -81,7 +76,6 @@ com\chunruo\portal\util\RefundUtil.class
 com\chunruo\portal\tag\CartListTag$1.class
 com\chunruo\portal\controller\UserInfoController.class
 com\chunruo\portal\controller\RefundController.class
-com\chunruo\portal\filter\GzipFilter.class
 com\chunruo\portal\job\AutoOrderCompletedScheduler.class
 com\chunruo\portal\util\ProductUtil$11.class
 com\chunruo\portal\tag\RefundReasonTag.class
@@ -95,7 +89,6 @@ com\chunruo\portal\util\OrderItemUtil.class
 com\chunruo\portal\controller\OrderPayNotifyController.class
 com\chunruo\portal\DruidDataSourceConfig.class
 com\chunruo\portal\tag\RefundStoreListTag$2.class
-com\chunruo\portal\util\UserAmountUtil.class
 com\chunruo\portal\vo\HBaseObject.class
 com\chunruo\portal\tag\ProductListTag.class
 com\chunruo\portal\vo\TagModel.class
@@ -104,7 +97,6 @@ com\chunruo\portal\util\ProductUtil$1.class
 com\chunruo\portal\tag\OrderWaitEvaluateListTag$2.class
 com\chunruo\portal\tag\OrderListTag.class
 com\chunruo\portal\controller\OrderPayController.class
-com\chunruo\portal\tag\ProductCategoryV2ListTag$3.class
 com\chunruo\portal\util\ProductUtil$4.class
 com\chunruo\portal\vo\CategoryVo.class
 com\chunruo\portal\SpringBootPortalApplication$1.class

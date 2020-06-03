@@ -12,7 +12,6 @@ ${userProfitListTag.setRequest($request)}
 	"msg":"${HtmlDecodeTag.get($!tagModel.msg)}",
 	"systemTime":"$!systemTime",
 	"nextPageURL":"$!tagModel.nextPageURL",
-	"balance": "$!tagModel.dataMap.get("balance")",
 	"dataList":[
 		#if($tagModel.data && $tagModel.data.size() > 0)
 	 		#foreach($record in $tagModel.data)
