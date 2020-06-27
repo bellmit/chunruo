@@ -18,7 +18,6 @@ public class RefundListByStoreIdCacheManager  {
 	@Autowired
 	private RefundManager refundManager;
 
-	@Cacheable(value = "sessionEhRedisCache", cacheManager = "sessionEhRedisCacheManager", key = "'refundListByStoreId_'+#storeId")
 	public Map<String, Refund> getSession(Long storeId) {
 		Map<String, Refund> refundMap = new HashMap<String, Refund> ();
 		List<Refund> refundList = this.refundManager.getRefundListByStoreId(storeId, true);
@@ -29,7 +28,6 @@ public class RefundListByStoreIdCacheManager  {
 		return refundMap;
 	}
 
-	@CacheEvict(value = "sessionEhRedisCache", cacheManager = "sessionEhRedisCacheManager", key = "'refundListByStoreId_'+#storeId")
 	public void removeSession(Long storeId) {
 		// 如果过期后要做特殊处理，可在此实现
 		// log.info("removeSession userId:" + userId + ",userToken:" +

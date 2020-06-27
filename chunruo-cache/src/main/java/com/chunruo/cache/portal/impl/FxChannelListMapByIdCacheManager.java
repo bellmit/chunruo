@@ -25,7 +25,6 @@ public class FxChannelListMapByIdCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private FxChannelManager fxChannelManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'fxChannelListMap'")
 	public Map<String, FxChannel> getSession(){
 		Map<String, FxChannel> fxChannelMap = new HashMap<String, FxChannel> ();
 		List<FxChannel> fxChannelList = this.fxChannelManager.getFxChannelListByStatus(FxChannel.FX_CHANNEL_STATUS_ENABLE);
@@ -44,7 +43,6 @@ public class FxChannelListMapByIdCacheManager extends BaseCacheManagerImpl{
 		return fxChannelMap;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'fxChannelListMap'")
 	public void removeSession() {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

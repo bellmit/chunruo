@@ -26,7 +26,6 @@ public class ProductCategoryListCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private ProductCategoryManager productCategoryManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productCategoryList'")
 	public List<ProductCategory> getSession(){
 		List<ProductCategory> realProductCategoryList = new LinkedList<ProductCategory>();
 		List<ProductCategory> productCategoryList = this.productCategoryManager.getProductCategoryByStatus(1);
@@ -91,7 +90,6 @@ public class ProductCategoryListCacheManager extends BaseCacheManagerImpl{
 	    return realProductCategoryList;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productCategoryList'")
 	public void removeSession() {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

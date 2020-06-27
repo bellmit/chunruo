@@ -15,7 +15,6 @@ import com.chunruo.core.model.Keywords;
 import com.chunruo.core.model.PostageTemplate;
 import com.chunruo.core.model.ProductBrand;
 import com.chunruo.core.model.ProductCategory;
-import com.chunruo.core.model.ProductGift;
 import com.chunruo.core.model.ProductIntro;
 import com.chunruo.core.model.ProductWarehouse;
 import com.chunruo.core.model.PurchaseDoubt;
@@ -117,7 +116,6 @@ public class Constants {
 	public static List<Keywords> KEYWORDS_ALL_LIST = new ArrayList<Keywords> ();
 	public static Map<Long, ProductBrand> PRODUCT_BRAND_MAP = new HashMap<Long, ProductBrand> ();
 	public static List<SignImageText> SIGN_IMAGE_TEXT_LIST = new ArrayList<SignImageText>();
-	public static List<ProductGift> PRODUCT_GIFT_LIST = new ArrayList<ProductGift> ();
 	public static List<Object[]> CATEGORY_BRAND_LIST = new ArrayList<Object[]> ();
 	
 	public static class WechatOautType{

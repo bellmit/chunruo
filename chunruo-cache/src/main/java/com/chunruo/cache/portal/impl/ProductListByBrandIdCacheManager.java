@@ -24,7 +24,6 @@ public class ProductListByBrandIdCacheManager {
 	@Autowired
 	private ProductManager productManager;
 
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productListByBrandId_'+#brandId")
 	public List<String> getSession(Long brandId){
 		List<String> productIdList = new ArrayList<String> ();
 		try{
@@ -48,7 +47,6 @@ public class ProductListByBrandIdCacheManager {
 		return productIdList;
 	}
 
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productListByBrandId_'+#brandId")
 	public void removeSession(Long brandId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

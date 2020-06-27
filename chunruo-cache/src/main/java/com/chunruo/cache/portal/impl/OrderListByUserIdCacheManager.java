@@ -25,7 +25,6 @@ public class OrderListByUserIdCacheManager {
 	@Autowired
 	private OrderManager orderManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'orderListByUserId_'+#userId")
 	public List<Order> getSession(Long userId){
 		List<Order> resultList = new ArrayList<Order> ();
 		List<Order> orderList = this.orderManager.getOrderListByUserId(userId, 5000);
@@ -52,7 +51,6 @@ public class OrderListByUserIdCacheManager {
 		return resultList;
 	}
 	
-	@CachePut(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'orderListByUserId_'+#userId")
 	public List<Order> addSession(Long userId, List<Order> modfiyOrderList){
 		// 加锁
 		lock.lock();
@@ -102,7 +100,6 @@ public class OrderListByUserIdCacheManager {
 		return list;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'orderListByUserId_'+#userId")
 	public void removeSession( Long userId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

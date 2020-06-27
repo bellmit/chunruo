@@ -5,11 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.chunruo.cache.portal.impl.OrderCountByIdentityNoCacheManager;
 import com.chunruo.cache.portal.impl.OrderLockStockByProductIdCacheManager;
 import com.chunruo.cache.portal.impl.PurchaseLimitListCacheManager;
 import com.chunruo.cache.portal.impl.RefundByOrderItemIdCacheManager;
@@ -45,51 +42,13 @@ public class PurchaseLimitUtil {
 	 */
 	public static MsgModel<Integer> checkIdentityOrderNumToday(String identityNo){
 		MsgModel<Integer> msgModel = new MsgModel<Integer>();
-		try {
-			//订购人限购策略
-			MsgModel<PurchaseLimit> limitModel = PurchaseLimitUtil.getPurchaseLimitByType(PurchaseLimit.PURCHASE_LLIMIT_SUBSCRIBER, null);
-		    if(!StringUtil.nullToBoolean(limitModel.getIsSucc())) {
-		    	msgModel.setIsSucc(false);
-                return msgModel;
-		    }
-		    
-		    PurchaseLimit purchaseLimit = limitModel.getData();
-		    //检查订购人限购数量
-			int limitNumber = StringUtil.nullToInteger(purchaseLimit.getLimitNumber());
-		    if(purchaseLimit != null 
-		    		&& purchaseLimit.getLimitId() != null
-		    		&& limitNumber > 0) {
-		    	//获取该订购人购买成功的所有订单列表
-		    	OrderCountByIdentityNoCacheManager orderCountByIdentityNoCacheManager = Constants.ctx.getBean(OrderCountByIdentityNoCacheManager.class);
-				int totalBuyOrderNumber = orderCountByIdentityNoCacheManager.getSession(identityNo);
-				log.info(String.format("[订购人\"%s\"限购数量:%s;已购数量:%s]", identityNo, limitNumber, totalBuyOrderNumber));
-				
-				//超出限购数量
-				if(StringUtil.nullToInteger(totalBuyOrderNumber) >= limitNumber) {
-					msgModel.setIsSucc(true);
-                    msgModel.setData(totalBuyOrderNumber);
-                    return msgModel;
-				}
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		
 		msgModel.setIsSucc(false);
 		return msgModel;
 	}
 	
-	/**
-	 * 按商品限购
-	 * 检查每个用户一天内下单数量
-	 * @param product
-	 * @param userInfo
-	 * @return
-	 */
 	public static MsgModel<Integer> checkUserLimitByProduct(Product product, UserInfo userInfo, int number){
 		MsgModel<Integer> msgModel = new MsgModel<Integer>();
 		try {
-			// 获取所有商品限购配置
 			MsgModel<PurchaseLimit> limitModel = PurchaseLimitUtil.getPurchaseLimitByType(PurchaseLimit.PURCHASE_LLIMIT_USER, StringUtil.nullToLong(product.getProductId()));
 		    if(!StringUtil.nullToBoolean(limitModel.getIsSucc())) {
 		    	msgModel.setData(-1);
@@ -110,25 +69,21 @@ public class PurchaseLimitUtil {
 		    		return msgModel;
 		    	}
 				
-				//退款类型
 				List<Integer> refundTypeList = new ArrayList<Integer>();
-				refundTypeList.add(Refund.REFUND_TYPE_MONEY);   //退款
-				refundTypeList.add(Refund.REFUND_TYPE_GOODS);   //退货退款
-				refundTypeList.add(Refund.REFUND_TYPE_CANCEL);  //取消订单
+				refundTypeList.add(Refund.REFUND_TYPE_MONEY);   
+				refundTypeList.add(Refund.REFUND_TYPE_GOODS);   
+				refundTypeList.add(Refund.REFUND_TYPE_CANCEL);  
 				
-				//剩余可购数量
 				int remainNumber = limitNumber;  
 				Date lastBuyTime = null;
 				boolean isUserLimit = false;
 				
-				//获取用户所有订单
 				OrderItemsManager orderItemsManager = Constants.ctx.getBean(OrderItemsManager.class);
 				RefundByOrderItemIdCacheManager refundByOrderItemIdCacheManager = Constants.ctx.getBean(RefundByOrderItemIdCacheManager.class);
 				
 				String startPayTime = DateUtil.formatDate(DateUtil.DATE_TIME_PATTERN, purchaseLimit.getCreateTime());
 				List<OrderItems> orderItemsList = orderItemsManager.getListByPurchaseLimit(userInfo.getUserId(), startPayTime, purchaseLimit.getProductId());
 				if(orderItemsList != null && orderItemsList.size() > 0) {
-					//此时间段内已购商品数量（不包含退款完成的,默认此单内购买商品数量）
 		        	int totalBuyProductQuantity = 0;  
 		        	Date limitDate = DateUtil.getDateMinuteBefore(DateUtil.getCurrentDate(), limitHours * 60);
     				for(OrderItems orderItems : orderItemsList) {
@@ -172,7 +127,6 @@ public class PurchaseLimitUtil {
     				
     				//剩下可购数量
 			        remainNumber = limitNumber - totalBuyProductQuantity;
-			        log.info("剩余可购数量:"+remainNumber);
 			        if(isUserLimit) {
 			        	msgModel.setIsSucc(true);
 			        	msgModel.setLastTime(lastBuyTime);
@@ -187,13 +141,11 @@ public class PurchaseLimitUtil {
 			        	msgModel.setMessage(String.format("\"%s\"不可继续购买", product.getName()));
 			        	return msgModel;
 			        }else if(number > remainNumber) {
-			        	log.info("超出限购数量:"+(totalBuyProductQuantity + number));
 			        	msgModel.setIsSucc(true);
 			        	msgModel.setData(remainNumber);
                     	msgModel.setMessage(String.format("您当前最多可购买商品\"%s\"%s件", product.getName(), remainNumber));
 	                    return msgModel;
 			        }else if(number == remainNumber) {
-			        	log.info("刚好达到限购数量:"+(remainNumber));
 			        	//开启48小时内限购此商品
 			        	msgModel.setIsSucc(false);
 			        	msgModel.setLastTime(lastBuyTime);

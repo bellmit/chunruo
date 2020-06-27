@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import com.chunruo.cache.portal.impl.ProductPromotListCacheManager;
 import com.chunruo.cache.portal.impl.UserCartListByUserIdCacheManager;
 import com.chunruo.core.Constants;
 import com.chunruo.core.Constants.BuyPostType;
@@ -16,7 +15,6 @@ import com.chunruo.core.Constants.GoodsType;
 import com.chunruo.core.Constants.UserLevel;
 import com.chunruo.core.model.Product;
 import com.chunruo.core.model.ProductGroup;
-import com.chunruo.core.model.ProductPromot;
 import com.chunruo.core.model.ProductSpec;
 import com.chunruo.core.model.UserCart;
 import com.chunruo.core.model.UserInfo;
@@ -27,21 +25,11 @@ import com.chunruo.core.vo.MsgModel;
 import com.chunruo.portal.vo.ProductGroupVo;
 
 /**
- * 订单检查工具类
  * @author chunruo
  */
 public class ProductCheckUtil {
 	
-	
-	
-	/**
-	 * 检查购物车是否已加入商品
-	 * @param product
-	 * @param productSpecId
-	 * @param userId
-	 * @param storeId
-	 * @return
-	 */
+
 	public static MsgModel<UserCart> checkExistUserCartByProduct(Product product, Long productSpecId, String groupProductInfo, UserInfo userInfo){
 		MsgModel<UserCart> msgModel = new MsgModel<UserCart> ();
 		try{
@@ -49,11 +37,9 @@ public class ProductCheckUtil {
 			List<UserCart> userCartList = userCartManager.getUserCartByProductId(userInfo.getUserId(), product.getProductId());
 			if(userCartList != null && userCartList.size() > 0){
 				if(StringUtil.nullToBoolean(product.getIsSpceProduct())){
-					// 检查商品规格是否存在
 					MsgModel<ProductSpec> xmsgModel = ProductUtil.checkExistProductSpecByProductSpecId(product, productSpecId);
 					if(StringUtil.nullToBoolean(xmsgModel.getIsSucc())){
 						for(UserCart userCart : userCartList){
-							// 匹配已加入购物车的规格商品
 							if(StringUtil.nullToBoolean(userCart.getIsSpceProduct()) 
 									&& StringUtil.compareObject(StringUtil.nullToLong(userCart.getProductSpecId()), productSpecId)){
 								msgModel.setIsSucc(true);
@@ -62,29 +48,8 @@ public class ProductCheckUtil {
 							}
 						}
 					}
-				}else if(StringUtil.nullToBoolean(product.getIsGroupProduct())) {
-					//检查组合商品是否存在
-					MsgModel<List<ProductGroupVo>> xmsgModel = ProductCheckUtil.checkExistGroupProductByGroupInfo(product, groupProductInfo, userInfo, false, 1);
-				    if(StringUtil.nullToBoolean(xmsgModel.getIsSucc())) {
-				    	for(UserCart userCart : userCartList) {
-				    		// 组合商品排序比较
-				    		List<Long> groupProductList = StringUtil.stringToLongArray(groupProductInfo);
-				    		List<Long> dbGroupProductList = StringUtil.stringToLongArray(userCart.getGroupProductInfo());
-				    		Collections.sort(groupProductList);
-				    		Collections.sort(dbGroupProductList);
-				    		
-				    		// 检查组合商品是否已存在
-							if(StringUtil.compareObject(StringUtil.longArray2String(groupProductList), StringUtil.longArray2String(dbGroupProductList))){
-								msgModel.setIsSucc(true);
-								msgModel.setData(userCart);
-								return msgModel;
-							}
-						}
-				    }
 				}else{
-					// 普通商品直接返回默认第一个
 					for(UserCart userCart : userCartList){
-						// 匹配已加入购物车的规格商品
 						if(!StringUtil.nullToBoolean(userCart.getIsSpceProduct())){
 							msgModel.setIsSucc(true);
 							msgModel.setData(userCart);
@@ -163,43 +128,6 @@ public class ProductCheckUtil {
 		return msgModel;
 	}
 	
-	/**
-	 * 检查促销赠送商品列表
-	 * @param productId
-	 * @return
-	 */
-	public static MsgModel<List<ProductPromot>> getProductPromotListBy(Long productId){
-		MsgModel<List<ProductPromot>> msgModel = new MsgModel<List<ProductPromot>> ();
-		try{
-			ProductPromotListCacheManager productPromotListCacheManager = Constants.ctx.getBean(ProductPromotListCacheManager.class);
-			List<ProductPromot> list = productPromotListCacheManager.getSession();
-			if(list != null && list.size() > 0){
-				// 遍历所有的促销赠送商品列表
-				List<ProductPromot> productPromotList = new ArrayList<ProductPromot> ();
-				for(ProductPromot productPromot : list){
-					//促销商品启用状态且非删除状态
-					if(StringUtil.nullToBoolean(productPromot.getStatus()) && !StringUtil.nullToBoolean(productPromot.getIsDelete())){
-						List<Long> productIdList = StringUtil.stringToLongArray(productPromot.getTarProductIds());
-						if(productIdList != null && productIdList.add(productId)){
-							productPromotList.add(productPromot);
-						}
-					}
-				}
-				
-				// 找到有效的促销商品列表
-				if(productPromotList != null && productPromotList.size() > 0){
-					msgModel.setIsSucc(true);
-					msgModel.setData(list);
-					return msgModel;
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		msgModel.setIsSucc(false);
-		return msgModel;
-	}
 	
 	/**
 	 * 订单确认

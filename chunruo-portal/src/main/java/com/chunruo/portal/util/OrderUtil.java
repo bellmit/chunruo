@@ -15,7 +15,6 @@ import com.chunruo.cache.portal.impl.OrderListByUserIdCacheManager;
 import com.chunruo.cache.portal.impl.OrderLockStockByProductIdCacheManager;
 import com.chunruo.cache.portal.impl.RefundByOrderItemIdCacheManager;
 import com.chunruo.cache.portal.impl.UserCouponListByUserIdCacheManager;
-import com.chunruo.cache.portal.impl.UserProductTaskRecordListByUserIdCacheManager;
 import com.chunruo.cache.portal.impl.UserProfitByUserIdCacheManager;
 import com.chunruo.cache.portal.impl.UserSaleRecordListByUserIdCacheManager;
 import com.chunruo.core.Constants;
@@ -156,7 +155,6 @@ public class OrderUtil {
 		UserProfitByUserIdCacheManager userProfitByUserIdCacheManager = Constants.ctx.getBean(UserProfitByUserIdCacheManager.class);
 		OrderLockStockByProductIdCacheManager orderLockStockByProductIdCacheManager = Constants.ctx.getBean(OrderLockStockByProductIdCacheManager.class);
 		UserSaleRecordListByUserIdCacheManager userSaleRecordListByUserIdCacheManager = Constants.ctx.getBean(UserSaleRecordListByUserIdCacheManager.class);
-		UserProductTaskRecordListByUserIdCacheManager userProductTaskRecordListByUserIdCacheManager = Constants.ctx.getBean(UserProductTaskRecordListByUserIdCacheManager.class);
 		
 		try{
 			List<Long> lockStockProductIdList = orderManager.updateOrderCloseStatus(order.getOrderId(), message, userId, refund, reasonId);
@@ -188,8 +186,6 @@ public class OrderUtil {
 				if(StringUtil.nullToBoolean(order.getIsPaymentSucc())) {
 					// 更新店铺销售记录
 					userSaleRecordListByUserIdCacheManager.removeSession(order.getStoreId());
-					// 当前店铺满返任务信息
-					userProductTaskRecordListByUserIdCacheManager.removeSession(order.getStoreId());
 					// 上级店铺返利信息
 					if(StringUtil.nullToDouble(order.getProfitTop()).compareTo(0.0d) > 0) {
 						userProfitByUserIdCacheManager.removeSession(order.getTopUserId());

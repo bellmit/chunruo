@@ -19,12 +19,10 @@ public class PostageTemplateCacheManager extends BaseCacheManagerImpl {
 	@Autowired
 	private PostageTemplateManager postageTemplateManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'postageTemplate'")
 	public List<PostageTemplate> getSession(){
 		return this.postageTemplateManager.getAll();
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'postageTemplate'")
 	public void removeSession() {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

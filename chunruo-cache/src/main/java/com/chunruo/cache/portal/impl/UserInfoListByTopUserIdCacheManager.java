@@ -16,7 +16,6 @@ public class UserInfoListByTopUserIdCacheManager {
 	@Autowired
 	private UserInfoManager userInfoManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userInfoListByTopUserId_'+#topUserId")
 	public List<UserInfo> getSession(Long topUserId){
 		List<UserInfo> userInfoList = this.userInfoManager.getUserInfoListByTopUserId(topUserId);
 		if(CollectionUtils.isEmpty(userInfoList)){
@@ -25,7 +24,6 @@ public class UserInfoListByTopUserIdCacheManager {
 		return userInfoList;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userInfoListByTopUserId_'+#topUserId")
 	public void removeSession(Long topUserId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

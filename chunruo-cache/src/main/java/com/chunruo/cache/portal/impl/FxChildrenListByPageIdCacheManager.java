@@ -14,12 +14,10 @@ public class FxChildrenListByPageIdCacheManager {
 	@Autowired
 	private FxChildrenManager fxChildrenManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'fxChildrenList_'+#pageId")
 	public List<FxChildren> getSession(Long pageId){
 		return this.fxChildrenManager.getFxChildrenListByPageId(pageId);
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'fxChildrenList_'+#pageId")
 	public void removeSession(Long pageId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

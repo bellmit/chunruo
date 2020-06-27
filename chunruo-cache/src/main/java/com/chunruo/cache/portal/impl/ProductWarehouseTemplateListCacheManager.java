@@ -21,7 +21,6 @@ public class ProductWarehouseTemplateListCacheManager extends BaseCacheManagerIm
 	@Autowired
 	private ProductWarehouseTemplateManager productWarehouseTemplateManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productWarehouseTemplateList'")
 	public Map<String,ProductWarehouseTemplate> getSession(){
 		Map<String,ProductWarehouseTemplate> productWarehouseTemplateMap = new HashMap<String,ProductWarehouseTemplate>();
 		List<ProductWarehouseTemplate> productWarehouseTemplateList = this.productWarehouseTemplateManager.getProductWarehouseTemplateListByStatus(true);
@@ -33,7 +32,6 @@ public class ProductWarehouseTemplateListCacheManager extends BaseCacheManagerIm
 		return productWarehouseTemplateMap;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productWarehouseTemplateList'")
 	public void removeSession() {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

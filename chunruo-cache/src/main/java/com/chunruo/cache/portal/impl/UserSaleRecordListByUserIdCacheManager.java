@@ -21,7 +21,6 @@ public class UserSaleRecordListByUserIdCacheManager extends BaseCacheManagerImpl
 	@Autowired
 	private UserSaleRecordManager userSaleRecordManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userSaleRecordListByUserId_'+#userId")
 	public List<UserSaleRecord> getSession(Long userId){
 		List<UserSaleRecord> userSaleRecordList = this.userSaleRecordManager.getUserSaleRecordListByUserId(userId);
 		if(CollectionUtils.isEmpty(userSaleRecordList)){
@@ -30,7 +29,6 @@ public class UserSaleRecordListByUserIdCacheManager extends BaseCacheManagerImpl
 		return userSaleRecordList;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userSaleRecordListByUserId_'+#userId")
 	public void removeSession(Long userId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

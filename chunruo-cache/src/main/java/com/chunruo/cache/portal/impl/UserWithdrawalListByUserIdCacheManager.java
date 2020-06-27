@@ -24,7 +24,6 @@ public class UserWithdrawalListByUserIdCacheManager extends BaseCacheManagerImpl
 	@Autowired
 	private UserWithdrawalManager userWithdrawalManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userWithdrawalListByUserId_'+#userId")
 	public Map<String, UserWithdrawal> getSession(Long userId){
 		Map<String, UserWithdrawal> userWithdrawalMap = new HashMap<String, UserWithdrawal> ();
 		List<UserWithdrawal> storeWithdrawalList = this.userWithdrawalManager.getUserWithdrawalListByUserId(userId);
@@ -36,7 +35,6 @@ public class UserWithdrawalListByUserIdCacheManager extends BaseCacheManagerImpl
 		return userWithdrawalMap;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userWithdrawalListByUserId_'+#userId")
 	public void removeSession(Long userId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

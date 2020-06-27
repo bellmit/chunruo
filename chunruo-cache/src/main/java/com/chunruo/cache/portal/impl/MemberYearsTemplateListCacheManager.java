@@ -27,7 +27,6 @@ public class MemberYearsTemplateListCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private MemberYearsTemplateManager memberYearsTemplateManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'memberYearsTemplateList'")
 	public Map<Long,MemberYearsTemplate> getSession(){
 		Map<Long,MemberYearsTemplate> templateMap = new HashMap<Long,MemberYearsTemplate>();
 		List<MemberYearsTemplate> memberYearsTemplateList = this.memberYearsTemplateManager.getMemberYearsTemplateListByStatus(true);
@@ -65,7 +64,6 @@ public class MemberYearsTemplateListCacheManager extends BaseCacheManagerImpl{
 	    return templateMap;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'memberYearsTemplateList'")
 	public void removeSession() {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

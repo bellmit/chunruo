@@ -206,7 +206,6 @@ public class Product implements Cloneable{
     private List<Product> aggrProductList = new ArrayList<Product>();  //聚合商品
     private List<Long> categoryFidList = new ArrayList<Long>();   //一级分类id集合
     private List<Long> categoryIdList = new ArrayList<Long>();    //二级分类id集合
-    private List<ProductCollectionProfit> collectionProfitList = new ArrayList<ProductCollectionProfit>();
 	private List<String> infoList = new ArrayList<String>();
 	private List<BarrageVo> barrageVoList = new ArrayList<BarrageVo>();
 	private List<ProductSpec> productSpecList = new ArrayList<ProductSpec> ();
@@ -1770,15 +1769,6 @@ public class Product implements Cloneable{
 
 	public void setPostageNotice(String postageNotice) {
 		this.postageNotice = postageNotice;
-	}
-
-	@Transient
-	public List<ProductCollectionProfit> getCollectionProfitList() {
-		return collectionProfitList;
-	}
-
-	public void setCollectionProfitList(List<ProductCollectionProfit> collectionProfitList) {
-		this.collectionProfitList = collectionProfitList;
 	}
 
 	@Transient

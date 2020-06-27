@@ -18,7 +18,6 @@ public class UserAddressListByUserIdCacheManager {
 	@Autowired
 	private UserAddressManager userAddressManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userAddressList_'+#userId")
 	public Map<String, UserAddress> getSession(Long userId){
 		Map<String, UserAddress> userAddressMap = new HashMap<String, UserAddress> ();
 		List<UserAddress> userAddressList = this.userAddressManager.getUserAddressListByUserId(userId);
@@ -30,7 +29,6 @@ public class UserAddressListByUserIdCacheManager {
 		return userAddressMap;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userAddressList_'+#userId")
 	public void removeSession(Long userId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

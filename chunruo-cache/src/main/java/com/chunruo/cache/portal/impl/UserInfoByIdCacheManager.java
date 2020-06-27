@@ -20,17 +20,14 @@ public class UserInfoByIdCacheManager extends BaseCacheManagerImpl {
 	@Autowired
 	private UserInfoManager userInfoManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userInfo_'+#userId")
 	public UserInfo getSession(Long userId){
 		return this.userInfoManager.get(userId);
 	}
 	
-	@CachePut(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userInfo_'+#userId")
 	public UserInfo updateSession(Long userId, UserInfo userInfo) {
 		return userInfo;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userInfo_'+#userId")
 	public void removeSession(Long userId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

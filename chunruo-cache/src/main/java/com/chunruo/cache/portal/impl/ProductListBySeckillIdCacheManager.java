@@ -23,7 +23,6 @@ public class ProductListBySeckillIdCacheManager {
 	@Autowired
 	private ProductManager productManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productListBySeckillId_'+#seckillId")
 	public Map<String, Product> getSession(Long seckillId){
 		Map<String, Product> productMap = new HashMap<String, Product> ();
 		try{
@@ -39,7 +38,6 @@ public class ProductListBySeckillIdCacheManager {
 		return productMap;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productListBySeckillId_'+#seckillId")
 	public void removeSession(Long seckillId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

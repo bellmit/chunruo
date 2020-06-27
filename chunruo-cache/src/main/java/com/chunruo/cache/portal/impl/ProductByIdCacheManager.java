@@ -55,7 +55,6 @@ public class ProductByIdCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private ProductListBySeckillIdCacheManager productListBySeckillIdCacheManager;
 
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productById_'+#productId")
 	public Product getSession(Long productId){
 		Product product = this.productManager.getProductByProductIdAndIsDelete(productId, false);
 		if(product != null && product.getProductId() != null){
@@ -95,7 +94,6 @@ public class ProductByIdCacheManager extends BaseCacheManagerImpl{
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);
 	}
 
-	@CachePut(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productById_'+#productId")
 	public Product addSession(Long productId, Product product){
 		return product;
 	}

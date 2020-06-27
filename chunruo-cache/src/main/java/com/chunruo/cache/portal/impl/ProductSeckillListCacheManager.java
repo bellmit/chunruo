@@ -27,7 +27,6 @@ public class ProductSeckillListCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private ProductSeckillManager productSeckillManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productSeckillList'")
 	public Map<String, ProductSeckill> getSession(){
 		Map<String, ProductSeckill> productSeckillMap = new HashMap<String, ProductSeckill> ();
 		try{

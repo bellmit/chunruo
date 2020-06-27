@@ -25,7 +25,6 @@ public class OrderEvaluateListByProductIdCacheManager extends BaseCacheManagerIm
 	@Autowired
 	private OrderEvaluateManager orderEvaluateManager;
 
-	@Cacheable(value = "sessionEhRedisCache", cacheManager = "sessionEhRedisCacheManager", key = "'orderEvaluateListByProductId_'+#productId")
 	public Map<String, OrderEvaluate> getSession(Long productId) {
 		 Map<String, OrderEvaluate> map = new HashMap<String, OrderEvaluate>();
 		 List<OrderEvaluate> recordList = this.orderEvaluateManager.getOrderEvaluateListByProductId(productId);
@@ -37,7 +36,6 @@ public class OrderEvaluateListByProductIdCacheManager extends BaseCacheManagerIm
 		 return map;
 	}
 
-	@CacheEvict(value = "sessionEhRedisCache", cacheManager = "sessionEhRedisCacheManager", key = "'orderEvaluateListByProductId_'+#productId")
 	public void removeSession(Long productId) {
 		// 如果过期后要做特殊处理，可在此实现
 		// log.info("removeSession userId:" + userId + ",userToken:" +

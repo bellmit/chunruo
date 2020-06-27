@@ -18,12 +18,10 @@ public class ProductCategoryAllListCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private ProductCategoryManager productCategoryManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productCategoryAllList'")
 	public List<ProductCategory> getSession(){
 		return this.productCategoryManager.getProductCategoryByStatus(1);
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productCategoryAllList'")
 	public void removeSession() {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

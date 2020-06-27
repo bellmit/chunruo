@@ -26,7 +26,6 @@ public class PurchaseLimitListCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private PurchaseLimitManager purchaseLimitManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'purchaseLimitList'")
 	public Map<String, List<PurchaseLimit>> getSession(){
 		Map<String, List<PurchaseLimit>> purchaseLimitMap = new HashMap<String, List<PurchaseLimit>> ();
 		try{
@@ -49,7 +48,6 @@ public class PurchaseLimitListCacheManager extends BaseCacheManagerImpl{
 		return purchaseLimitMap;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'purchaseLimitList'")
 	public void removeSession() {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

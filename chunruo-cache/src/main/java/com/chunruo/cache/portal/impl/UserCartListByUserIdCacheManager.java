@@ -19,7 +19,6 @@ public class UserCartListByUserIdCacheManager{
 	@Autowired
 	private UserCartManager userCartManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userCartList_'+#userId")
 	public Map<String, UserCart> getSession(Long userId){
 		Map<String, UserCart> userCartIdMap = new HashMap<String, UserCart> ();
 		List<UserCart> userCartList = this.userCartManager.getUserCartListByUserId(userId);
@@ -31,7 +30,6 @@ public class UserCartListByUserIdCacheManager{
 		return userCartIdMap;
 	}
 	
-	@CachePut(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userCartList_'+#userId")
 	public Map<String, UserCart> updateSession(Long userId, UserCart userCart) {
 		Map<String, UserCart> userCartIdMap = this.getSession(userId);
 		if(userCartIdMap == null || userCartIdMap.size() <= 0){
@@ -42,7 +40,6 @@ public class UserCartListByUserIdCacheManager{
 		return userCartIdMap;
 	}
 	
-	@CachePut(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userCartList_'+#userId")
 	public Map<String, UserCart> deleteSession(Long userId, List<Long> userCartIdList) {
 		Map<String, UserCart> userCartIdMap = this.getSession(userId);
 		if(userCartIdList != null 
@@ -58,7 +55,6 @@ public class UserCartListByUserIdCacheManager{
 		return userCartIdMap;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userCartList_'+#userId")
 	public void removeSession(Long userId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ", class:" + this.getClass().toString());

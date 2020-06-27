@@ -13,12 +13,10 @@ public class FxPageByIdCacheManager {
 	@Autowired
 	private FxPageManager fxPageManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'fxPage_'+#pageId")
 	public FxPage getSession(Long pageId){
 		return this.fxPageManager.get(pageId);
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'fxPage_'+#pageId")
 	public void removeSession(Long pageId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

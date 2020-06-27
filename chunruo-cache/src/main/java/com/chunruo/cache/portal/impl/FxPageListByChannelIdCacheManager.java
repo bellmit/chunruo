@@ -18,7 +18,6 @@ public class FxPageListByChannelIdCacheManager {
 	@Autowired
 	private FxPageManager fxPageManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'fxPageList_'+#channelId")
 	public Map<String, FxPage> getSession(Long channelId){
 		Map<String, FxPage> fxPageMap = new HashMap<String, FxPage> ();
 		List<FxPage> fxPageList = this.fxPageManager.getFxPageListByChannelId(channelId);
@@ -30,7 +29,6 @@ public class FxPageListByChannelIdCacheManager {
 		return fxPageMap;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'fxPageList_'+#channelId")
 	public void removeSession(Long channelId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

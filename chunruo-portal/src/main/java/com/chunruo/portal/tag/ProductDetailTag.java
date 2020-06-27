@@ -34,7 +34,6 @@ public class ProductDetailTag extends BaseTag {
 				return tagModel;
 			}
 
-			// 供应商商品信息
 			MsgModel<Product> msgModel = ProductUtil.getProductByUserLevel(productId, userInfo, false);
 			if (!StringUtil.nullToBoolean(msgModel.getIsSucc())) {
 				tagModel.setCode(PortalConstants.CODE_ERROR);
@@ -56,9 +55,7 @@ public class ProductDetailTag extends BaseTag {
 			tagModel.setMapList(imageMapList);
 
 			tagModel.setDataMap(objectMap);
-			// 在上架商品中，供货商取消分销后，商品显示已售罄
 			if (StringUtil.nullToBoolean(product.getIsPaymentSoldout())) {
-				// 判断商品状态不是上架状态,购物车统一任务是售罄状态
 				product.setPaymentStockNumber(0);
 			}
 			tagModel.setData(product);
@@ -70,14 +67,7 @@ public class ProductDetailTag extends BaseTag {
 		return tagModel;
 	}
 
-
-
 	
-	/**
-	 * 获取商品分类名称
-	 * @param categoryIdList
-	 * @return
-	 */
 	public static String getCategoryName(List<Long> categoryIdList) {
 		try {
 			if(categoryIdList != null && !categoryIdList.isEmpty()) {

@@ -28,7 +28,6 @@ public class UserTeamListByTopUserIdCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private UserTeamManager userTeamManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userTeamListByTopUserId_'+#topUserId")
 	public Map<String, UserTeam> getSession(Long topUserId){
 		Map<String, UserTeam> userTeamMap = new HashMap<String, UserTeam> ();
 		try{
@@ -44,7 +43,6 @@ public class UserTeamListByTopUserIdCacheManager extends BaseCacheManagerImpl{
 		return userTeamMap;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userTeamListByTopUserId_'+#topUserId")
 	public void removeSession(Long topUserId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

@@ -27,7 +27,6 @@ public class UserProfitByUserIdCacheManager extends BaseCacheManagerImpl {
 	@Autowired
 	private UserProfitRecordManager userProfitRecordManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userProfitByUserId_'+#userId")
 	public Map<String, UserProfitRecord> getSession(Long userId){
 		Map<String, UserProfitRecord> map = new HashMap<String, UserProfitRecord>();
 		List<UserProfitRecord> userProfitList = this.userProfitRecordManager.getUserProfitRecordList(userId);
@@ -42,7 +41,6 @@ public class UserProfitByUserIdCacheManager extends BaseCacheManagerImpl {
 		return map;
 	}
 	
-	@CachePut(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userProfitByUserId_'+#userId")
 	public Map<String, UserProfitRecord> updateSession(Long userId, UserProfitRecord storeProfitRecord) {
 		Map<String, UserProfitRecord> map = this.getSession(userId);
 		if(map == null || map.size() <= 0){
@@ -57,7 +55,6 @@ public class UserProfitByUserIdCacheManager extends BaseCacheManagerImpl {
 		return map;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userProfitByUserId_'+#userId")
 	public void removeSession(Long userId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

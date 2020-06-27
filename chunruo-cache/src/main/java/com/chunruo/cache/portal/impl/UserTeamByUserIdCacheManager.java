@@ -25,12 +25,10 @@ public class UserTeamByUserIdCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private UserTeamManager userTeamManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userTeamByUserId_'+#userId")
 	public UserTeam getSession(Long userId){
 	   return this.userTeamManager.getUserTeamByUserId(userId);
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userTeamByUserId_'+#userId")
 	public void removeSession(Long userId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

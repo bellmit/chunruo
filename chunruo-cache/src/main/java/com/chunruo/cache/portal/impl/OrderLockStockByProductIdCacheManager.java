@@ -21,12 +21,10 @@ public class OrderLockStockByProductIdCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private OrderLockStockManager orderLockStockManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'orderLockStockByProductId_'+#productId")
 	public List<OrderLockStock> getSession(Long productId){
 		return this.orderLockStockManager.getOrderLockStockListByProductId(productId, false);
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'orderLockStockByProductId_'+#productId")
 	public void removeSession(Long productId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

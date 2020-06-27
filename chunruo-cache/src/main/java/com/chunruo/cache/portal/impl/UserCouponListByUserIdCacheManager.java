@@ -27,7 +27,6 @@ public class UserCouponListByUserIdCacheManager extends BaseCacheManagerImpl {
 	@Autowired
 	private UserCouponManager userCouponManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userCouponList_'+#userId")
 	public List<UserCoupon> getSession(Long userId){
 		List<UserCoupon> userCouponresult = new ArrayList<> ();
 		List<UserCoupon> userCouponList = this.userCouponManager.getUserCouponListByUserId(userId);
@@ -41,7 +40,6 @@ public class UserCouponListByUserIdCacheManager extends BaseCacheManagerImpl {
 		return userCouponresult;
 	}
 	
-	@CachePut(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userCouponList_'+#userId")
 	public List<UserCoupon> updateSession(Long userId, UserCoupon userCoupon) {
 		List<UserCoupon> userCouponList = this.getSession(userId);
 		if(userCouponList == null || userCouponList.size() <= 0){
@@ -54,7 +52,6 @@ public class UserCouponListByUserIdCacheManager extends BaseCacheManagerImpl {
 		return userCouponList;
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userCouponList_'+#userId")
 	public void removeSession(Long userId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

@@ -37,7 +37,6 @@ import com.chunruo.core.vo.TModel;
 import com.chunruo.webapp.BaseController;
 import com.chunruo.webapp.interceptor.AuthorizeInterceptor;
 import com.chunruo.webapp.util.OrderUtil;
-import com.chunruo.webapp.vo.AbnormalOrderVo;
 
 @Controller
 @RequestMapping("/order/")
@@ -501,87 +500,6 @@ public class OrderController extends BaseController {
 		resultMap.put("error", true);
 		resultMap.put("success", true);
 		resultMap.put("message", "错误, 保存失败");
-		return resultMap;
-	}
-	
-	/**
-	 * 所有异常订单
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/abnormalOrderlist")
-	public @ResponseBody Map<String, Object> abnormalOrderlist(final HttpServletRequest request) {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		Map<String, Object> filtersMap = new HashMap<String, Object>();
-
-		Long count = 0L;
-		List<Order> orderList = new ArrayList<Order>();
-		List<AbnormalOrderVo> abnormalOrderVoList = new ArrayList<AbnormalOrderVo>();
-		List<AbnormalOrderVo> subAbnormalOrderVoList = new ArrayList<AbnormalOrderVo>();
-		List<Order> abnormalList = null;
-		try {
-			int start = StringUtil.nullToInteger(request.getParameter("start"));
-			int limit = StringUtil.nullToInteger(request.getParameter("limit"));
-			String sort = StringUtil.nullToString(request.getParameter("sort"));
-			String filters = StringUtil.nullToString(request.getParameter("filters"));
-			Map<String, String> sortMap = StringUtil.getSortMap(StringUtil.null2Str(sort));
-			filtersMap = StringUtil.getFiltersMap(StringUtil.null2Str(filters), Order.class);
-
-			// 内容、@用户名、用户ID、#手机号码
-			String keyword = StringUtil.nullToString(request.getParameter("keyword"));
-			if (!StringUtil.isNullStr(keyword)) {
-				// 内容
-				paramMap.put("title", "%" + keyword + "%");
-				paramMap.put("content", "%" + keyword + "%");
-			}
-
-			// filter过滤字段查询
-			if (filtersMap != null && filtersMap.size() > 0) {
-				for (Entry<String, Object> entry : filtersMap.entrySet()) {
-					paramMap.put(entry.getKey(), entry.getValue());
-				}
-			}
-
-			count = this.orderManager.countHql(paramMap);
-			if (count != null && count.longValue() > 0L) {
-				orderList = this.orderManager.getHqlPages(paramMap, start, limit, sortMap.get("sort"),
-						sortMap.get("dir"));
-			}
-
-			abnormalList = this.orderManager.getAbmormalOrderList();
-			if (filtersMap != null && filtersMap.size() > 0) {
-				//过滤
-				@SuppressWarnings("unchecked")
-				List<Order> interList = (List<Order>) CollectionUtils.intersection(orderList, abnormalList);
-				abnormalList.clear();
-				if (!CollectionUtils.isEmpty(interList)) {
-					abnormalList.addAll(interList);
-				}
-			}
-			if (!CollectionUtils.isEmpty(abnormalList)) {
-				for (Order order : abnormalList) {
-					AbnormalOrderVo abnormalOrderVo = new AbnormalOrderVo();
-					abnormalOrderVo.setOrderId(order.getOrderId());
-					abnormalOrderVo.setOrderNo(order.getOrderNo());
-					abnormalOrderVo.setPayTime(order.getPayTime());
-					abnormalOrderVo.setNotdeliverDays((DateUtil.getCurrentTime() - order.getPayTime().getTime()) / (24 * 60 * 60 * 1000));
-					abnormalOrderVoList.add(abnormalOrderVo);
-				}
-			}
-			if (start + limit > abnormalOrderVoList.size()) {
-				subAbnormalOrderVoList.addAll(abnormalOrderVoList.subList(start, abnormalOrderVoList.size()));
-			} else {
-				subAbnormalOrderVoList.addAll(abnormalOrderVoList.subList(start, start + limit));
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		resultMap.put("data", subAbnormalOrderVoList);
-		resultMap.put("totalCount", abnormalList.size());
-		resultMap.put("filters", filtersMap);
 		return resultMap;
 	}
 	

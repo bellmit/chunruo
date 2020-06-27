@@ -14,12 +14,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.chunruo.cache.portal.impl.OrderListByUserIdCacheManager;
-import com.chunruo.cache.portal.impl.ProductAnswerListByQuestionIdCacheManager;
 import com.chunruo.cache.portal.impl.ProductByIdCacheManager;
 import com.chunruo.cache.portal.impl.ProductCategoryAllListCacheManager;
 import com.chunruo.cache.portal.impl.ProductImageListByIdCacheManger;
-import com.chunruo.cache.portal.impl.ProductQuestionListByProductIdCacheManager;
-import com.chunruo.cache.portal.impl.RechargeTemplateListCacheManager;
 import com.chunruo.cache.portal.impl.TagModelListCacheManager;
 import com.chunruo.cache.portal.impl.UserCouponListByUserIdCacheManager;
 import com.chunruo.core.Constants;
@@ -30,7 +27,6 @@ import com.chunruo.core.model.Keywords;
 import com.chunruo.core.model.Order;
 import com.chunruo.core.model.OrderItems;
 import com.chunruo.core.model.Product;
-import com.chunruo.core.model.ProductAnswer;
 import com.chunruo.core.model.ProductBrand;
 import com.chunruo.core.model.ProductCategory;
 import com.chunruo.core.model.ProductGroup;
@@ -46,7 +42,6 @@ import com.chunruo.core.model.UserCoupon;
 import com.chunruo.core.model.UserInfo;
 import com.chunruo.core.service.KeywordsManager;
 import com.chunruo.core.service.ProductManager;
-import com.chunruo.core.service.ProductSpecManager;
 import com.chunruo.core.util.BaseThreadPool;
 import com.chunruo.core.util.DateUtil;
 import com.chunruo.core.util.DoubleUtil;
@@ -625,18 +620,17 @@ public class ProductUtil {
 			Product product = xsgModel.getData();
 
 			List<Integer> userLevelList = new ArrayList<Integer> ();
-			userLevelList.add(UserLevel.USER_LEVEL_BUYERS);	//VIP用户
-			userLevelList.add(UserLevel.USER_LEVEL_DEALER);	//经销商
+			userLevelList.add(UserLevel.USER_LEVEL_BUYERS);	
+			userLevelList.add(UserLevel.USER_LEVEL_DEALER);	
 			
 			List<Integer> userLevelWholesale = new ArrayList<Integer> ();
-			userLevelWholesale.add(UserLevel.USER_LEVEL_DEALER);	// 经销商
+			userLevelWholesale.add(UserLevel.USER_LEVEL_DEALER);	
 
 			Integer userLevel = UserLevel.USER_LEVEL_COMMON;
 			if(userLevelList.contains(StringUtil.nullToInteger(userInfo.getLevel()))){
 				userLevel = StringUtil.nullToInteger(userInfo.getLevel());
 			}
 
-			//设置用户实时购买等级
 			userInfo.setPaymentUserLevel(userLevel);
 
 			String imagePath = StringUtil.null2Str(product.getImage());
@@ -787,59 +781,35 @@ public class ProductUtil {
 			if(product != null && product.getProductId() != null){
 				boolean isPaymentSoldout = false;
 
-				if(!StringUtil.nullToBoolean(product.getIsGroupProduct())){
-
-					// 检查商品是否正常
-					MsgModel<Integer> xsgModel = ProductUtil.checkProductConfigure(product);
-					if(!StringUtil.nullToBoolean(xsgModel.getIsSucc())){
-						// 已售罄
-						isPaymentSoldout = true;
-						if(isMustSell
-								&& !StringUtil.nullToBoolean(product.getIsSoldout())
-								&& !StringUtil.nullToBoolean(product.getIsSeckillProduct())){
-							// 非秒杀商品更新下架状态商品
-							productManager.updateProductSoldoutStatus(productId, true);
-							try{
-								productByIdCacheManager.removeSession(productId);
-							}catch(Exception e){
-								e.printStackTrace();
-							}
-
-							// 代理商品已下架
-							String message = String.format("\"%s\"商品已售罄", StringUtil.null2Str(product.getName()));
-							msgModel.setIsSucc(false);
-							msgModel.setMessage(message);
-							return msgModel;
+				// 检查商品是否正常
+				MsgModel<Integer> xsgModel = ProductUtil.checkProductConfigure(product);
+				if(!StringUtil.nullToBoolean(xsgModel.getIsSucc())){
+					// 已售罄
+					isPaymentSoldout = true;
+					if(isMustSell
+							&& !StringUtil.nullToBoolean(product.getIsSoldout())
+							&& !StringUtil.nullToBoolean(product.getIsSeckillProduct())){
+						// 非秒杀商品更新下架状态商品
+						productManager.updateProductSoldoutStatus(productId, true);
+						try{
+							productByIdCacheManager.removeSession(productId);
+						}catch(Exception e){
+							e.printStackTrace();
 						}
 
-						// 检查是否秒杀配置错误商品(即将开始)
-						if(!StringUtil.nullToBoolean(isMustSell)
-								&& StringUtil.nullToBoolean(product.getIsSeckillProduct()) 
-								&& StringUtil.nullToBoolean(product.getIsSeckillReadStatus())){
-							product.setIsSeckillProduct(false);
-							product.setIsSeckillReadStatus(false);
-						}
+						// 代理商品已下架
+						String message = String.format("\"%s\"商品已售罄", StringUtil.null2Str(product.getName()));
+						msgModel.setIsSucc(false);
+						msgModel.setMessage(message);
+						return msgModel;
 					}
-				}else{
-					// 检查组合商品
-					MsgModel<Integer> xsgModel = ProductUtil.checkGroupProduct(product);
-					if(!StringUtil.nullToBoolean(xsgModel.getIsSucc())){
-						// 已售罄
-						isPaymentSoldout = true;
-						if(isMustSell && !StringUtil.nullToBoolean(product.getIsSoldout())){
-							// 组合商品更新下架状态商品
-							productManager.updateProductSoldoutStatus(productId, true);
-							try{
-								productByIdCacheManager.removeSession(productId);
-							}catch(Exception e){
-								e.printStackTrace();
-							}
 
-							// 代理商品已下架
-							msgModel.setIsSucc(false);
-							msgModel.setMessage(xsgModel.getMessage());
-							return msgModel;
-						}
+					// 检查是否秒杀配置错误商品(即将开始)
+					if(!StringUtil.nullToBoolean(isMustSell)
+							&& StringUtil.nullToBoolean(product.getIsSeckillProduct()) 
+							&& StringUtil.nullToBoolean(product.getIsSeckillReadStatus())){
+						product.setIsSeckillProduct(false);
+						product.setIsSeckillReadStatus(false);
 					}
 				}
 
@@ -1081,11 +1051,6 @@ public class ProductUtil {
 	public static MsgModel<Integer> checkSingleProductConfigure(Product product, ProductVerifyVo productVerify){
 		MsgModel<Integer> msgModel = new MsgModel<Integer> ();
 		try{
-			ProductManager productManager = Constants.ctx.getBean(ProductManager.class);
-			ProductSpecManager productSpecManager = Constants.ctx.getBean(ProductSpecManager.class);
-			ProductByIdCacheManager productByIdCacheManager = Constants.ctx.getBean(ProductByIdCacheManager.class);
-
-			// 检查商品配置信息是否有效
 			boolean isConfigureError = false;
 			StringBuffer errorBuffer = new StringBuffer ();
 			int stockNumber = StringUtil.nullToInteger(productVerify.getStockNumber());
@@ -1105,14 +1070,6 @@ public class ProductUtil {
 				isConfigureError = true;
 				errorBuffer.append("售卖价不能小于成本价");
 			}
-			
-			// 打印商品配置错误原因
-			if(StringUtil.nullToBoolean(isConfigureError) 
-					&& StringUtil.nullToBoolean(product.getStatus())
-					&& !StringUtil.nullToBoolean(product.getIsSoldout())) {
-				Long productSpecId = StringUtil.nullToLong(productVerify.getProductSpecId());
-				log.debug(String.format("商品售罄[productId=%s,productSpecId=%s]%s", product.getProductId(), productSpecId, errorBuffer.toString()));
-			}
 
 			// 商品配置信息是否有效
 			if(isConfigureError || StringUtil.nullToInteger(stockNumber) <= 0){
@@ -1122,97 +1079,6 @@ public class ProductUtil {
 				return msgModel;
 			}
 
-			// 检查是否秒杀商品(重新计算商品库存信息)
-			if(StringUtil.nullToBoolean(product.getIsSeckillProduct())){
-				int seckillTotalStock = StringUtil.nullToInteger(productVerify.getSeckillTotalStock());		//秒杀库存数量
-				int seckillSalesNumber = StringUtil.nullToInteger(productVerify.getSeckillSalesNumber());	//秒杀商品销量
-				int seckillLockNumber = StringUtil.nullToInteger(productVerify.getSeckillLockNumber());		//秒杀锁定库存数量
-				Double seckillPrice = StringUtil.nullToDoubleFormat(productVerify.getSeckillPrice());		//秒杀价格
-				Double seckillProfit = StringUtil.nullToDoubleFormat(productVerify.getSeckillProfit());		//秒杀利润
-
-				// 检查商品的秒杀状态
-				if(StringUtil.nullToBoolean(product.getIsSeckillReadStatus())){
-					// 秒杀即将开始
-					if(seckillTotalStock <= 0){
-						//秒杀库存数量<=0错误
-						seckillTotalStock = 0;
-					}else if(seckillSalesNumber < 0){
-						//秒杀商品销量<0
-						seckillSalesNumber = 0;
-					}else if(seckillLockNumber < 0){
-						//秒杀锁定库存数量<0
-						seckillLockNumber = 0;
-					}
-
-					// 检查秒杀剩余库存数量是否有效
-					int surplusStock = seckillTotalStock - (seckillSalesNumber + seckillLockNumber);	
-					if(surplusStock <= 0){
-						String message = String.format("\"%s\"秒杀库存信息错误", StringUtil.null2Str(product.getName()));
-						msgModel.setIsSucc(false);
-						msgModel.setMessage(message);
-						return msgModel;
-					}
-
-					// 普通剩余库存数
-					//stockNumber = stockNumber - surplusStock;
-				}else {
-					// 已开始的秒杀
-					boolean isConfigureSeckillError = false;
-					if(seckillTotalStock <= 0){
-						//秒杀库存数量<=0错误
-						isConfigureSeckillError = true;
-					}else if(seckillSalesNumber < 0){
-						//秒杀商品销量<0
-						isConfigureSeckillError = true;
-					}else if(seckillLockNumber < 0){
-						//秒杀锁定库存数量<0
-						isConfigureSeckillError = true;
-					}else if(seckillPrice.compareTo(new Double(0.001)) <= 0){
-						// 秒杀商品价格不能低于0.001
-						isConfigureSeckillError = true;
-					}else if(seckillProfit.compareTo(new Double(0.0)) < 0){
-						// 秒杀商品利润不能大于秒杀商品价格
-						isConfigureSeckillError = true;
-					}
-
-					// 秒杀库存信息错误
-					if(isConfigureSeckillError){
-						String message = String.format("\"%s\"秒杀库存信息错误", StringUtil.null2Str(product.getName()));
-						msgModel.setIsSucc(false);
-						msgModel.setMessage(message);
-						return msgModel;
-					}
-
-					// 检查秒杀剩余库存数量是否有效
-					int surplusStock = seckillTotalStock - (seckillSalesNumber + seckillLockNumber);	
-					if(surplusStock <= 0){
-						String message = String.format("\"%s\"秒杀库存信息错误", StringUtil.null2Str(product.getName()));
-						msgModel.setIsSucc(false);
-						msgModel.setMessage(message);
-						return msgModel;
-					}
-
-					if(stockNumber < surplusStock) {
-						if(StringUtil.nullToBoolean(product.getIsSpceProduct())) {
-							//规格商品
-							productSpecManager.updateProductSeckillTotalNumber(productVerify.getProductSpecId(), stockNumber);
-						}else {
-							// 组合商品更新下架状态商品
-							productManager.updateProductSeckillTotalNumber(product.getProductId(), stockNumber);
-						}
-						try{
-							productByIdCacheManager.removeSession(product.getProductId());
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-					}else {
-						// 秒杀剩余库存数
-						stockNumber = surplusStock;
-					}
-				}
-			}
-
-			// 商品正常分销状态
 			msgModel.setData(stockNumber);
 			msgModel.setIsSucc(true);
 			return msgModel;
@@ -1226,67 +1092,6 @@ public class ProductUtil {
 		return msgModel;
 	}
 
-	/**
-	 * 支持关键字模糊匹配，根据商品标签
-	 * @param name
-	 * @param keyword
-	 * @param isVague
-	 * @return
-	 */
-	public static MsgModel<Long> getKeywordFuzzyMatchByTagNames(String keyword, String productName, String specTagNames, List<String> tagNameList){
-		MsgModel<Long> msgModel = new MsgModel<Long> ();
-		try{
-			// 关键字搜索,支持多规则匹配
-			List<String> keywordList = IKUtil.getKeywordList(keyword,null);
-			if(keywordList != null && keywordList.size() > 0){
-				// 根据品牌标签|分类标签搜索
-				if(tagNameList != null && tagNameList.size() > 0){
-					for(String strKey : keywordList){
-						//去掉空格字符串
-						strKey = StringUtil.null2Str(strKey).replaceAll("\\s+", "").toUpperCase();
-						for(String tagName : tagNameList){
-							tagName = StringUtil.null2Str(tagName).replaceAll("\\s+", "").toUpperCase();
-							if(StringUtil.compareObject(tagName, strKey)){
-								msgModel.setIsSucc(true);
-								return msgModel;
-							}
-						}
-					}
-				}
-
-				// 根据规格标签搜索
-				if(!StringUtil.isNull(specTagNames)){
-					specTagNames = StringUtil.null2Str(specTagNames).toUpperCase();
-					List<String> specTagNameArray = StringUtil.strToStrList(StringUtil.null2Str(specTagNames), ",");
-					if(specTagNameArray != null && specTagNameArray.size() > 0){
-						for(String strKey : keywordList){
-							//去掉空格字符串
-							strKey = StringUtil.null2Str(strKey).replaceAll("\\s+", "").toUpperCase();
-							for(String specTagName : specTagNameArray){
-								specTagName = StringUtil.null2Str(specTagName).replaceAll("\\s+", "").toUpperCase();
-								if(StringUtil.null2Str(specTagName).contains(strKey)){
-									msgModel.setIsSucc(true);
-									return msgModel;
-								}
-							}
-						}
-					}
-				}
-
-				// 商品名称全包含关键字
-				keyword = StringUtil.null2Str(keyword).replaceAll("\\s+", "").toUpperCase();
-				if(StringUtil.null2Str(productName).toUpperCase().contains(keyword)){
-					msgModel.setIsSucc(true);
-					return msgModel;
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
-		msgModel.setIsSucc(false);
-		return msgModel;
-	}
 
 	/**
 	 * 支持关键字模糊匹配，根据商品标签
@@ -1455,99 +1260,8 @@ public class ProductUtil {
 	}
 
 
-	/**
-	 * 获取商品的问答列表
-	 * @param productId 商品市场id
-	 * @param isProdcutDetail	是否来至商品详情页
-	 * @param userId	用户id
-	 * @return
-	 */
-	public static List<ProductQuestion> getProductQuestion(Long productId, Long userId){
-		List<ProductQuestion> questionList = new ArrayList<ProductQuestion>();
-		ProductQuestionListByProductIdCacheManager productQuestionListByProductIdCacheManager = Constants.ctx.getBean(ProductQuestionListByProductIdCacheManager.class);
 
-		//获取问题列表
-		Map<String, ProductQuestion> questionMap = productQuestionListByProductIdCacheManager.getSession(productId);
-		if (questionMap == null || questionMap.size() <= 0){
-			//商品没有问答
-			return null;
-		}
-
-		//创建时间排序
-		List<Map.Entry<String, ProductQuestion>> mappingList = new ArrayList<Map.Entry<String, ProductQuestion>> (questionMap.entrySet());
-		Collections.sort(mappingList, new Comparator<Map.Entry<String, ProductQuestion>>(){
-			public int compare(Map.Entry<String, ProductQuestion> obj1, Map.Entry<String, ProductQuestion> obj2){
-				ProductQuestion question1 = obj1.getValue();
-				ProductQuestion question2 = obj2.getValue();
-				Long time1 = (question1 == null || question1.getCreateTime() == null) ? 0L : question1.getCreateTime().getTime();
-				Long time2 = (question2 == null || question2.getCreateTime() == null) ? 1L : question2.getCreateTime().getTime();
-				return (time1.longValue() < time2.longValue()) ? 1 : -1;
-			}
-		}); 
-
-		for(Map.Entry<String, ProductQuestion> entry : mappingList){
-			ProductQuestion question = entry.getValue();
-			if(question != null 
-					&& question.getQuestionId() != null  
-					&& !StringUtil.nullToBoolean(question.getIsDelete())){
-				//如果是自己的提问或者审核通的提问需要显示
-				if(StringUtil.compareObject(question.getUserId(), userId) || StringUtil.nullToBoolean(question.getStatus())){
-					questionList.add(question);
-					//若果是商品详情页则取最新的一条有效提问
-				}
-			}
-		}
-		return questionList;
-	}
-
-	/**
-	 * 获取问题回答列表
-	 * @param questionId
-	 * @param isProdcutDetail
-	 * @return
-	 */
-	public static List<ProductAnswer> getAnswerListByQuestionId(Long questionId, Long userId){
-		List<ProductAnswer> answerList = new ArrayList<ProductAnswer>();
-		try{
-			ProductAnswerListByQuestionIdCacheManager productAnswerListByQuestionIdCacheManager = Constants.ctx.getBean(ProductAnswerListByQuestionIdCacheManager.class);
-			//更新缓存
-			productAnswerListByQuestionIdCacheManager.removeSession(questionId);
-			//获取答案列表
-			Map<String, ProductAnswer> answerMap = productAnswerListByQuestionIdCacheManager.getSession(questionId);
-			if (answerMap == null || answerMap.size() == 0){
-				//商品没有问答
-				return null;
-			}
-
-			//排序
-			List<Map.Entry<String, ProductAnswer>> mappingList = new ArrayList<Map.Entry<String, ProductAnswer>> (answerMap.entrySet());
-			Collections.sort(mappingList, new Comparator<Map.Entry<String, ProductAnswer>>(){
-				public int compare(Map.Entry<String, ProductAnswer> obj1, Map.Entry<String, ProductAnswer> obj2){
-					ProductAnswer answer1 = obj1.getValue();
-					ProductAnswer answer2 = obj2.getValue();
-					Long time1 = (answer1 == null || answer1.getCreateTime() == null) ? 0L : answer1.getCreateTime().getTime();
-					Long time2 = (answer2 == null || answer2.getCreateTime() == null) ? 1L : answer2.getCreateTime().getTime();
-					return (time1.longValue() < time2.longValue()) ? 1 : -1;
-				}
-			}); 
-
-			for(Map.Entry<String, ProductAnswer> entry : mappingList){
-				ProductAnswer answer = entry.getValue();
-				if(answer != null 
-						&& answer.getAnswerId() != null 
-						&& !StringUtil.nullToBoolean(answer.getIsDelete())){
-					//如果是自己的回答或者审核通的回答需要显示
-					if(StringUtil.compareObject(answer.getUserId(), userId) || StringUtil.nullToBoolean(answer.getStatus())){
-						answerList.add(answer);
-					}
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return answerList;
-	}
-
+	
 	/**
 	 * 保存搜索关键词
 	 * @param keyword
@@ -2276,50 +1990,6 @@ public class ProductUtil {
 	}
 
 
-	/**
-	 * 检查是否充值赠品
-	 * @param productId
-	 * @param userInfo
-	 * @return
-	 */
-	public static void checkIsRechargeGiftProduct(Product product,UserInfo userInfo){
-		try {
-			RechargeTemplateListCacheManager rechargeTemplateListCacheManager = Constants.ctx.getBean(RechargeTemplateListCacheManager.class);
-
-			List<Integer> userLevelList = new ArrayList<Integer>();
-			userLevelList.add(UserLevel.USER_LEVEL_DEALER);
-			userLevelList.add(UserLevel.USER_LEVEL_AGENT);
-			userLevelList.add(UserLevel.USER_LEVEL_V2);
-			userLevelList.add(UserLevel.USER_LEVEL_V3);
-			Map<String, RechargeTemplate> rechargeTemplateMap = rechargeTemplateListCacheManager.getSession();
-			if(rechargeTemplateMap != null && !rechargeTemplateMap.isEmpty()) {
-				for(Map.Entry<String, RechargeTemplate> entry : rechargeTemplateMap.entrySet()) {
-					RechargeTemplate rechargeTemplate = entry.getValue();
-					if(rechargeTemplate != null && rechargeTemplate.getTemplateId() != null
-							&& StringUtil.nullToBoolean(rechargeTemplate.getIsEnable())
-							&& !StringUtil.nullToBoolean(rechargeTemplate.getIsDelete())
-							&& StringUtil.nullToDouble(rechargeTemplate.getAmount()).compareTo(0D) > 0
-							&& StringUtil.compareObject(StringUtil.nullToInteger(rechargeTemplate.getType()), RechargeTemplate.RECHARGE_TEMPLATE_TYPE_PRODUCT)
-							&& StringUtil.compareObject(StringUtil.nullToLong(rechargeTemplate.getProductId()), StringUtil.nullToLong(product.getProductId()))) {
-						Integer userLevel = StringUtil.nullToInteger(rechargeTemplate.getUserLevel());
-						Integer level = StringUtil.nullToInteger(userInfo.getLevel());
-						if(StringUtil.compareObject(userLevel, RechargeTemplate.RECHARGE_TEMPLATE_USERLEVEL_ALLUSER)
-								|| (StringUtil.compareObject(userLevel, RechargeTemplate.RECHARGE_TEMPLATE_USERLEVEL_ALLDECLARE)
-										&& userLevelList.contains(level))
-								|| StringUtil.compareObject(level, userLevel)) {
-							product.setIsRechargeGiftProduct(true);
-							product.setRechargeDesc(String.format("充值%s元免费赠送", StringUtil.nullToDouble(rechargeTemplate.getAmount()).intValue()));
-							product.setRechargeNotes(String.format("充值%s元即可免费获得%s一份，更多充值活动，请至充值中心查看!", StringUtil.nullToDouble(rechargeTemplate.getAmount()).intValue(),StringUtil.null2Str(product.getName())));
-							return;
-						}
-					}
-				}
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/**
 	 * 检查用户时候含有此商品优惠券
 	 * @param productId

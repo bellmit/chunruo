@@ -21,7 +21,6 @@ public class OrderEvaluateListByUserIdCacheManager{
 	@Autowired
 	private OrderWaitEvaluateListByStoreIdCacheManager orderWaitEvaluateListByStoreIdCacheManager;
 
-	@Cacheable(value = "sessionEhRedisCache", cacheManager = "sessionEhRedisCacheManager", key = "'orderEvaluateListByUserId_'+#userId")
 	public Map<String, OrderEvaluate> getSession(Long userId) {
 		 Map<String, OrderEvaluate> map = new HashMap<String, OrderEvaluate>();
 		 List<OrderEvaluate> recordList = this.orderEvaluateManager.getOrderEvaluateListByUserId(userId, 50);
@@ -33,7 +32,6 @@ public class OrderEvaluateListByUserIdCacheManager{
 		 return map;
 	}
 
-	@CacheEvict(value = "sessionEhRedisCache", cacheManager = "sessionEhRedisCacheManager", key = "'orderEvaluateListByUserId_'+#userId")
 	public void removeSession(Long userId, Order order) {
 		// 如果过期后要做特殊处理，可在此实现
 		try {

@@ -20,12 +20,10 @@ public class OrderPackageListByOrderIdCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private OrderPackageManager orderPackageManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'orderPackageListByOrderId_'+#orderId")
 	public List<OrderPackage> getSession(Long orderId){
 		return this.orderPackageManager.getOrderPackageListByOrderId(orderId);
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'orderPackageListByOrderId_'+#orderId")
 	public void removeSession(Long orderId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

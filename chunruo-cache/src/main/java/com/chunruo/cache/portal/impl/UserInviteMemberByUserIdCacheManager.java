@@ -19,12 +19,10 @@ public class UserInviteMemberByUserIdCacheManager extends BaseCacheManagerImpl {
 	@Autowired
 	private UserInviteMemberManager userInviteMemberManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userInviteMember_'+#userId")
 	public UserInviteMember getSession(Long userId){
 		return this.userInviteMemberManager.getUserInviteMemberByUserId(userId);
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'userInviteMember_'+#userId")
 	public void removeSession(Long userId) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

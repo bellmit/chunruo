@@ -20,14 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.chunruo.core.Constants;
 import com.chunruo.core.Constants.GoodsType;
 import com.chunruo.core.model.PostageTemplate;
 import com.chunruo.core.model.Product;
 import com.chunruo.core.model.ProductBrand;
 import com.chunruo.core.model.ProductCategory;
-import com.chunruo.core.model.ProductGift;
 import com.chunruo.core.model.ProductGroup;
 import com.chunruo.core.model.ProductImage;
 import com.chunruo.core.model.ProductSpec;
@@ -36,9 +34,7 @@ import com.chunruo.core.model.ProductSpecType;
 import com.chunruo.core.model.ProductWarehouse;
 import com.chunruo.core.model.TagModel;
 import com.chunruo.core.model.UserSaleStandard;
-import com.chunruo.core.service.ProductGiftManager;
 import com.chunruo.core.service.PostageTemplateManager;
-import com.chunruo.core.service.ProductGroupManager;
 import com.chunruo.core.service.ProductImageManager;
 import com.chunruo.core.service.ProductManager;
 import com.chunruo.core.service.ProductSpecManager;
@@ -54,7 +50,6 @@ import com.chunruo.core.util.StringUtil;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.webapp.BaseController;
 import com.chunruo.webapp.vo.ImageVo;
-import com.chunruo.webapp.vo.ProductGroupVo;
 
 @Controller
 @RequestMapping("/product/")
@@ -73,10 +68,6 @@ public class ProductController extends BaseController {
 	private ProductSpecTypeManager productSpecTypeManager;
 	@Autowired
 	private ProductSpecModelManager productSpecModelManager;
-	@Autowired
-	private ProductGroupManager productGroupManager;
-	@Autowired
-	private ProductGiftManager productGiftManager;
 	
 	/**
 	 * 商品市场列表
@@ -429,7 +420,6 @@ public class ProductController extends BaseController {
 		resultMap.put("secondarySpecTypeList", secondarySpecTypeList);
 		resultMap.put("imageList", imageList);
 		resultMap.put("materialImageList", materialImageList);
-		resultMap.put("productGroupList", this.getProductGroupList(product));
 		resultMap.put("isGroupProduct", StringUtil.nullToBoolean(product.getIsGroupProduct()));
 		return resultMap;
 	}
@@ -457,114 +447,6 @@ public class ProductController extends BaseController {
 		}
 		resultMap.put("success", true);
 		return resultMap;
-	}
-	
-	/**
-	 * 获取组合商品信息
-	 * @param productGroupId
-	 * @return
-	 */
-	private List<ProductGroupVo> getProductGroupList(Product product){
-		List<ProductGroupVo> productGroupList = new ArrayList<ProductGroupVo> ();
-		try{
-			// 非组合商品直接返回空
-			if(!StringUtil.nullToBoolean(product.getIsGroupProduct())){
-				return productGroupList; 
-			}
-			
-			List<ProductGroup> groupList = this.productGroupManager.getProductGroupListByProductGroupId(product.getProductId());
-			if(groupList != null && groupList.size() > 0){
-				Map<Long, List<ProductGroup>> productGroupListMap = new HashMap<Long, List<ProductGroup>> ();
-				for(ProductGroup productGroup : groupList){
-					// 按商品的归类
-					if(productGroupListMap.containsKey(productGroup.getProductId())){
-						productGroupListMap.get(productGroup.getProductId()).add(productGroup);
-					}else{
-						List<ProductGroup> list = new ArrayList<ProductGroup> ();
-						list.add(productGroup);
-						productGroupListMap.put(productGroup.getProductId(), list);
-					}
-				}
-
-				List<Product> productList = this.productManager.getByIdList(StringUtil.longSetToList(productGroupListMap.keySet()));
-				if(productList != null && productList.size() > 0){
-					for(Product tmpProduct : productList){
-						if(StringUtil.nullToBoolean(tmpProduct.getIsSpceProduct())){
-							List<ProductSpec> list = this.productSpecManager.getProductSpecListByProductId(tmpProduct.getProductId());
-							if(list != null && list.size() > 0){
-								// 根据规格ID规整数据
-								Map<Long, ProductGroup> productGroupMap = new HashMap<Long, ProductGroup> ();
-								List<ProductGroup> tmpProductGroupList = productGroupListMap.get(tmpProduct.getProductId());
-								if(tmpProductGroupList != null && tmpProductGroupList.size() > 0){
-									for(ProductGroup productGroup : tmpProductGroupList){
-										productGroupMap.put(productGroup.getProductSpecId(), productGroup);
-									}
-								}
-
-								// 合并真实数据
-								for(ProductSpec productSpec : list){
-									ProductGroupVo productGroup = new ProductGroupVo ();
-									productGroup.setObjectId(productSpec.getProductSpecId());
-									productGroup.setProductId(productSpec.getProductId());
-									productGroup.setProductSpecId(productSpec.getProductSpecId());				
-									productGroup.setName(tmpProduct.getName());					
-									productGroup.setProductCode(productSpec.getProductCode());		
-									productGroup.setPriceWholesale(productSpec.getPriceWholesale());			
-									productGroup.setPriceRecommend(productSpec.getPriceRecommend());			
-									productGroup.setPriceCost(productSpec.getPriceCost());	
-									productGroup.setStockNumber(productSpec.getStockNumber());
-									productGroup.setGroupPriceCost(0.0D);
-									productGroup.setGroupPriceRecommend(0.0D);
-									productGroup.setGroupPriceWholesale(0.0D);
-									productGroup.setSaleTimes(0);
-
-									// 检查组合商品是否已存在
-									if(productGroupMap.containsKey(productSpec.getProductSpecId())){
-										ProductGroup group = productGroupMap.get(productSpec.getProductSpecId());
-										productGroup.setGroupPriceCost(StringUtil.nullToDouble(group.getGroupPriceCost()));
-										productGroup.setGroupPriceRecommend(StringUtil.nullToDouble(group.getGroupPriceRecommend()));
-										productGroup.setGroupPriceWholesale(StringUtil.nullToDouble(group.getGroupPriceWholesale()));
-										productGroup.setSaleTimes(StringUtil.nullToInteger(group.getSaleTimes()));
-										productGroup.setProductTags(StringUtil.null2Str(group.getProductTags()));
-									}
-									productGroupList.add(productGroup);
-								}
-							}
-						}else{
-							// 普通商品
-							ProductGroupVo productGroup = new ProductGroupVo ();
-							productGroup.setObjectId(tmpProduct.getProductId());
-							productGroup.setProductId(tmpProduct.getProductId());				
-							productGroup.setName(tmpProduct.getName());					
-							productGroup.setProductCode(tmpProduct.getProductCode());		
-							productGroup.setPriceRecommend(tmpProduct.getPriceRecommend());			
-							productGroup.setPriceCost(tmpProduct.getPriceCost());	
-							productGroup.setStockNumber(tmpProduct.getStockNumber());
-							productGroup.setGroupPriceRecommend(0.0D);
-							productGroup.setGroupPriceWholesale(0.0D);
-							productGroup.setSaleTimes(0);
-
-							// 检查组合商品是否已存在
-							List<ProductGroup> tmpProductGroupList = productGroupListMap.get(tmpProduct.getProductId());
-							if(tmpProductGroupList != null && tmpProductGroupList.size() > 0){
-								for(ProductGroup tmpProductGroup : tmpProductGroupList){
-									productGroup.setGroupPriceCost(StringUtil.nullToDouble(tmpProductGroup.getGroupPriceCost()));
-									productGroup.setGroupPriceRecommend(StringUtil.nullToDouble(tmpProductGroup.getGroupPriceRecommend()));
-									productGroup.setGroupPriceWholesale(StringUtil.nullToDouble(tmpProductGroup.getGroupPriceWholesale()));
-									productGroup.setSaleTimes(StringUtil.nullToInteger(tmpProductGroup.getSaleTimes()));
-									break;
-								}
-							}
-							productGroupList.add(productGroup);
-						}
-					}
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-			log.debug(e.getMessage());
-		}
-		return productGroupList;
 	}
 	
 	/**
@@ -1785,53 +1667,6 @@ public class ProductController extends BaseController {
 		msgModel.setIsSucc(false);
 		return msgModel;
 	}
-	
-	
-
-	
-
-	
-	
-	
-	
-	
-	/**
-	 * 商品描述
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value="/saveProductGiftInfoDesc")
-	public @ResponseBody Map<String, Object> saveProductGiftInfoDesc(final HttpServletRequest request) {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		Long giftId = StringUtil.nullToLong(request.getParameter("giftId"));
-		String productDesc = StringUtil.null2Str(request.getParameter("productDesc"));
-		try{
-			ProductGift giftProductInfo = this.productGiftManager.get(giftId);
-			if(giftProductInfo == null || giftProductInfo.getGiftId() == null){
-				resultMap.put("error", true);
-				resultMap.put("success", true);
-				resultMap.put("message", getText("errors.nuKnow"));
-				return resultMap;
-			}
-			
-			giftProductInfo.setProductDesc(productDesc);
-			giftProductInfo.setUpdateTime(DateUtil.getCurrentDate());
-			this.productGiftManager.save(giftProductInfo);
-			
-			resultMap.put("error", false);
-			resultMap.put("success", true);
-			resultMap.put("message", getText("save.success"));
-			return resultMap;
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		resultMap.put("error", true);
-		resultMap.put("success", true);
-		resultMap.put("message", getText("errors.nuKnow"));
-		return resultMap;
-	}
-	
 	
 	
 	@Autowired

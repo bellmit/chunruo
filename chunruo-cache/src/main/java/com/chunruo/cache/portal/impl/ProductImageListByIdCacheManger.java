@@ -24,12 +24,10 @@ public class ProductImageListByIdCacheManger extends BaseCacheManagerImpl {
 	@Autowired
 	private ProductImageManager productImageManager;
 	
-	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'imageList_'+#productId+'_'+#imageType")
 	public List<ProductImage> getSession(Long productId, Integer imageType){
 		return this.productImageManager.getProductImageListByProductId(productId, imageType);
 	}
 	
-	@CacheEvict(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'imageList_'+#productId+'_'+#imageType")
 	public void removeSession(Long productId, Integer imageType) {
 		//如果过期后要做特殊处理，可在此实现
 		//log.info("removeSession userId:" + userId + ",userToken:" + userToken);

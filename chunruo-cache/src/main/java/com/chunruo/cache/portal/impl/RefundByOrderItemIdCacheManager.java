@@ -22,7 +22,6 @@ public class RefundByOrderItemIdCacheManager extends BaseCacheManagerImpl{
 	@Autowired
 	private RefundManager refundManager;
 
-	@Cacheable(value = "sessionEhRedisCache", cacheManager = "sessionEhRedisCacheManager", key = "'refundByOrderItemId_'+#orderItemId")
 	public Refund getSession(Long orderItemId) {
 		List<Refund> refundList = this.refundManager.getRefundListByOrderItemId(orderItemId, true);
 		if(refundList != null && refundList.size() > 0){
@@ -31,7 +30,6 @@ public class RefundByOrderItemIdCacheManager extends BaseCacheManagerImpl{
 		return null;
 	}
 
-	@CacheEvict(value = "sessionEhRedisCache", cacheManager = "sessionEhRedisCacheManager", key = "'refundByOrderItemId_'+#orderItemId")
 	public void removeSession(Long orderItemId) {
 		// 如果过期后要做特殊处理，可在此实现
 		// log.info("removeSession userId:" + userId + ",userToken:" +
