@@ -69,12 +69,10 @@ com\chunruo\core\model\UserCoupon.class
 com\chunruo\core\service\impl\FxChildrenManagerImpl.class
 com\chunruo\core\service\HotSaleRecordManager.class
 com\chunruo\core\service\CouponManager.class
-com\chunruo\core\service\impl\ProductCollectionProfitManagerImpl.class
 com\chunruo\core\service\UserQuickCardManager.class
 com\chunruo\core\model\ProductSoldOutNotice.class
 com\chunruo\easypay\EasySignUtils.class
 com\chunruo\core\Constants$LogisticsStatus.class
-com\chunruo\core\service\ProductCollectionManager.class
 com\chunruo\core\model\UserProfitRecord.class
 com\chunruo\core\service\OrderCustomsRecordManager.class
 com\chunruo\core\service\WeiNiProductManager.class
@@ -87,7 +85,6 @@ com\chunruo\core\repository\HelpQuestionRepository.class
 com\chunruo\core\service\UserSaleStandardManager.class
 com\chunruo\core\vo\ProductOrderVo.class
 com\chunruo\core\vo\SendVo.class
-com\chunruo\core\repository\ProductGiftRepository.class
 com\chunruo\core\model\ProductWarehouse.class
 com\chunruo\core\model\RefundReason.class
 com\chunruo\core\repository\FxPageRepository.class
@@ -99,14 +96,12 @@ com\chunruo\core\repository\OrderSyncComplateRepository.class
 com\chunruo\core\service\RechargeTemplateManager.class
 com\chunruo\core\model\Identification.class
 com\chunruo\core\service\impl\RefundHistoryManagerImpl.class
-com\chunruo\core\model\ProductCollectionProfit.class
 com\chunruo\core\model\ScheduleTask.class
 com\chunruo\core\model\WeChatAppConfig.class
 com\chunruo\core\model\UserWithdrawalHistory.class
 com\chunruo\core\util\RefundUtil.class
 com\chunruo\easypay\BaseHttpSSLSocketFactory.class
 com\chunruo\core\base\GenericRepository.class
-com\chunruo\core\repository\ProductCollectionProfitRepository.class
 com\chunruo\core\util\CoreInitUtil$1.class
 com\chunruo\core\service\SignManager.class
 com\chunruo\core\repository\StartImageTemplateRepository.class
@@ -117,7 +112,6 @@ com\chunruo\core\model\ProductWarehouseTemplate.class
 com\chunruo\core\model\UserPool.class
 com\chunruo\core\service\PaymentVerifyRecordManager.class
 com\chunruo\core\repository\OrderPaymentRecordRepository.class
-com\chunruo\core\service\ProductCollectionProfitManager.class
 com\chunruo\core\vo\ChilderOrderVo.class
 com\chunruo\core\service\impl\ProductShareRecordManagerImpl.class
 com\chunruo\core\service\impl\ProductBrandManagerImpl.class
@@ -175,7 +169,6 @@ com\chunruo\core\repository\WeiNiProductRepository.class
 com\chunruo\core\service\UserWithdrawalManager.class
 com\chunruo\core\service\PostageConfigManager.class
 com\chunruo\core\repository\UserExpireRecordRepository.class
-com\chunruo\core\model\ProductCollection.class
 com\chunruo\core\repository\ProductTaskRepository.class
 com\chunruo\easypay\EasyRsaUtils.class
 com\chunruo\core\repository\UserAddressRepository.class
@@ -280,7 +273,6 @@ com\chunruo\core\service\impl\FxPageManagerImpl.class
 com\chunruo\core\service\impl\KeywordsManagerImpl.class
 com\chunruo\core\service\FeedbackManager.class
 com\chunruo\easypay\EasyHttpClientUtils.class
-com\chunruo\core\service\ProductGiftManager.class
 com\chunruo\core\repository\UserSaleStandardRepository.class
 com\chunruo\core\model\PushMessage.class
 com\chunruo\core\service\OrderHistoryManager.class
@@ -314,7 +306,6 @@ com\chunruo\core\model\PaymentVerifyRecord.class
 com\chunruo\core\vo\UserInfoVo.class
 com\chunruo\core\service\OrderEvaluateManager.class
 com\chunruo\core\model\ProductSpecType.class
-com\chunruo\core\model\ProductGift.class
 com\chunruo\core\repository\PurchaseLimitRepository.class
 com\chunruo\core\service\PageViewManager.class
 com\chunruo\core\model\Sign.class
@@ -358,7 +349,6 @@ com\chunruo\core\Constants$FiledType.class
 com\chunruo\core\repository\ProductIntroRepository.class
 com\chunruo\core\repository\OrderLockStockRepository.class
 com\chunruo\core\repository\UserProductTaskRecordRepository.class
-com\chunruo\core\repository\ProductCollectionRepository.class
 com\chunruo\core\base\SQLBuilder.class
 com\chunruo\core\repository\WeChatAppConfigRepository.class
 com\chunruo\core\repository\OrderSyncListRepository.class
@@ -373,7 +363,6 @@ com\chunruo\core\model\OrderItems.class
 com\chunruo\core\repository\TagModelRepository.class
 com\chunruo\core\service\UserInfoManager.class
 com\chunruo\core\model\Order.class
-com\chunruo\core\service\impl\ProductGiftManagerImpl.class
 com\chunruo\core\model\PageView.class
 com\chunruo\core\vo\CommodityPriceVo.class
 com\chunruo\core\service\ProductSoldOutNoticeManager.class
@@ -479,7 +468,6 @@ com\chunruo\core\Constants$WechatOautType.class
 com\chunruo\core\service\UserProfitRecordManager.class
 com\chunruo\core\vo\ImageTextVo.class
 com\chunruo\core\service\RefundManager.class
-com\chunruo\core\service\impl\ProductCollectionManagerImpl.class
 com\chunruo\core\model\ProductTask.class
 com\chunruo\core\repository\UserLevelExplainRepository.class
 com\chunruo\core\service\impl\ProductCategoryManagerImpl.class

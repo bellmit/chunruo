@@ -1014,7 +1014,7 @@ public class ProductUtil {
 				productVerify.setSeckillTotalStock(product.getSeckillTotalStock());
 				productVerify.setSeckillSalesNumber(product.getSeckillSalesNumber());
 				productVerify.setSeckillLockNumber(product.getSeckillLockNumber());
-
+				product.setPaymentPrice(productVerify.getPriceRecommend());
 				//普通商品价格信息校验
 				MsgModel<Integer> cmsgModel = ProductUtil.checkSingleProductConfigure(product, productVerify);
 				if(!StringUtil.nullToBoolean(product.getIsSoldout()) && StringUtil.nullToBoolean(cmsgModel.getIsSucc())){
@@ -1100,11 +1100,11 @@ public class ProductUtil {
 	 * @param isVague
 	 * @return
 	 */
-	public static MsgModel<Long> getKeywordFuzzyMatchByName(String keyword, String name){
+	public static MsgModel<Long> getKeywordFuzzyMatchByName(List<String> keywordList, String name){
 		MsgModel<Long> msgModel = new MsgModel<Long> ();
 		try{
 			// 关键字搜索,支持多规则匹配
-			List<String> keywordList = IKUtil.getKeywordList(keyword,null);
+//			List<String> keywordList = IKUtil.getKeywordList(keyword);
 			if(keywordList != null && keywordList.size() > 0){
 				for(String strKey : keywordList){
 					//去掉空格字符串
@@ -1262,46 +1262,6 @@ public class ProductUtil {
 
 
 	
-	/**
-	 * 保存搜索关键词
-	 * @param keyword
-	 * @return
-	 */
-	public static void recordKeywords(final String keyword){
-		try {
-			BaseThreadPool.getThreadPoolExecutor().execute(new Runnable(){
-				@Override
-				public void run() {
-					try{
-						KeywordsManager keywordsManager = Constants.ctx.getBean(KeywordsManager.class);
-						List<Keywords> keywordsList = keywordsManager.getAll();
-						//若数据库已有，搜索次数加1
-						if (keywordsList != null && keywordsList.size() > 0) {
-							for (Keywords keywords : keywordsList) {
-								if (Objects.equals(keywords.getName(), keyword)) {
-									keywords.setSeekCount(keywords.getSeekCount() + 1);
-									keywordsManager.update(keywords);
-									return;
-								}
-							}
-						}
-						//若数据库没有，创建新关键词
-						Keywords words = new Keywords();
-						words.setName(keyword);
-						words.setSeekCount(1);
-						words.setIsDefault(false);
-						words.setCreateTime(DateUtil.getCurrentDate());
-						words.setUpdateTime(words.getCreateTime());
-						keywordsManager.save(words);
-					}catch(Exception e){
-						e.printStackTrace();
-					}
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * 商品banner图片列表
@@ -1327,166 +1287,166 @@ public class ProductUtil {
 	}
 
 
-	/**
-	 * 商品搜索
-	 */
-	public static MsgModel<Long> getProductByKeyword(String keyword, Product product){
-		MsgModel<Long> msgModel = new MsgModel<Long>();
-		try {
-			TagModelListCacheManager tagModelListCacheManager = Constants.ctx.getBean(TagModelListCacheManager.class);
-
-			//商品自定义标签
-			List<Long> productTagIdList = StringUtil.stringToLongArray(product.getTagIds());
-			List<TagModel> tagModelList = tagModelListCacheManager.getSession();
-			//从数据库中加载自定义单词
-			Set<String> wordsSet = new HashSet<String>();
-			if(tagModelList != null && tagModelList.size() > 0 ){
-				for(TagModel tagModel : tagModelList) {
-					wordsSet.add(StringUtil.null2Str(tagModel.getName()));
-				}
-			}
-
-			// 关键字搜索,支持多规则匹配
-			List<String> keywordList = IKUtil.getKeywordList(keyword, wordsSet);
-			if (keywordList != null && keywordList.size() > 0) {
-				Set<String> keywordSet = new HashSet<String>();
-				for (String keyStr : keywordList) {
-					keywordSet.add(keyStr);
-				}
-
-				Long brandId = 0L;
-				Long categoryId = 0L;
-				int brandTagNumber = 0;
-				int categoryTagNumber = 0;
-				int productTagNumber = 0;
-				Set<String> productNameSet = new HashSet<String>();
-				if (tagModelList != null && tagModelList.size() > 0) {
-					for (String strKey : keywordSet) {
-						boolean isContainStrKey = false;
-						for (TagModel tagModel : tagModelList) {
-							if (StringUtil.compareObject(strKey, StringUtil.null2Str(tagModel.getName()))) {
-								isContainStrKey = true;
-								if(productTagIdList != null && productTagIdList.contains(tagModel.getTagId())) {
-									//商品自定义标签
-									productTagNumber++;
-								}else if (StringUtil.compareObject(StringUtil.nullToInteger(tagModel.getTagType()),
-										TagModel.BRAND_TAG_TYPE)) {
-									// 统计关键字中品牌标签出现的次数
-									brandTagNumber++;
-									brandId = StringUtil.nullToLong(tagModel.getObjectId());
-								} else if (StringUtil.compareObject(StringUtil.nullToInteger(tagModel.getTagType()),
-										TagModel.CATEGORY_TAG_TYPE)) {
-									// 统计关键字中分类标签出现的次数
-									categoryTagNumber++;
-									categoryId = StringUtil.nullToLong(tagModel.getObjectId());
-								}
-							}
-						}
-						if (!isContainStrKey) {
-							productNameSet.add(strKey);
-						}
-					}
-				}
-
-				if(productTagNumber >= 2) {
-					//同一个商品标签出现2次及以上
-					msgModel.setIsSucc(true);
-					return msgModel;
-				}else if(productTagNumber == 1) {
-					if(brandTagNumber == 0 && categoryTagNumber == 0) {
-						msgModel.setIsSucc(true);
-						return msgModel;
-					}else if(brandTagNumber == 1 && StringUtil.compareObject(product.getBrandId(), brandId)) {
-						msgModel.setIsSucc(true);
-						return msgModel;
-					}else if(categoryTagNumber == 1 &&(product.getCategoryFidList().contains(categoryId)
-							|| product.getCategoryIdList().contains(categoryId))) {
-						msgModel.setIsSucc(true);
-						return msgModel;
-					}
-				}else if (brandTagNumber >= 2 || categoryTagNumber >= 2 || (brandTagNumber == 0 && categoryTagNumber == 0)) {
-					// 商品名称模糊搜索
-					for (String strKey : keywordSet) {
-						if (StringUtil.null2Str(product.getName()).toUpperCase().contains(strKey)) {
-							//去掉空格字符串
-							strKey = StringUtil.null2Str(strKey).replaceAll("\\s+", "").toUpperCase();
-							if (StringUtil.null2Str(product.getName()).replaceAll("\\s+", "").toUpperCase().contains(strKey)) {
-								msgModel.setIsSucc(true);
-								return msgModel;
-							}
-						}
-					}
-				} else if (brandTagNumber == 1 && categoryTagNumber == 1) {
-					if(StringUtil.compareObject(StringUtil.nullToLong(product.getBrandId()), brandId) && (
-							product.getCategoryFidList().contains(categoryId)
-							|| product.getCategoryIdList().contains(categoryId))) {
-						if (productNameSet != null && productNameSet.size() > 0) {
-							// 有多余的名字
-							for (String name : productNameSet) {
-								//去掉空格字符串
-								name = StringUtil.null2Str(name).replaceAll("\\s+", "").toUpperCase();
-								if (StringUtil.null2Str(product.getName()).replaceAll("\\s+", "").toUpperCase().contains(name)) {
-									msgModel.setIsSucc(true);
-									return msgModel;
-								}
-							}
-						}else {
-							// 品牌和分类的交集
-							msgModel.setIsSucc(true);
-							return msgModel;
-						}
-					}
-
-				} else if (brandTagNumber == 1 ) {
-					// 品牌标签出现一次
-					if (StringUtil.compareObject(StringUtil.nullToLong(product.getBrandId()), brandId)) {
-						if (productNameSet != null && productNameSet.size() > 0) {
-							// 有多余的名字
-							for (String name : productNameSet) {
-								//去掉空格字符串
-								name = StringUtil.null2Str(name).replaceAll("\\s+", "").toUpperCase();
-								if (StringUtil.null2Str(product.getName()).replaceAll("\\s+", "").toUpperCase().contains(name)) {
-									msgModel.setIsSucc(true);
-									return msgModel;
-								}
-							}
-						}else {
-							//没有标签之外的名字，则取此品牌或分类下名称
-							msgModel.setIsSucc(true);
-							return msgModel;
-						}
-					}
-				}else if(categoryTagNumber == 1) {
-					// 品牌标签出现一次
-					if (product.getCategoryFidList().contains(categoryId)
-							|| product.getCategoryIdList().contains(categoryId)) {
-						if (productNameSet != null && productNameSet.size() > 0) {
-							// 有多余的名字
-							for (String name : productNameSet) {
-								//去掉空格字符串
-								name = StringUtil.null2Str(name).replaceAll("\\s+", "").toUpperCase();
-								if (StringUtil.null2Str(product.getName()).replaceAll("\\s+", "").toUpperCase().contains(name)) {
-									msgModel.setIsSucc(true);
-									return msgModel;
-								}
-							}
-						}else {
-							//没有标签之外的名字，则取此品牌或分类下名称
-							msgModel.setIsSucc(true);
-							return msgModel;
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}finally{
-
-		}
-
-		msgModel.setIsSucc(false);
-		return msgModel;
-	}
+//	/**
+//	 * 商品搜索
+//	 */
+//	public static MsgModel<Long> getProductByKeyword(String keyword, Product product){
+//		MsgModel<Long> msgModel = new MsgModel<Long>();
+//		try {
+//			TagModelListCacheManager tagModelListCacheManager = Constants.ctx.getBean(TagModelListCacheManager.class);
+//
+//			//商品自定义标签
+//			List<Long> productTagIdList = StringUtil.stringToLongArray(product.getTagIds());
+//			List<TagModel> tagModelList = tagModelListCacheManager.getSession();
+//			//从数据库中加载自定义单词
+//			Set<String> wordsSet = new HashSet<String>();
+//			if(tagModelList != null && tagModelList.size() > 0 ){
+//				for(TagModel tagModel : tagModelList) {
+//					wordsSet.add(StringUtil.null2Str(tagModel.getName()));
+//				}
+//			}
+//
+//			// 关键字搜索,支持多规则匹配
+//			List<String> keywordList = IKUtil.getKeywordList(keyword);
+//			if (keywordList != null && keywordList.size() > 0) {
+//				Set<String> keywordSet = new HashSet<String>();
+//				for (String keyStr : keywordList) {
+//					keywordSet.add(keyStr);
+//				}
+//
+//				Long brandId = 0L;
+//				Long categoryId = 0L;
+//				int brandTagNumber = 0;
+//				int categoryTagNumber = 0;
+//				int productTagNumber = 0;
+//				Set<String> productNameSet = new HashSet<String>();
+//				if (tagModelList != null && tagModelList.size() > 0) {
+//					for (String strKey : keywordSet) {
+//						boolean isContainStrKey = false;
+//						for (TagModel tagModel : tagModelList) {
+//							if (StringUtil.compareObject(strKey, StringUtil.null2Str(tagModel.getName()))) {
+//								isContainStrKey = true;
+//								if(productTagIdList != null && productTagIdList.contains(tagModel.getTagId())) {
+//									//商品自定义标签
+//									productTagNumber++;
+//								}else if (StringUtil.compareObject(StringUtil.nullToInteger(tagModel.getTagType()),
+//										TagModel.BRAND_TAG_TYPE)) {
+//									// 统计关键字中品牌标签出现的次数
+//									brandTagNumber++;
+//									brandId = StringUtil.nullToLong(tagModel.getObjectId());
+//								} else if (StringUtil.compareObject(StringUtil.nullToInteger(tagModel.getTagType()),
+//										TagModel.CATEGORY_TAG_TYPE)) {
+//									// 统计关键字中分类标签出现的次数
+//									categoryTagNumber++;
+//									categoryId = StringUtil.nullToLong(tagModel.getObjectId());
+//								}
+//							}
+//						}
+//						if (!isContainStrKey) {
+//							productNameSet.add(strKey);
+//						}
+//					}
+//				}
+//
+//				if(productTagNumber >= 2) {
+//					//同一个商品标签出现2次及以上
+//					msgModel.setIsSucc(true);
+//					return msgModel;
+//				}else if(productTagNumber == 1) {
+//					if(brandTagNumber == 0 && categoryTagNumber == 0) {
+//						msgModel.setIsSucc(true);
+//						return msgModel;
+//					}else if(brandTagNumber == 1 && StringUtil.compareObject(product.getBrandId(), brandId)) {
+//						msgModel.setIsSucc(true);
+//						return msgModel;
+//					}else if(categoryTagNumber == 1 &&(product.getCategoryFidList().contains(categoryId)
+//							|| product.getCategoryIdList().contains(categoryId))) {
+//						msgModel.setIsSucc(true);
+//						return msgModel;
+//					}
+//				}else if (brandTagNumber >= 2 || categoryTagNumber >= 2 || (brandTagNumber == 0 && categoryTagNumber == 0)) {
+//					// 商品名称模糊搜索
+//					for (String strKey : keywordSet) {
+//						if (StringUtil.null2Str(product.getName()).toUpperCase().contains(strKey)) {
+//							//去掉空格字符串
+//							strKey = StringUtil.null2Str(strKey).replaceAll("\\s+", "").toUpperCase();
+//							if (StringUtil.null2Str(product.getName()).replaceAll("\\s+", "").toUpperCase().contains(strKey)) {
+//								msgModel.setIsSucc(true);
+//								return msgModel;
+//							}
+//						}
+//					}
+//				} else if (brandTagNumber == 1 && categoryTagNumber == 1) {
+//					if(StringUtil.compareObject(StringUtil.nullToLong(product.getBrandId()), brandId) && (
+//							product.getCategoryFidList().contains(categoryId)
+//							|| product.getCategoryIdList().contains(categoryId))) {
+//						if (productNameSet != null && productNameSet.size() > 0) {
+//							// 有多余的名字
+//							for (String name : productNameSet) {
+//								//去掉空格字符串
+//								name = StringUtil.null2Str(name).replaceAll("\\s+", "").toUpperCase();
+//								if (StringUtil.null2Str(product.getName()).replaceAll("\\s+", "").toUpperCase().contains(name)) {
+//									msgModel.setIsSucc(true);
+//									return msgModel;
+//								}
+//							}
+//						}else {
+//							// 品牌和分类的交集
+//							msgModel.setIsSucc(true);
+//							return msgModel;
+//						}
+//					}
+//
+//				} else if (brandTagNumber == 1 ) {
+//					// 品牌标签出现一次
+//					if (StringUtil.compareObject(StringUtil.nullToLong(product.getBrandId()), brandId)) {
+//						if (productNameSet != null && productNameSet.size() > 0) {
+//							// 有多余的名字
+//							for (String name : productNameSet) {
+//								//去掉空格字符串
+//								name = StringUtil.null2Str(name).replaceAll("\\s+", "").toUpperCase();
+//								if (StringUtil.null2Str(product.getName()).replaceAll("\\s+", "").toUpperCase().contains(name)) {
+//									msgModel.setIsSucc(true);
+//									return msgModel;
+//								}
+//							}
+//						}else {
+//							//没有标签之外的名字，则取此品牌或分类下名称
+//							msgModel.setIsSucc(true);
+//							return msgModel;
+//						}
+//					}
+//				}else if(categoryTagNumber == 1) {
+//					// 品牌标签出现一次
+//					if (product.getCategoryFidList().contains(categoryId)
+//							|| product.getCategoryIdList().contains(categoryId)) {
+//						if (productNameSet != null && productNameSet.size() > 0) {
+//							// 有多余的名字
+//							for (String name : productNameSet) {
+//								//去掉空格字符串
+//								name = StringUtil.null2Str(name).replaceAll("\\s+", "").toUpperCase();
+//								if (StringUtil.null2Str(product.getName()).replaceAll("\\s+", "").toUpperCase().contains(name)) {
+//									msgModel.setIsSucc(true);
+//									return msgModel;
+//								}
+//							}
+//						}else {
+//							//没有标签之外的名字，则取此品牌或分类下名称
+//							msgModel.setIsSucc(true);
+//							return msgModel;
+//						}
+//					}
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}finally{
+//
+//		}
+//
+//		msgModel.setIsSucc(false);
+//		return msgModel;
+//	}
 
 
 

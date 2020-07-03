@@ -344,7 +344,7 @@ public class OrderUtil {
 					if (!StringUtil.isNull(keyword)) {
 						boolean isMathcKeyword = false;
 						//搜索词
-						List<String> keywordList = IKUtil.getKeywordList(keyword, null);
+						List<String> keywordList = IKUtil.getKeywordList(keyword);
 						//检查收货人，号码是否匹配
 						if(StringUtil.compareObject(order.getConsigneePhone(), keyword)
 								|| StringUtil.compareObject(order.getOrderNo(), keyword)

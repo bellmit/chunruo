@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import com.chunruo.cache.portal.impl.ProductListByBrandIdCacheManager;
 import com.chunruo.cache.portal.impl.ProductListByCatIdCacheManager;
 import com.chunruo.cache.portal.impl.ProductListByCouponIdCacheManager;
@@ -14,6 +19,7 @@ import com.chunruo.cache.portal.vo.ProductSortVo;
 import com.chunruo.core.Constants;
 import com.chunruo.core.model.Product;
 import com.chunruo.core.util.DoubleUtil;
+import com.chunruo.core.util.IKUtil;
 import com.chunruo.core.util.ListPageUtil;
 import com.chunruo.core.util.StringUtil;
 import com.chunruo.core.util.vo.ListPageVo;
@@ -105,69 +111,90 @@ public class ProductListTag extends BaseTag {
 				realProductIdList = productListByCatIdCacheManager.getSession(categoryId);
 			}
 
+			
 			// 找出有效上架的商品
 			Map<Long, Product> productMap = new HashMap<Long, Product> ();
+			final Map<Long, Product> realProductMap = new HashMap<Long, Product> ();
 			if(realProductIdList != null && realProductIdList.size() > 0){
 				final Boolean xcheckPrice = checkPrice;
+				List<Future<Product>> result = new ArrayList<Future<Product>>();
+				ExecutorService exec = Executors.newFixedThreadPool(5);
 				try {
-					for(String strProductId : realProductIdList){
-
-						MsgModel<Product> msgModel = ProductUtil.getProductByProductId(StringUtil.nullToLong(strProductId), true);
-						if(StringUtil.nullToBoolean(msgModel.getIsSucc())){
-							Product product = msgModel.getData();
-							//商品价格校验
-							if(xcheckPrice) {
-								Double paymentPrice = StringUtil.nullToDouble(product.getPaymentPrice());
-								if(paymentPrice.compareTo(minPrice) == -1
-										|| paymentPrice.compareTo(maxPrice) == 1) {
-									return null;
+					for(final String strProductId : realProductIdList){
+						//启用多线程处理
+						result.add(exec.submit(new Callable<Product>() {
+							@Override
+							public Product call() throws Exception {
+								MsgModel<Product> msgModel = ProductUtil.getProductByProductId(StringUtil.nullToLong(strProductId), true);
+								if(StringUtil.nullToBoolean(msgModel.getIsSucc())){
+									Product product = msgModel.getData();
+									//商品价格校验
+									if(xcheckPrice) {
+										Double paymentPrice = StringUtil.nullToDouble(product.getPaymentPrice());
+										if(paymentPrice.compareTo(minPrice) == -1
+												|| paymentPrice.compareTo(maxPrice) == 1) {
+											return null;
+										}
+									}
+									return product;
 								}
+								return null;
 							}
-							// 搜索结果商品
-							productMap.put(StringUtil.nullToLong(product.getProductId()), product);
-						}
-						
+						}));
 					}
 					
+					//多线程返回对象结果
+					for(Future<Product> future : result) {
+						Product xproduct = future.get();
+						if(xproduct != null && xproduct.getProductId() != null) {
+							// 搜索结果商品
+							productMap.put(StringUtil.nullToLong(xproduct.getProductId()), xproduct);
+						}
+					}
+					
+					
+					if(productMap != null && productMap.size() > 0){
+						final boolean isKeyword = !StringUtil.isNull(keyword);
+						if(isKeyword){
+							List<Future<Product>> matchResult = new ArrayList<Future<Product>>();
+
+							List<String> keywordList = IKUtil.getKeywordList(keyword);
+							for(final Entry<Long, Product> entry : productMap.entrySet()){
+								matchResult.add(exec.submit(new Callable<Product>() {
+									@Override
+									public Product call() throws Exception {
+										Product product = entry.getValue();
+										MsgModel<Long> xmsgModel = ProductUtil.getKeywordFuzzyMatchByName(keywordList, StringUtil.null2Str(product.getName()));
+										if(StringUtil.nullToBoolean(xmsgModel.getIsSucc())){
+											return product;
+										}
+										return null;
+									}
+								}));
+								
+							}
+
+							// 最终关键字匹配结果
+							if(matchResult != null && matchResult.size() > 0){
+								for(Future<Product> future : matchResult){
+									Product product = future.get();
+									if(product != null && product.getProductId() != null) {
+										// 搜索结果商品
+										realProductMap.put(product.getProductId(), product);
+									}
+								}
+							}
+						}else{
+							realProductMap.putAll(productMap);
+						}
+					}
 				}catch(Exception e) {
 					e.printStackTrace();
-				}
-			}
-			
-			// 根据搜索关键字匹配
-			final Map<Long, Product> realProductMap = new HashMap<Long, Product> ();
-			if(productMap != null && productMap.size() > 0){
-				// 检查是否有关键字搜索
-				final boolean isKeyword = !StringUtil.isNull(keyword);
-				if(isKeyword){
-					//保存关键词
-					ProductUtil.recordKeywords(keyword);
-
-					// 根据标签匹配
-					List<Product> productList = new ArrayList<Product> ();
-					for(Entry<Long, Product> entry : productMap.entrySet()){
-						Product product = entry.getValue();
-						MsgModel<Long> xmsgModel = ProductUtil.getProductByKeyword(keyword,product);
-						if(StringUtil.nullToBoolean(xmsgModel.getIsSucc())){
-							productList.add(product);
-						}
-					}
-
-					// 最终关键字匹配结果
-					if(productList != null && productList.size() > 0){
-						for(Product product : productList){
-							realProductMap.put(product.getProductId(), product);
-						}
-					}
-				}else{
-					realProductMap.putAll(productMap);
+				}finally{
+					exec.shutdown();
 				}
 			}
 
-			//综合排序规则
-			if(StringUtil.compareObject(sort, ProductListTag.PRODUCT_SORT_SN)) {
-				ProductUtil.getProductSortWeight(realProductMap);
-			}
 			//  排序
 			final int realSort = sort;
 			final int realSortType = sortType;
