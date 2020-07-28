@@ -259,7 +259,7 @@ public class ProductCheckUtil {
 			
 			// 遍历所有请求购物车记录
 			List<Product> productList = new ArrayList<Product> ();
-			Map<Long,Integer> limitNumberMap = new HashMap<Long,Integer>();
+//			Map<Long,Integer> limitNumberMap = new HashMap<Long,Integer>();
 			for(UserCart userCart : userCartList){
 				Integer quantity = StringUtil.nullToInteger(userCart.getQuantity());
 				
@@ -272,46 +272,39 @@ public class ProductCheckUtil {
 					return resultCheckModel;
 				}
 				
-				// 单个商品信息
+//				// 单个商品信息
 				Product product = productCheckModel.getData();
-				if(!limitNumberMap.containsKey(product.getProductId())) {
-                	limitNumberMap.put(product.getProductId(), quantity);
-				}else {
-					limitNumberMap.put(product.getProductId(), limitNumberMap.get(product.getProductId()) + quantity);
-				}
-		
-				Integer totalNumber = StringUtil.nullToInteger(limitNumberMap.get(product.getProductId()));
-				//检查是否设置单次购买最大数量限制
-				Integer maxLimitNumber = StringUtil.nullToInteger(product.getMaxLimitNumber());
-	            if(maxLimitNumber > 0 && totalNumber > maxLimitNumber) {
-	            	resultCheckModel.setIsSucc(false);
-	            	resultCheckModel.setMessage(String.format("\"%s\"数量过多，请分开结算", StringUtil.null2Str(product.getName())));
-					return resultCheckModel;
-	            }
-				
-				//检查购物车用户等级限购
-				if(StringUtil.nullToBoolean(product.getIsLevelLimitProduct())
-						&& StringUtil.nullToInteger(product.getLevelLimitNumber()) >= 0
-						&& StringUtil.nullToInteger(product.getLevelLimitNumber()) < totalNumber){
-					resultCheckModel.setIsSucc(false);
-					resultCheckModel.setMessage(String.format("您当前最多可购买\"%s\"%s件", product.getName(),StringUtil.nullToInteger(product.getLevelLimitNumber())));
-					return resultCheckModel;
-				}
-				
-				//检查购物车用户限购
-				Map<Long, Integer> productIdMap = PurchaseLimitUtil.USER_LIMIT_THREAD_LOCAL.get();
-                if(productIdMap != null 
-                		&& productIdMap.size() > 0
-                		&& productIdMap.containsKey(StringUtil.nullToLong(product.getProductId()))) {
-                	//剩余可购数量
-                	Integer remainNumber = StringUtil.nullToInteger(productIdMap.get(StringUtil.nullToLong(product.getProductId())));
-                	System.out.println(String.format("2==>[商品Id:%s;剩余可购数量:%s;购物车数量:%s]", product.getProductId(), remainNumber, totalNumber));
-                	if(totalNumber > remainNumber) {
-                		resultCheckModel.setIsSucc(false);
-                		resultCheckModel.setMessage(String.format("您当前最多可购买商品\"%s\"%s件", product.getName(), remainNumber));
-        				return resultCheckModel;
-                	}
-                }
+//				if(!limitNumberMap.containsKey(product.getProductId())) {
+//                	limitNumberMap.put(product.getProductId(), quantity);
+//				}else {
+//					limitNumberMap.put(product.getProductId(), limitNumberMap.get(product.getProductId()) + quantity);
+//				}
+//		
+//				Integer totalNumber = StringUtil.nullToInteger(limitNumberMap.get(product.getProductId()));
+//				
+//				//检查购物车用户等级限购
+//				if(StringUtil.nullToBoolean(product.getIsLevelLimitProduct())
+//						&& StringUtil.nullToInteger(product.getLevelLimitNumber()) >= 0
+//						&& StringUtil.nullToInteger(product.getLevelLimitNumber()) < totalNumber){
+//					resultCheckModel.setIsSucc(false);
+//					resultCheckModel.setMessage(String.format("您当前最多可购买\"%s\"%s件", product.getName(),StringUtil.nullToInteger(product.getLevelLimitNumber())));
+//					return resultCheckModel;
+//				}
+//				
+//				//检查购物车用户限购
+//				Map<Long, Integer> productIdMap = PurchaseLimitUtil.USER_LIMIT_THREAD_LOCAL.get();
+//                if(productIdMap != null 
+//                		&& productIdMap.size() > 0
+//                		&& productIdMap.containsKey(StringUtil.nullToLong(product.getProductId()))) {
+//                	//剩余可购数量
+//                	Integer remainNumber = StringUtil.nullToInteger(productIdMap.get(StringUtil.nullToLong(product.getProductId())));
+//                	System.out.println(String.format("2==>[商品Id:%s;剩余可购数量:%s;购物车数量:%s]", product.getProductId(), remainNumber, totalNumber));
+//                	if(totalNumber > remainNumber) {
+//                		resultCheckModel.setIsSucc(false);
+//                		resultCheckModel.setMessage(String.format("您当前最多可购买商品\"%s\"%s件", product.getName(), remainNumber));
+//        				return resultCheckModel;
+//                	}
+//                }
 				product.setPaymentBuyNumber(quantity);
 				
 				
@@ -351,18 +344,7 @@ public class ProductCheckUtil {
 				resultCheckModel.setMessage(msgModel.getMessage());
 				return resultCheckModel;
 			}
-			Integer totalProductType = StringUtil.nullToInteger(msgModel.getProductType());
-			
-			// 验证跨境商品订单金额累计、商品数量累计
-			if(StringUtil.nullToBoolean(isCheckCrossLimit)) {
-				//检查单笔订单金额是否超出限制
-				MsgModel<Void> csgModel = ProductCheckUtil.checkMaxProductAmount(sumAmount, totalProductType);
-			    if(!StringUtil.nullToBoolean(csgModel.getIsSucc())) {
-			    	resultCheckModel.setIsSucc(false);
-			    	resultCheckModel.setMessage(StringUtil.null2Str(csgModel.getMessage()));
-					return resultCheckModel;
-			    }
-			}
+		
 			
 			resultCheckModel.setIsSucc(true);
 			resultCheckModel.setData(productList);
@@ -419,9 +401,6 @@ public class ProductCheckUtil {
 			// 商品信息
 			Product product = xsgModel.getData();
 			
-			// 跨境限制消费限制
-		    Integer productType = StringUtil.nullToInteger(product.getProductType());
-			
 			// 检查商品是否有库存
 			if(number > StringUtil.nullToInteger(product.getPaymentStockNumber())){
 				msgModel.setIsSucc(false);
@@ -454,49 +433,7 @@ public class ProductCheckUtil {
 				product = xmsgModel.getData();
 			}
 			
-			//检查是否设置单次购买最大数量限制
-			Integer maxLimitNumber = StringUtil.nullToInteger(product.getMaxLimitNumber());
-            if(maxLimitNumber > 0 && number > maxLimitNumber) {
-            	msgModel.setIsSucc(false);
-				msgModel.setMessage(String.format("\"%s\"数量过多，请分开结算", StringUtil.null2Str(product.getName())));
-				return msgModel;
-            }
 		    
-		    //商品总金额（含税费）
-	    	Double paymentTax = StringUtil.nullToDouble(product.getTax());
-	    	Double paymentPrice = StringUtil.nullToDouble(product.getPaymentPrice());
-			Double totalProductAmount = DoubleUtil.mul(DoubleUtil.add(paymentPrice, paymentTax), StringUtil.nullToDouble(number));
-		  
-			//检查单笔订单金额是否超出限制
-			MsgModel<Void> csgModel = ProductCheckUtil.checkMaxProductAmount(totalProductAmount, productType);
-		    if(!StringUtil.nullToBoolean(csgModel.getIsSucc())) {
-		    	msgModel.setIsSucc(false);
-				msgModel.setMessage(StringUtil.null2Str(csgModel.getMessage()));
-				return msgModel;
-		    }
-		    
-		    //检查用户限购
-		    MsgModel<Integer> userLimitModel = PurchaseLimitUtil.checkUserLimitByProduct(product, userInfo, number);
-			if(StringUtil.nullToBoolean(userLimitModel.getIsSucc())) {
-				msgModel.setIsSucc(false);
-				msgModel.setMessage(userLimitModel.getMessage());
-				return msgModel;
-			}else if(StringUtil.nullToInteger(userLimitModel.getData()) > 0) {
-				//标记此商品为达到最大限购数量商品,禁止48小时内再次购买
-				if(StringUtil.nullToBoolean(userLimitModel.getIsExpire())) {
-					product.setIsBanPurchase(true);
-				}
-				
-				Map<Long, Integer> productIdMap = PurchaseLimitUtil.USER_LIMIT_THREAD_LOCAL.get();
-				if(productIdMap == null || productIdMap.isEmpty()) {
-	            	System.out.println(String.format("1==>[商品Id:%s;剩余可购数量:%s;当前商品数量:%s]", product.getProductId(),userLimitModel.getData(),number));
-	            	productIdMap = new HashMap<Long,Integer>();
-	            	productIdMap.put(StringUtil.nullToLong(product.getProductId()), StringUtil.nullToInteger(userLimitModel.getData()));
-					PurchaseLimitUtil.USER_LIMIT_THREAD_LOCAL.set(productIdMap);
-				}
-			}
-			
-			// 购买商品的真实价格
 			msgModel.setData(product);
 			msgModel.setIsSucc(true);
 			return msgModel;
@@ -1030,41 +967,4 @@ public class ProductCheckUtil {
 	}
 	
 	
-	/**
-	 * 检查单笔订单金额是否超过限制
-	 * • 行邮仓：1000；
-     * • 跨境直邮仓、跨境仓：2600；
-	 * @param sumAmount
-	 * @param productType
-	 * @return
-	 */
-	public static MsgModel<Void> checkMaxProductAmount(Double sumAmount,Integer productType){
-		MsgModel<Void> msgModel = new MsgModel<Void>();
-		try {
-			List<Integer> productTypeList = new ArrayList<Integer>();
-		    productTypeList.add(GoodsType.GOODS_TYPE_CROSS);  //跨境
-		    productTypeList.add(GoodsType.GOODS_TYPE_DIRECT); //直邮
-		    
-			if(productTypeList.contains(productType) 
-					&& sumAmount.compareTo(Constants.MAX_PRODUCT_AMOUNT) == 1){
-				//根据海关政策，单笔订单不能超过2600元，可分开下单
-				msgModel.setIsSucc(false);
-				msgModel.setMessage(String.format("单笔订单金额已达上限%s元。", Constants.MAX_PRODUCT_AMOUNT));
-				return msgModel;
-			}else if(StringUtil.compareObject(productType, GoodsType.GOODS_TYPE_DIRECT_GO)
-					&& sumAmount.compareTo(Constants.MAX_PRODUCT_GO_AMOUNT) == 1) {
-				//行邮
-				msgModel.setIsSucc(false);
-				msgModel.setMessage(String.format("行邮单笔订单金额已达上限%s元。", Constants.MAX_PRODUCT_GO_AMOUNT));
-				return msgModel;
-			}
-			msgModel.setIsSucc(true);
-			return msgModel;
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		msgModel.setIsSucc(false);
-		msgModel.setMessage("金额上限检查错误");
-		return msgModel;
-	}
 }

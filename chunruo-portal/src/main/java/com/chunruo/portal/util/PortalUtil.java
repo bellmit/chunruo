@@ -25,7 +25,6 @@ import com.chunruo.portal.PortalConstants;
 
 public class PortalUtil {
 	protected final static transient Log log = LogFactory.getLog(PortalUtil.class);
-	public static Map<String, String> MOBILE_PREFIX_MAP = new HashMap<String,String> ();
 
 
 	/**

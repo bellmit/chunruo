@@ -243,8 +243,29 @@ public class UserProfitRecordManagerImpl extends GenericManagerImpl<UserProfitRe
 			Integer profitType = UserProfitRecord.DISTRIBUTION_TYPE_FX; 
 			Long fromUserId = order.getUserId();						
 			Long topUserId = 0L; 										
-			Long storeId = 0L;                                          
+			Long storeId = 0L;            
+			Long shareUserId = 0L;
 			Double profitTop = 0.0D; 									
+			Double profitSub = 0.0D;                       
+			
+			// 支持上级返利等级用户
+			UserInfo topUserInfo = this.userInfoManager.get(order.getTopUserId());
+			if(topUserInfo != null
+					&& StringUtil.nullToBoolean(topUserInfo.getIsAgent()) 
+					&& StringUtil.compareObject(topUserInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)){
+				topUserId = StringUtil.nullToLong(topUserInfo.getUserId());
+				profitTop = StringUtil.nullToDoubleFormat(order.getProfitTop());
+			}
+			
+			//分享返利
+			UserInfo shareUserInfo = this.userInfoManager.get(order.getShareUserId());
+            if(shareUserInfo != null
+            		&& shareUserInfo.getUserId() != null
+            		 && StringUtil.nullToBoolean(shareUserInfo.getIsAgent())) {
+            	shareUserId = StringUtil.nullToLong(shareUserInfo.getUserId());
+            	profitSub = StringUtil.nullToDoubleFormat(order.getProfitSub());
+            }
+			
 			
 			Map<String, List<Long>> resultMap = new HashMap<String, List<Long>> ();
 			if(StringUtil.nullToBoolean(order.getIsInvitationAgent())){
@@ -267,11 +288,27 @@ public class UserProfitRecordManagerImpl extends GenericManagerImpl<UserProfitRe
 				topUserProfitRecord.setOrderId(orderId);
 				topUserProfitRecord.setOrderNo(orderNo);
 				topUserProfitRecord.setIncome(profitTop);
+				topUserProfitRecord.setMtype(UserProfitRecord.DISTRIBUTION_MTYPE_TOP);
 				topUserProfitRecord.setStatus(UserProfitRecord.DISTRIBUTION_STATUS_INIT);
 				topUserProfitRecord.setType(profitType);
 				topUserProfitRecord.setCreateTime(DateUtil.getCurrentDate());
 				topUserProfitRecord.setUpdateTime(topUserProfitRecord.getCreateTime());
 				userProfitRecordList.add(topUserProfitRecord);
+			}
+			
+			if( profitSub.compareTo(0.0D) > 0) {
+				UserProfitRecord shareUserProfitRecord = new UserProfitRecord();
+				shareUserProfitRecord.setUserId(shareUserId);
+				shareUserProfitRecord.setFromUserId(fromUserId);
+				shareUserProfitRecord.setOrderId(orderId);
+				shareUserProfitRecord.setOrderNo(orderNo);
+				shareUserProfitRecord.setIncome(profitSub);
+				shareUserProfitRecord.setMtype(UserProfitRecord.DISTRIBUTION_MTYPE_DOWN);
+				shareUserProfitRecord.setStatus(UserProfitRecord.DISTRIBUTION_STATUS_INIT);
+				shareUserProfitRecord.setType(UserProfitRecord.DISTRIBUTION_TYPE_FX);
+				shareUserProfitRecord.setCreateTime(DateUtil.getCurrentDate());
+				shareUserProfitRecord.setUpdateTime(shareUserProfitRecord.getCreateTime());	
+				userProfitRecordList.add(shareUserProfitRecord);
 			}
 			
 		
@@ -475,6 +512,7 @@ public class UserProfitRecordManagerImpl extends GenericManagerImpl<UserProfitRe
 			topUserProfitRecord.setOrderId(StringUtil.nullToLong(order.getOrderId()));
 			topUserProfitRecord.setOrderNo(StringUtil.null2Str(order.getOrderNo()));
 			topUserProfitRecord.setIncome(StringUtil.nullToDoubleFormat(profitTop));
+			topUserProfitRecord.setMtype(UserProfitRecord.DISTRIBUTION_MTYPE_TOP);
 			topUserProfitRecord.setStatus(UserProfitRecord.DISTRIBUTION_STATUS_INIT);
 			topUserProfitRecord.setType(UserProfitRecord.DISTRIBUTION_TYPE_VIP);
 			topUserProfitRecord.setCreateTime(DateUtil.getCurrentDate());

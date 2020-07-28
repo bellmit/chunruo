@@ -22,6 +22,7 @@ import com.chunruo.core.util.vo.MessageVo;
 import com.chunruo.core.vo.MsgModel;
 import com.chunruo.portal.BaseController;
 import com.chunruo.portal.PortalConstants;
+import com.chunruo.portal.interceptor.LoginInterceptor;
 import com.chunruo.portal.util.PortalUtil;
 
 /**
@@ -315,5 +316,67 @@ public class UserInfoController extends BaseController{
 		return resultMap;
 	}
 
+	
+	@LoginInterceptor(value = LoginInterceptor.LOGIN, contType = LoginInterceptor.CONT_JOSN_TYPE)
+	@RequestMapping("/bindShareUser")
+	public @ResponseBody Map<String, Object> bindShareUser(final HttpServletRequest request,final  HttpServletResponse response) {
+		Map<String, Object> resultMap = new HashMap<String, Object> ();
+		Long shareUserId = StringUtil.nullToLong(request.getParameter("userId"));
+		try {
 
+			System.out.println("bindShareUser:"+shareUserId);
+			// 修改最后登录时间失效
+			UserInfo userInfo = PortalUtil.getCurrentUserInfo(request);
+			if(userInfo == null || userInfo.getUserId() == null){
+				resultMap.put(PortalConstants.CODE, PortalConstants.CODE_NOLOGIN);
+				resultMap.put(PortalConstants.MSG, "用户未登录");
+				resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
+				return resultMap;
+			}
+
+			if(StringUtil.compareObject(userInfo.getUserId(), shareUserId)) {
+                    resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
+					resultMap.put(PortalConstants.MSG, "不能绑定自己");
+					resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
+					return resultMap;
+			}
+			
+			if(!StringUtil.compareObject(userInfo.getShareUserId(), 0)) {
+				UserInfo shareUserInfo = this.userInfoManager.get(StringUtil.nullToLong(userInfo.getShareUserId()));
+				if(shareUserInfo != null 
+						&& shareUserInfo.getUserId() != null) {
+					resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
+					resultMap.put(PortalConstants.MSG, "用户已绑定分享关系");
+					resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
+					return resultMap;
+				}
+			}
+			
+			UserInfo shareUserInfo = this.userInfoManager.get(shareUserId);
+			if(shareUserInfo == null || shareUserInfo.getUserId() == null) {
+				resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
+				resultMap.put(PortalConstants.MSG, "分享人信息未找到");
+				resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
+				return resultMap;
+			}
+			
+			userInfo.setShareUserId(StringUtil.nullToLong(shareUserInfo.getUserId()));
+			userInfo.setUpdateTime(DateUtil.getCurrentDate());
+			this.userInfoManager.save(userInfo);
+
+			resultMap.put(PortalConstants.CODE, PortalConstants.CODE_SUCCESS);
+			resultMap.put(PortalConstants.MSG, "分享关系绑定成功");
+			resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
+			return resultMap;
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+
+        System.out.println("ERROR bindShareUser:"+shareUserId);
+		resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
+		resultMap.put(PortalConstants.MSG, "绑定失败");
+		resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
+		return resultMap;
+	}
 }

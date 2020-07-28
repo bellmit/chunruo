@@ -30,10 +30,7 @@ import com.chunruo.portal.util.DesUtil;
 import com.chunruo.portal.util.PortalUtil;
 import com.chunruo.portal.util.WeiXinPayUtil;
 
-/**
- * 小程序获取用户、登录信息
- * @author Administrator
- */
+
 @Controller
 @RequestMapping("/api/miniProgram/")
 public class WeiXinAppletController extends BaseController{

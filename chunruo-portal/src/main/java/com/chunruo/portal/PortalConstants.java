@@ -28,16 +28,15 @@ public class PortalConstants {
 	public static final String CODE_NO_VOTER="-22";
 
 	// 短信类型
-	public static int CODE_TYPE_REGISTER = 1; 		// 注册用户短信
-	public static int CODE_TYPE_LOGIN = 2; 			// 短信登陆
-	public static int CODE_TYPE_FORGET = 3;	 		// 修改安全密碼
-	public static int CODE_TYPE_MODIFY_PASSWD = 4;	// 修改密码短信
-	public static int CODE_TYPE_BIND_MOBILE = 5;	// 绑定手机号码
-	public static int CODE_TYPE_REGISTER_SUCC = 6;	// 用户注册成功
-	public static int CODE_TYPE_WECHAT_MODIFY = 7;	// 更换微信短信
-	public static int CODE_TYPE_ORDER_PAY = 8;      // 下单短信
+	public static int CODE_TYPE_REGISTER = 1; 		
+	public static int CODE_TYPE_LOGIN = 2; 			
+	public static int CODE_TYPE_FORGET = 3;	 		
+	public static int CODE_TYPE_MODIFY_PASSWD = 4;	
+	public static int CODE_TYPE_BIND_MOBILE = 5;	
+	public static int CODE_TYPE_REGISTER_SUCC = 6;	
+	public static int CODE_TYPE_WECHAT_MODIFY = 7;	
+	public static int CODE_TYPE_ORDER_PAY = 8;      
 	
-	//请求头信息参数Key
 	public static final String X_APP_VERSION = "X-APP-VERSION";
 	public static final String X_CLIENT_TYPE = "X-CLIENT-TYPE";
 	public static final String X_USER_AGENT = "X-USER-AGENT";
@@ -53,7 +52,6 @@ public class PortalConstants {
 	public static final String X_SHARE_USER = "X-SHARE-USER";
 	public static final String X_REQUEST_TYPE = "X-REQUEST-TYPE";
 
-	//session信息
 	public final static String SESSION_ALIPAY_WEB_SUCCESS = "login_alipay_web_success";
 	public final static String SESSION_LOGIN_SUCC_REDIRECT_URI = "login_succ_redirect_uri";
 	public final static String SESSION_WECHAT_CONFIG_ID = "current_wechat_config_id";

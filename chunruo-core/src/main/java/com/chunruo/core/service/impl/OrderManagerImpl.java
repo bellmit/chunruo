@@ -41,7 +41,6 @@ import com.chunruo.core.service.UserProductTaskItemManager;
 import com.chunruo.core.service.UserProfitRecordManager;
 import com.chunruo.core.service.UserSaleRecordManager;
 import com.chunruo.core.vo.ChilderOrderVo;
-import com.chunruo.core.vo.MsgModel;
 import com.chunruo.core.util.DateUtil;
 import com.chunruo.core.util.DoubleUtil;
 import com.chunruo.core.util.StringUtil;

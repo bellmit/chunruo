@@ -22,13 +22,8 @@ import javax.persistence.UniqueConstraint;
 public class UserInfo implements Cloneable, Serializable{
 	private static final long serialVersionUID = -2259459843973883469L;
 	public static final String DEFUALT_COUNTRY_CODE = "86"; //默认中国区号
-	public static final Integer DEFUALT_CHANCE_COUNT = 5; 	//默认剩余输入密码机会次数
 	
-	// 登录类型
-	public static final int LOGIN_TYPE_APP = 1;				
-	public static final int LOGIN_TYPE_WECAHT = 2;			
-	public static final int LOGIN_TYPE_MINI_PROGRAM = 3;	
-	public static final int LOGIN_TYPE_PC = 4;				
+	// 登录类			
 	public static final int LOGIN_TYPE_JKD_PROGRAM = 5;		//纯若小程序登录
 	
 	private Long userId;						//用户ID
@@ -65,6 +60,8 @@ public class UserInfo implements Cloneable, Serializable{
     private Long userManagerId;                 //客户经理id
     private Date registerTime;                  //注册时间
     private Date upgradeTime;                   //升级时间
+    private Long topUserId;					    //上级ID
+    private Long shareUserId;                   //分享人ID
     private Date createTime;				    //创建时间
     private Date updateTime;				    //更新时间
     
@@ -75,7 +72,6 @@ public class UserInfo implements Cloneable, Serializable{
     private Double balance;					//可提现金额（集币）
     private Double sales;					//销售金额
     private Double income;					//累计销售金额
-    private Long topUserId;					//上级店铺ID
     private String inviterCode;				//邀请码
     private Double withdrawalAmount; 		//已提现金额
 	private Long bankId; 					//开户银行
@@ -378,6 +374,15 @@ public class UserInfo implements Cloneable, Serializable{
 		this.topUserId = topUserId;
 	}
 	
+	@Column(name="share_user_id")
+	public Long getShareUserId() {
+		return shareUserId;
+	}
+
+	public void setShareUserId(Long shareUserId) {
+		this.shareUserId = shareUserId;
+	}
+
 	@Column(name="create_time")
 	public Date getCreateTime() {
 		return createTime;

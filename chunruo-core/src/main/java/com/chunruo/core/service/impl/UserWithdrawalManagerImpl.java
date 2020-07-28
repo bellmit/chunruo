@@ -195,6 +195,7 @@ public class UserWithdrawalManagerImpl extends GenericManagerImpl<UserWithdrawal
 				userWithdrawal.setRemarks("提现");
 				userWithdrawal.setStatus(Constants.WithdrawalStatus.NEW_STATUS);
 				userWithdrawal.setTradeNo(CoreInitUtil.getRandomNo());
+				userWithdrawal.setName(StringUtil.null2Str(paramMap.get("name")));
 				userWithdrawal.setUserId(userInfo.getUserId());
 				userWithdrawal.setCreateTime(DateUtil.getCurrentDate());
 				userWithdrawal.setUpdateTime(userWithdrawal.getCreateTime());

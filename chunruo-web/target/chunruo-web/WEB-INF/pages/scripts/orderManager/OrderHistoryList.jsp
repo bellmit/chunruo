@@ -49,36 +49,8 @@ Ext.define('MyExt.orderManager.OrderHistoryList', {
 			},
 			{text: '<fmt:message key="history.createTime"/>', dataIndex: 'createTime', width: 130, sortable : true}
         ]; 
-        
-        <jkd:haveAuthorize access="/order/pushPaymentRecordToCustoms.json">
-        this.tbar = [{
-	        text: '<fmt:message key="order.push.payment.record"/>',
-	        iconCls: 'add',
-	        handler : this.pushPaymentRecord,
-	       	scope: this
-	    }];
-	    </jkd:haveAuthorize>
+       
     	this.callParent();
     },
     
-    pushPaymentRecord : function() {
-		Ext.Msg.confirm('<fmt:message key="ajax.confirm"/>', '<fmt:message key="save.confirm"/>', function(e){
-			if(e == 'yes'){
-				Ext.Ajax.request({
-		        	url: '<c:url value="/order/pushPaymentRecordToCustoms.json"/>',
-		         	method: 'post',
-					scope: this,
-					params:{orderId: this.record.data.orderId},
-		          	success: function(response){
-          				var responseObject = Ext.JSON.decode(response.responseText);
-                        if(responseObject.success == true){
-                       		showSuccMsg(responseObject.message);
-						}else{
-							showFailMsg(responseObject.message, 4);
-						}
-					}
-		     	})
-	     	}
-	 	}, this)  
-	},  
 });

@@ -461,7 +461,6 @@ public class ProductController extends BaseController {
 		String productSpecGridJson = StringUtil.null2Str(request.getParameter("productSpecGridJson"));
 		String primarySpecGridJson = StringUtil.null2Str(request.getParameter("primarySpecGridJson"));
 		String secondarySpecGridJson = StringUtil.null2Str(request.getParameter("secondarySpecGridJson"));
-		String productGroupGridJson = StringUtil.null2Str(request.getParameter("productGroupGridJson"));
 		Boolean isGroupProduct = StringUtil.nullToBoolean(request.getParameter("isGroupProduct"));
 
 		try{
@@ -500,7 +499,6 @@ public class ProductController extends BaseController {
 				product.setProductCopywriter(StringUtil.null2Str(dbProduct.getProductCopywriter()));
 				product.setAggrProductIds(dbProduct.getAggrProductIds());
 			}
-			
 			// 规格商品
 			boolean isMoreSpecProduct = false;
 			List<Product> aggrProductList = null;
@@ -509,128 +507,102 @@ public class ProductController extends BaseController {
 			List<ProductSpecType> secondarySpecList = new ArrayList<ProductSpecType> ();
 			List<ProductGroup> productGroupList = new ArrayList<ProductGroup> ();
 			
-			if(StringUtil.nullToBoolean(product.getIsGroupProduct())){
-				if(StringUtil.nullToBoolean(product.getIsOpenV2Price())
-						|| StringUtil.nullToBoolean(product.getIsOpenV3Price())
-						|| StringUtil.nullToBoolean(product.getIsShowLevelPrice())
-						|| StringUtil.nullToBoolean(product.getIsShowV2Price())
-						|| StringUtil.nullToBoolean(product.getIsShowV3Price())) {
+			// 是否规格商品
+			List<Double> priceList = new ArrayList<Double> ();
+			if(StringUtil.nullToBoolean(product.getIsSpceProduct())){
+				// 检查商品规格信息
+				MsgModel<List<ProductSpec>> productSpecModel = this.getProductSpecList(productSpecGridJson, isNews, product);
+				if(!StringUtil.nullToBoolean(productSpecModel.getIsSucc())){
 					resultMap.put("error", true);
 					resultMap.put("success", true);
-					resultMap.put("message", "组合商品不能开启等级价");
+					resultMap.put("message", productSpecModel.getMessage());
 					return resultMap;
 				}
 				
-				// 组合商品
-				MsgModel<List<ProductGroup>> msgModel = this.getProductGroupList(productGroupGridJson, isNews, product.getWareHouseId());
-				if(!StringUtil.nullToBoolean(msgModel.getIsSucc())){
-					resultMap.put("error", true);
-					resultMap.put("success", true);
-					resultMap.put("message", msgModel.getMessage());
-					return resultMap;
-				}
+				// 规格信息
+				productSpecList = productSpecModel.getData();
+				// 是否多规格商品
+				isMoreSpecProduct = StringUtil.nullToBoolean(productSpecModel.getIsMoreSpecProduct());
 				
-				// 组合商品有效数据
-				productGroupList = msgModel.getData();
+				// 检查商品规格信息是否有效
+				if(productSpecModel.getData() != null && productSpecModel.getData().size() > 0){
+					for(ProductSpec productSpec : productSpecModel.getData()){
+						priceList.add(productSpec.getPriceRecommend());
+					}
+					
+					// 检查主商品规格类型
+					MsgModel<List<ProductSpecType>> primarySpecModel = this.getProductSpecTypeList(primarySpecGridJson, isNews, product.getProductId());
+					if(!StringUtil.nullToBoolean(primarySpecModel.getIsSucc())){
+						resultMap.put("error", true);
+						resultMap.put("success", true);
+						resultMap.put("message", primarySpecModel.getMessage());
+						return resultMap;
+					}else if(primarySpecModel.getData() == null || primarySpecModel.getData().size() <= 0){
+						resultMap.put("error", true);
+						resultMap.put("success", true);
+						resultMap.put("message", "主商品规格类型不能为空");
+						return resultMap;
+					}
+					
+					primarySpecList = primarySpecModel.getData();
+					
+					// 多个规格商品
+					if(isMoreSpecProduct){
+						// 检查次商品规格类型
+						MsgModel<List<ProductSpecType>> secondarySpecModel = this.getProductSpecTypeList(secondarySpecGridJson, isNews, product.getProductId());
+						if(!StringUtil.nullToBoolean(secondarySpecModel.getIsSucc())){
+							resultMap.put("error", true);
+							resultMap.put("success", true);
+							resultMap.put("message", secondarySpecModel.getMessage());
+							return resultMap;
+						}else if(StringUtil.nullToBoolean(productSpecModel.getIsMoreSpecProduct())
+								&& (secondarySpecModel.getData() == null || secondarySpecModel.getData().size() <= 0)){
+							resultMap.put("error", true);
+							resultMap.put("success", true);
+							resultMap.put("message", "次商品规格类型不能为空");
+							return resultMap;
+						}
+						
+						secondarySpecList = secondarySpecModel.getData();
+					}
+				}
 			}else{
-				// 是否规格商品
-				List<Double> priceList = new ArrayList<Double> ();
-				if(StringUtil.nullToBoolean(product.getIsSpceProduct())){
-					// 检查商品规格信息
-					MsgModel<List<ProductSpec>> productSpecModel = this.getProductSpecList(productSpecGridJson, isNews, product);
-					if(!StringUtil.nullToBoolean(productSpecModel.getIsSucc())){
-						resultMap.put("error", true);
-						resultMap.put("success", true);
-						resultMap.put("message", productSpecModel.getMessage());
-						return resultMap;
-					}
-					
-					// 规格信息
-					productSpecList = productSpecModel.getData();
-					// 是否多规格商品
-					isMoreSpecProduct = StringUtil.nullToBoolean(productSpecModel.getIsMoreSpecProduct());
-					
-					// 检查商品规格信息是否有效
-					if(productSpecModel.getData() != null && productSpecModel.getData().size() > 0){
-						for(ProductSpec productSpec : productSpecModel.getData()){
-							priceList.add(productSpec.getPriceRecommend());
-						}
-						
-						// 检查主商品规格类型
-						MsgModel<List<ProductSpecType>> primarySpecModel = this.getProductSpecTypeList(primarySpecGridJson, isNews, product.getProductId());
-						if(!StringUtil.nullToBoolean(primarySpecModel.getIsSucc())){
-							resultMap.put("error", true);
-							resultMap.put("success", true);
-							resultMap.put("message", primarySpecModel.getMessage());
-							return resultMap;
-						}else if(primarySpecModel.getData() == null || primarySpecModel.getData().size() <= 0){
-							resultMap.put("error", true);
-							resultMap.put("success", true);
-							resultMap.put("message", "主商品规格类型不能为空");
-							return resultMap;
-						}
-						
-						primarySpecList = primarySpecModel.getData();
-						
-						// 多个规格商品
-						if(isMoreSpecProduct){
-							// 检查次商品规格类型
-							MsgModel<List<ProductSpecType>> secondarySpecModel = this.getProductSpecTypeList(secondarySpecGridJson, isNews, product.getProductId());
-							if(!StringUtil.nullToBoolean(secondarySpecModel.getIsSucc())){
-								resultMap.put("error", true);
-								resultMap.put("success", true);
-								resultMap.put("message", secondarySpecModel.getMessage());
-								return resultMap;
-							}else if(StringUtil.nullToBoolean(productSpecModel.getIsMoreSpecProduct())
-									&& (secondarySpecModel.getData() == null || secondarySpecModel.getData().size() <= 0)){
-								resultMap.put("error", true);
-								resultMap.put("success", true);
-								resultMap.put("message", "次商品规格类型不能为空");
-								return resultMap;
-							}
-							
-							secondarySpecList = secondarySpecModel.getData();
-						}
-					}
-				}else{
-					// 检查商品价格是否有效
-					if(product.getPriceCost() == null){
-						// 成本价格不能为空
-						resultMap.put("error", true);
-						resultMap.put("success", true);
-						resultMap.put("message", getText("product.wholesale.priceCost.empty"));
-						return resultMap;
-					}else if(StringUtil.nullToDouble(product.getPriceRecommend()).compareTo(StringUtil.nullToDouble(product.getPriceCost())) <= 0){
-						// 售卖价格必须比成本价格大
-						resultMap.put("error", true);
-						resultMap.put("success", true);
-						resultMap.put("message", getText("售卖价格必须大于成本价"));
-						return resultMap;
-					}else if(product.getTemplateId() == null) {
-						resultMap.put("error", true);
-						resultMap.put("success", true);
-						resultMap.put("message", getText("运费模板不能为空"));
-						return resultMap;
-					}
-					
-					// 售卖价格
-					priceList.add(product.getPriceRecommend());
-					
-					//是否售罄
-					Integer quantity = StringUtil.nullToInteger(product.getStockNumber());
-					product.setIsSoldout(true);
-					if(quantity > 0){
-						product.setIsSoldout(false);
-					}	
+				// 检查商品价格是否有效
+				if(product.getPriceCost() == null){
+					// 成本价格不能为空
+					resultMap.put("error", true);
+					resultMap.put("success", true);
+					resultMap.put("message", getText("product.wholesale.priceCost.empty"));
+					return resultMap;
+				}else if(StringUtil.nullToDouble(product.getPriceRecommend()).compareTo(StringUtil.nullToDouble(product.getPriceCost())) <= 0){
+					// 售卖价格必须比成本价格大
+					resultMap.put("error", true);
+					resultMap.put("success", true);
+					resultMap.put("message", getText("售卖价格必须大于成本价"));
+					return resultMap;
+				}else if(product.getTemplateId() == null) {
+					resultMap.put("error", true);
+					resultMap.put("success", true);
+					resultMap.put("message", getText("运费模板不能为空"));
+					return resultMap;
 				}
 				
-				Collections.sort(priceList, new Comparator<Double>() {
-					public int compare(Double obj1, Double obj2) {
-						return StringUtil.nullToDouble(obj2).compareTo(StringUtil.nullToDouble(obj1));
-					}
-				});
+				// 售卖价格
+				priceList.add(product.getPriceRecommend());
 				
+				//是否售罄
+				Integer quantity = StringUtil.nullToInteger(product.getStockNumber());
+				product.setIsSoldout(true);
+				if(quantity > 0){
+					product.setIsSoldout(false);
+				}	
 			}
+			
+			Collections.sort(priceList, new Comparator<Double>() {
+				public int compare(Double obj1, Double obj2) {
+					return StringUtil.nullToDouble(obj2).compareTo(StringUtil.nullToDouble(obj1));
+				}
+			});
 			
 			
 			
@@ -1159,164 +1131,6 @@ public class ProductController extends BaseController {
 		return resultMap;
 	}
 	
-	/**
-	 * 组合商品解析
-	 * @param productSpecGridJson
-	 * @param isNews
-	 * @param productId
-	 * @return
-	 */
-	private MsgModel<List<ProductGroup>> getProductGroupList(String productGroupGridJson, boolean isNews, Long warehouseId){
-		MsgModel<List<ProductGroup>> msgModel = new MsgModel<List<ProductGroup>> ();
-		try{
-			List<Object> objectMapList = new ArrayList<Object> ();
-			try{
-				objectMapList = StringUtil.jsonDeserialize(productGroupGridJson);
-			}catch(Exception e){
-				log.debug(e.getMessage());
-			}
-			
-			if(objectMapList != null && objectMapList.size() > 0){
-				List<ProductGroup> productGroupList = new ArrayList<ProductGroup> ();
-				for(Object object : objectMapList){
-					@SuppressWarnings("unchecked")
-					Map<String, Object> objectMap = (Map<String, Object>)object;
-					Long productId = StringUtil.nullToLong(objectMap.get("productId"));
-					Long productSpecId = StringUtil.nullToLong(objectMap.get("productSpecId"));
-					Double groupPriceCost = StringUtil.nullToDoubleFormat(objectMap.get("groupPriceCost"));
-					Double groupPriceWholesale = StringUtil.nullToDoubleFormat(objectMap.get("groupPriceWholesale"));
-					Double groupPriceRecommend = StringUtil.nullToDoubleFormat(objectMap.get("groupPriceRecommend"));
-					Integer saleTimes = StringUtil.nullToInteger(objectMap.get("saleTimes"));
-					
-					// 检查商品价格是否有效
-					if(groupPriceCost == null || StringUtil.nullToDouble(groupPriceCost) < 0.01D){
-						// 组合商品成本价格错误
-						msgModel.setIsSucc(false);
-						msgModel.setMessage("错误,组合商品成本价格错误");
-						return msgModel;
-					}else if(StringUtil.nullToDouble(groupPriceWholesale).compareTo(StringUtil.nullToDouble(groupPriceCost)) <= 0){
-						// 组合商品市场价格错误
-						msgModel.setIsSucc(false);
-						msgModel.setMessage("错误,组合商品市场价格必须大于成本价格");
-						return msgModel;
-					}else if(StringUtil.nullToDouble(groupPriceRecommend).compareTo(StringUtil.nullToDouble(groupPriceWholesale)) <= 0){
-						// 组合商品售卖价格必须大于市场价格
-						msgModel.setIsSucc(false);
-						msgModel.setMessage("错误,组合商品售卖价格必须大于市场价格");
-						return msgModel;
-					}else if(StringUtil.nullToInteger(saleTimes) <= 0){
-						//商品规格号不能为空
-						msgModel.setIsSucc(false);
-						msgModel.setMessage("错误,组合商品出售倍数必须大于0");
-						return msgModel;
-					}
-			
-					ProductGroup productGroup = new ProductGroup ();
-					productGroup.setProductId(productId);
-					productGroup.setProductSpecId(productSpecId);
-					productGroup.setGroupPriceCost(groupPriceCost);
-					productGroup.setGroupPriceWholesale(groupPriceWholesale);
-					productGroup.setGroupPriceRecommend(groupPriceRecommend);
-					productGroup.setSaleTimes(saleTimes);
-					productGroupList.add(productGroup);
-				}
-				
-				// 新的组合商品规则
-				Map<Long, Product> productMap = new HashMap<Long, Product> ();
-				Map<Long, List<ProductGroup>> productGroupListMap = new HashMap<Long, List<ProductGroup>> ();
-				if(productGroupList != null && productGroupList.size() > 0){
-					Set<Long> productIdSet = new HashSet<Long> ();
-					for(ProductGroup productGroup : productGroupList){
-						productIdSet.add(productGroup.getProductId());
-					}
-					
-					// 查询所有的子商品
-					List<Product> productList = this.productManager.getByIdList(StringUtil.longSetToList(productIdSet));
-					if(productList != null && productList.size() > 0){
-						for(Product product : productList){
-							productMap.put(product.getProductId(), product);
-						}
-					}
-					
-					for(ProductGroup productGroup : productGroupList){
-						// 检查对应的商品是否存在
-						if(!productMap.containsKey(productGroup.getProductId())){
-							msgModel.setIsSucc(false);
-							msgModel.setMessage("错误,组合子商品信息不存在");
-							return msgModel;
-						}
-						
-						// 真实商品记录
-						Product product = productMap.get(productGroup.getProductId());
-						if(!StringUtil.compareObject(product.getWareHouseId(), warehouseId)) {
-							msgModel.setIsSucc(false);
-							msgModel.setMessage(String.format("错误,\"%s\"与组合商品仓库信息不匹配", product.getName()));
-							return msgModel;
-						}
-						
-						// 复制商品规格属性
-						productGroup.setIsSpceProduct(StringUtil.nullToBoolean(product.getIsSpceProduct()));
-						if(StringUtil.nullToBoolean(product.getIsSpceProduct())){
-							ProductSpec productSpec = this.productSpecManager.get(productGroup.getProductSpecId());
-							if(productSpec == null 
-									|| productSpec.getProductSpecId() == null
-									|| !StringUtil.compareObject(productSpec.getProductId(), product.getProductId())){
-								msgModel.setIsSucc(false);
-								msgModel.setMessage("错误,组合子规格商品信息不存在");
-								return msgModel;
-							}
-							// 仓库信息汇总
-							productGroup.setProductTags(StringUtil.null2Str(productSpec.getProductTags()));
-						}
-						
-						// 按商品的归类
-						if(productGroupListMap.containsKey(productGroup.getProductId())){
-							// 单规格商品不能出现多条记录
-							if(!StringUtil.nullToBoolean(product.getIsSpceProduct())){
-								msgModel.setIsSucc(false);
-								msgModel.setMessage(String.format("错误,\"%s\"单商品存在多条记录", product.getName()));
-								return msgModel;
-							}
-							
-							// 检查出售倍数是否一直
-							List<ProductGroup> list = productGroupListMap.get(productGroup.getProductId());
-							if(list != null && list.size() > 0){
-								Set<Integer> saleTimeSet = new HashSet<Integer> ();
-								for(ProductGroup group : list){
-									saleTimeSet.add(StringUtil.nullToInteger(group.getSaleTimes()));
-								}
-								saleTimeSet.add(StringUtil.nullToInteger(productGroup.getSaleTimes()));
-								
-								// 检查仓库汇总的记录是否不唯一
-								if(!StringUtil.compareObject(saleTimeSet.size(), 1)){
-									msgModel.setIsSucc(false);
-									msgModel.setMessage("错误,同商品的出售倍数必须一致");
-									return msgModel;
-								}
-							}
-							
-							productGroupListMap.get(productGroup.getProductId()).add(productGroup);
-						}else{
-							List<ProductGroup> list = new ArrayList<ProductGroup> ();
-							list.add(productGroup);
-							productGroupListMap.put(productGroup.getProductId(), list);
-						}
-					}
-					
-				}
-				
-				msgModel.setIsSucc(true);
-				msgModel.setData(productGroupList);
-				return msgModel;
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		msgModel.setIsSucc(false);
-		msgModel.setMessage("组合商品信息解析错误");
-		return msgModel;
-	}
 	
 	
 	/**

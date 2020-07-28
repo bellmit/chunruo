@@ -27,6 +27,7 @@ import com.chunruo.core.model.ProductSpec;
 import com.chunruo.core.model.UserAddress;
 import com.chunruo.core.model.UserInfo;
 import com.chunruo.core.service.OrderManager;
+import com.chunruo.core.service.UserInfoManager;
 import com.chunruo.core.util.CoreInitUtil;
 import com.chunruo.core.util.DateUtil;
 import com.chunruo.core.util.DoubleUtil;
@@ -52,6 +53,8 @@ public class OrderController extends BaseController{
 	public static Double TOP_PROFIT_RATE = 0.1;
 	@Autowired
 	private OrderManager orderManager;
+	@Autowired
+	private UserInfoManager userInfoManager;
 	@Autowired
 	private OrderByIdCacheManager orderByIdCacheManager;
 	@Autowired
@@ -228,7 +231,6 @@ public class OrderController extends BaseController{
 
 			//检查优惠券是否有效性
 			boolean isUserCoupon = false;
-			boolean isRechargeProductCoupon = false;
 
 			// 购买商品列表
 			List<Product> buyProductList = productCheckModel.getData();
@@ -256,12 +258,26 @@ public class OrderController extends BaseController{
 			//订单商品ID列表
 			List<Long> productIdList = new ArrayList<Long> ();
 
-			// 检查上级店铺是否可以返利
-			List<Integer> levelList = new ArrayList<Integer>();
-			levelList.add(UserLevel.USER_LEVEL_DEALER); //经销商
-			levelList.add(UserLevel.USER_LEVEL_AGENT);  //总代
-			levelList.add(UserLevel.USER_LEVEL_V2);     //v2
-			levelList.add(UserLevel.USER_LEVEL_V3);     //v3
+			
+			
+			//检查上级是否能有返利
+			boolean isHaveTopProfit = false;
+			if(!StringUtil.compareObject(userInfo.getTopUserId(), 0)) {
+				UserInfo topUserInfo = this.userInfoManager.get(StringUtil.nullToLong(userInfo.getTopUserId()));
+				if(topUserInfo != null && topUserInfo.getUserId() != null
+						&& StringUtil.compareObject(topUserInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
+					isHaveTopProfit = true;
+				}
+			}
+			
+			boolean isHaveSubProfit = false;
+			if(!StringUtil.compareObject(userInfo.getShareUserId(), 0 )) {
+				UserInfo shareUserInfo = this.userInfoManager.get(StringUtil.nullToLong(userInfo.getShareUserId()));
+				if(shareUserInfo != null && shareUserInfo.getUserId() != null) {
+					isHaveSubProfit = true;
+				}
+			}
+			
 			
 			int index = 1;
 			int totalNumber = 0;
@@ -293,8 +309,17 @@ public class OrderController extends BaseController{
 				//按模版统计重量
 				Double totalWeights = DoubleUtil.mul(StringUtil.nullToDouble(product.getPaymentWeigth()), doubleProductNumber); 
 
-				Double topProfit = DoubleUtil.mul(productAmount, TOP_PROFIT_RATE);                                                      
-				Double subProfit = new Double(0);                                                       
+				//上级返利
+				Double topProfit = new Double(0);
+				if(isHaveTopProfit) {
+					topProfit = DoubleUtil.mul(productAmount, TOP_PROFIT_RATE); 
+				}
+
+				//分享返利
+				Double subProfit = new Double(0);
+				if(isHaveSubProfit) {
+					topProfit = DoubleUtil.mul(productAmount, TOP_PROFIT_RATE); 
+				}
 
 				// 按模版计算邮费
 				if(!StringUtil.nullToBoolean(product.getIsFreePostage())) {
@@ -427,25 +452,24 @@ public class OrderController extends BaseController{
 			order.setUserId(userInfo.getUserId());					                            //买家用户ID
 			order.setLoginType(StringUtil.nullToInteger(userInfo.getLoginType()));	            //用户登录类型
 			order.setLevel(StringUtil.nullToInteger(userInfo.getLevel()));                      //下单用户等级
-			order.setTopUserId(StringUtil.nullToLong(userInfo.getTopUserId()));			//上线用户ID
-			order.setShareUserId(StringUtil.nullToLong(userInfo.getUserId()));             //分享人ID
-			order.setStoreId(StringUtil.nullToLong(userInfo.getUserId()));                 //店铺ID
-			order.setOrderNo(CoreInitUtil.getRandomNo());     		//订单号date('YmdHis') . mt_rand(100000, 999999)
-			order.setStatus(OrderStatus.NEW_ORDER_STATUS);  		//订单状态(1:未支付;2:未发货;3:已发货;4:已完成;5:已取消;6:退款中;7:买家确认收货)
+			order.setTopUserId(StringUtil.nullToLong(userInfo.getTopUserId()));			      
+			order.setShareUserId(StringUtil.nullToLong(userInfo.getShareUserId()));             
+			order.setStoreId(StringUtil.nullToLong(userInfo.getUserId()));                 
+			order.setOrderNo(CoreInitUtil.getRandomNo());     		
+			order.setStatus(OrderStatus.NEW_ORDER_STATUS);  		
 			order.setProductAmount(StringUtil.nullToDoubleFormat(totalProductAmount));	//商品金额（不含邮费，不含税费）
 			order.setTotalRealSellPrice(StringUtil.nullToDoubleFormat(totalSellPrice));                                //商品总拿货价
-			order.setPostage(StringUtil.nullToDoubleFormat(totalPostage));    			//邮费
-			order.setTax(StringUtil.nullToDoubleFormat(totalTaxAmount)); 				//增值税
-			order.setPostageTax(StringUtil.nullToDoubleFormat(postageTaxAmount));       //邮费税费
-			order.setOrderAmount(StringUtil.nullToDoubleFormat(totalOrderAmount)); 		//订单金额（含邮费，含税费）
-			order.setPayAmount(StringUtil.nullToDoubleFormat(totalOrderAmount));  		//订单实付金额（含邮费，含税费）
+			order.setPostage(StringUtil.nullToDoubleFormat(totalPostage));    			
+			order.setTax(StringUtil.nullToDoubleFormat(totalTaxAmount)); 				
+			order.setPostageTax(StringUtil.nullToDoubleFormat(postageTaxAmount));      
+			order.setOrderAmount(StringUtil.nullToDoubleFormat(totalOrderAmount)); 		
+			order.setPayAmount(StringUtil.nullToDoubleFormat(totalOrderAmount));  		
 			order.setProductNumber(totalNumber);										//商品总件数
 			order.setIsDelete(false);													//订单是否隐藏		
-			order.setIsRechargeProductCoupon(isRechargeProductCoupon);                  //是否使用充值商品券
-			order.setProfitSub(StringUtil.nullToDoubleFormat(totalSubProfit));			//分销利润
+			order.setProfitSub(StringUtil.nullToDoubleFormat(totalSubProfit));			//分享利润
 			order.setProfitTop(StringUtil.nullToDoubleFormat(totalTopProfit));			//上级供应店铺利润
-			order.setProductType(1);                 					        //订单商品 商品类型
-			order.setOrderItemsList(orderItemsList);									//订单商品列表
+			order.setProductType(1);                 					        
+			order.setOrderItemsList(orderItemsList);									
 
 			// 设置是否实付金额
 			order.setPayAmount(StringUtil.nullToDoubleFormat(payAmount));                //实际支付现金金额

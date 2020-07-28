@@ -46,7 +46,7 @@ public class WithdrawalController extends BaseController{
 		lock.lock();
 		try {
 			Double amount = StringUtil.nullToDoubleFormat(request.getParameter("amount"));           //提现金额（含个税）
-			
+			String name = StringUtil.null2Str(request.getParameter("name"));
 			// 检查提现金额大于100
 			if (amount < 100) {
 				resultMap.put(PortalConstants.SYSTEMTIME, System.currentTimeMillis());
@@ -68,8 +68,8 @@ public class WithdrawalController extends BaseController{
 			
 			Map<String,Object> paramMap = new HashMap<String,Object>();
 			paramMap.put("userId", userInfo.getUserId());
+			paramMap.put("name", name);
 			paramMap.put("amount", amount);
-			
 			// 提现
 			MsgModel<Double> msgMode = this.userWithdrawalManager.insertUserDrawalRecord(paramMap);
 			if(!StringUtil.nullToBoolean(msgMode.getIsSucc())){

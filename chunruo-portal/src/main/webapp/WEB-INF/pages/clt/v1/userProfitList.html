@@ -24,6 +24,7 @@ ${userProfitListTag.setRequest($request)}
 	 			"orderProfit":"${StringUtil.nullToDoubleFormatDecimal($!record.orderProfit)}",
 	 			"refundProfit":"${StringUtil.nullToDoubleFormatDecimal($!record.refundProfit)}",
 	 			"status":"$!record.status",
+	 			"mtype":"$!record.mtype",
 	 			"createTime":"${DateUtil.getSeconds($!record.createTime)}",
 	 			"isHaveRefund":"${StringUtil.booleanToInt($!record.isHaveRefund)}",
 	 			"refundList":[
