@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.chunruo.cache.portal.impl.PostageTemplateCacheManager;
 import com.chunruo.cache.portal.impl.UserInfoByIdCacheManager;
 import com.chunruo.core.Constants;
 import com.chunruo.core.Constants.BuyPostType;
+import com.chunruo.core.model.PostageTemplate;
 import com.chunruo.core.model.Product;
 import com.chunruo.core.model.ProductSpec;
 import com.chunruo.core.model.UserAddress;
@@ -32,6 +34,7 @@ import com.chunruo.portal.vo.TagModel;
  *
  */
 public class OrderCheckTag extends BaseTag {
+	public final static Double DEFAULT_FREE_POSTAGE_AMOUNT = 10D;
 
 	public TagModel<Map<String, Object>> getData(Object postType_1, Object productId_1, Object productSpecId_1, Object number_1, Object cartIds_1, Object orderStackId_1, Object addressId_1, Object userCouponId_1, Object groupProductInfo_1){
 		Integer postType = StringUtil.nullToInteger(postType_1);		//请求方式: 0:立即下单;1:购物车结算
@@ -63,6 +66,7 @@ public class OrderCheckTag extends BaseTag {
 			}
 			
 			//从缓存重新读取用户信息
+			PostageTemplateCacheManager postageTemplateCacheManager = Constants.ctx.getBean(PostageTemplateCacheManager.class);
 			UserInfoByIdCacheManager userInfoByIdCacheManager = Constants.ctx.getBean(UserInfoByIdCacheManager.class);
 			userInfo = userInfoByIdCacheManager.getSession(userInfo.getUserId());
 			
@@ -159,6 +163,7 @@ public class OrderCheckTag extends BaseTag {
 			Double totalProductAmount = new Double(0);
 			Double totalOrderAmount = new Double (0);
 			Double totalTaxAmount = new Double(0);
+			Double freePosageProductAmount = new Double(0);
 			//订单商品与价格MAP
 			Map<Long, Double> couponProductMap = new HashMap<Long, Double>();
 			//订单商品分类与价格MAP
@@ -167,8 +172,6 @@ public class OrderCheckTag extends BaseTag {
 			Map<Long, Double> templateWeightsMap = new HashMap<Long, Double> ();
 			List<Map<String, Object>> productMapList = new ArrayList<Map<String, Object>> ();
 			for(Product product : buyProductList){
-				// 检查商品是否为秒杀即将开始商品价格
-//				ProductCheckUtil.checkSeckillProductStatusReadStatus(product);
 				
 				//商品数量
 				int productNumber = StringUtil.nullToInteger(product.getPaymentBuyNumber());
@@ -202,6 +205,8 @@ public class OrderCheckTag extends BaseTag {
 					}else{
 						templateWeightsMap.put(postTplId, totalWeights);
 					}
+				}else {
+					freePosageProductAmount = DoubleUtil.add(freePosageProductAmount, productAmount);
 				}
 				
 				//判断分销商品是否售罄或下架
@@ -245,25 +250,39 @@ public class OrderCheckTag extends BaseTag {
 				}
 			}
 			
-			//物流方式按地区计算邮费
-			if(templateWeightsMap != null && templateWeightsMap.size() > 0){
-				for(Entry<Long, Double> postTplEntry : templateWeightsMap.entrySet()){
-					PostageVo postageVo = PostageUtil.getPostage(postTplEntry.getKey(), provinceId, postTplEntry.getValue());
-					if(postageVo != null && postageVo.getPostage() != null){
-						//按模版计算总邮费
-						totalPostage = DoubleUtil.add(totalPostage, postageVo.getPostage());
-					}
-				}
-			}
+//			//物流方式按地区计算邮费
+//			if(templateWeightsMap != null && templateWeightsMap.size() > 0){
+//				for(Entry<Long, Double> postTplEntry : templateWeightsMap.entrySet()){
+//					PostageVo postageVo = PostageUtil.getPostage(postTplEntry.getKey(), provinceId, postTplEntry.getValue());
+//					if(postageVo != null && postageVo.getPostage() != null){
+//						//按模版计算总邮费
+//						totalPostage = DoubleUtil.add(totalPostage, postageVo.getPostage());
+//					}
+//				}
+//			}
 			
 			//跨境商品邮费税费
 			Double productTaxAmount = totalTaxAmount;
 			Double postageTaxAmount = new Double(0);
-//			if(StringUtil.compareObject(totalProductType, GoodsType.GOODS_TYPE_CROSS)
-//					&& totalPostage.compareTo(0D) > 0) {
-//				postageTaxAmount = DoubleUtil.mul(totalPostage, Product.TAXRATE);
-//				totalTaxAmount = DoubleUtil.add(totalTaxAmount, postageTaxAmount);
-//			}
+			
+			//获取免运费模板
+			PostageTemplate freeTemplate = null;
+			List<PostageTemplate> postageTemplateList = postageTemplateCacheManager.getSession();
+			if(postageTemplateList != null && postageTemplateList.size() > 0){
+				for(PostageTemplate postageTemplate : postageTemplateList){
+					if(StringUtil.nullToBoolean(postageTemplate.getIsFreeTemplate())) {
+						freeTemplate = postageTemplate;
+						break;
+					}
+				}
+			}
+			
+			if(freeTemplate == null
+					|| freePosageProductAmount.compareTo(StringUtil.nullToDouble(freeTemplate.getFreePostageAmount())) < 0) {
+				totalPostage= OrderCheckTag.DEFAULT_FREE_POSTAGE_AMOUNT;
+				System.out.println("默认运费"+totalPostage);
+			}
+			
 			totalOrderAmount = DoubleUtil.add(totalProductAmount, DoubleUtil.add(totalPostage, totalTaxAmount));
 
 			tagModel.setMapList(productMapList);

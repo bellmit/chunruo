@@ -94,6 +94,13 @@ public class PostageTemplateController extends BaseController {
 				}
 			}
 			
+			// 满包邮邮费库存
+			ProductWarehouse preePostageWarehouse = new ProductWarehouse ();
+			preePostageWarehouse.setWarehouseId(tmpWarehouseId);
+			preePostageWarehouse.setName("满包邮模板");
+			preePostageWarehouse.setExpanded(StringUtil.compareObject(warehouseId, preePostageWarehouse.getWarehouseId()));
+			wareHousePostageTplMap.put(preePostageWarehouse, postageTemplateMap.get(tmpWarehouseId));
+						
 			// 按仓库归类邮费模板
 			List<ProductWarehouse> productWarehouseList = this.productWarehouseManager.getAll();
 			if(productWarehouseList != null && productWarehouseList.size() > 0){

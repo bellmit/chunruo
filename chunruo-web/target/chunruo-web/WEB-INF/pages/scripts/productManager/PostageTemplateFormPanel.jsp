@@ -49,6 +49,13 @@ Ext.define('MyExt.productManager.PostageTemplateFormPanel', {
 			readOnly:true,
 			value: this.record.data.warehouseName, 
 		},{
+			xtype: 'textfield',
+			labelWidth: 60,
+			fieldLabel: '<fmt:message key="postage.template.pinkageAmount"/>',
+			anchor:'97%',
+			hidden: !this.isFreePostage,
+			name: 'freePostageAmount'
+		},{
 			xtype: 'fieldset',
 			title: '<fmt:message key="postage.template.default"/>',
            	layout: 'hbox',

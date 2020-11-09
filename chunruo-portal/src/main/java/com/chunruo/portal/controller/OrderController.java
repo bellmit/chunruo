@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.chunruo.cache.portal.impl.OrderByIdCacheManager;
 import com.chunruo.cache.portal.impl.OrderListByStoreIdCacheManager;
 import com.chunruo.cache.portal.impl.OrderListByUserIdCacheManager;
+import com.chunruo.cache.portal.impl.PostageTemplateCacheManager;
 import com.chunruo.cache.portal.impl.UserCartListByUserIdCacheManager;
 import com.chunruo.core.Constants;
 import com.chunruo.core.Constants.BuyPostType;
@@ -22,6 +23,7 @@ import com.chunruo.core.Constants.OrderStatus;
 import com.chunruo.core.Constants.UserLevel;
 import com.chunruo.core.model.Order;
 import com.chunruo.core.model.OrderItems;
+import com.chunruo.core.model.PostageTemplate;
 import com.chunruo.core.model.Product;
 import com.chunruo.core.model.ProductSpec;
 import com.chunruo.core.model.UserAddress;
@@ -37,6 +39,7 @@ import com.chunruo.core.vo.MsgModel;
 import com.chunruo.portal.BaseController;
 import com.chunruo.portal.PortalConstants;
 import com.chunruo.portal.interceptor.LoginInterceptor;
+import com.chunruo.portal.tag.OrderCheckTag;
 import com.chunruo.portal.util.OrderUtil;
 import com.chunruo.portal.util.PortalUtil;
 import com.chunruo.portal.util.PostageUtil;
@@ -57,6 +60,8 @@ public class OrderController extends BaseController{
 	private UserInfoManager userInfoManager;
 	@Autowired
 	private OrderByIdCacheManager orderByIdCacheManager;
+	@Autowired
+	private PostageTemplateCacheManager postageTemplateCacheManager;
 	@Autowired
 	private UserCartListByUserIdCacheManager userCartListByUserIdCacheManager;
 	@Autowired
@@ -297,6 +302,7 @@ public class OrderController extends BaseController{
 			Double cTotalSubProfit = new Double (0);
 			Double cTotalTaxAmount = new Double (0);
 			Double cTotalSellPrice = new Double (0);
+			Double freePosageProductAmount = new Double(0);
 			Map<Long, Double> templateWeightsMap = new HashMap<Long, Double> ();
 			for(Product product : buyProductList){
 				//商品数量
@@ -330,6 +336,8 @@ public class OrderController extends BaseController{
 					}else{
 						templateWeightsMap.put(postTplId, totalWeights);
 					}
+				}else {
+					freePosageProductAmount = DoubleUtil.add(freePosageProductAmount, productAmount);
 				}
 
 				//总商品数量
@@ -390,18 +398,36 @@ public class OrderController extends BaseController{
 
 			//邮费,只有在物流方式下计算
 			Double postage = 0.0D;
-			if(templateWeightsMap != null && templateWeightsMap.size() > 0){
-				for(Entry<Long, Double> postTplEntry : templateWeightsMap.entrySet()){
-					PostageVo postageVo = PostageUtil.getPostage(postTplEntry.getKey(), userAddress.getProvinceId(), postTplEntry.getValue());
-					if(postageVo == null || postageVo.getPostage() == null){
-						resultMap.put(PortalConstants.MSG, "邮费计算错误");
-						resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
-						resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
-						return resultMap;
+//			if(templateWeightsMap != null && templateWeightsMap.size() > 0){
+//				for(Entry<Long, Double> postTplEntry : templateWeightsMap.entrySet()){
+//					PostageVo postageVo = PostageUtil.getPostage(postTplEntry.getKey(), userAddress.getProvinceId(), postTplEntry.getValue());
+//					if(postageVo == null || postageVo.getPostage() == null){
+//						resultMap.put(PortalConstants.MSG, "邮费计算错误");
+//						resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
+//						resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
+//						return resultMap;
+//					}
+//					//按模版计算总邮费
+//					postage = DoubleUtil.add(postage, StringUtil.nullToDouble(postageVo.getPostage()));
+//				}
+//			}
+			
+			//获取免运费模板
+			PostageTemplate freeTemplate = null;
+			List<PostageTemplate> postageTemplateList = this.postageTemplateCacheManager.getSession();
+			if(postageTemplateList != null && postageTemplateList.size() > 0){
+				for(PostageTemplate postageTemplate : postageTemplateList){
+					if(StringUtil.nullToBoolean(postageTemplate.getIsFreeTemplate())) {
+						freeTemplate = postageTemplate;
+						break;
 					}
-					//按模版计算总邮费
-					postage = DoubleUtil.add(postage, StringUtil.nullToDouble(postageVo.getPostage()));
 				}
+			}
+			
+			if(freeTemplate == null
+					|| freePosageProductAmount.compareTo(StringUtil.nullToDouble(freeTemplate.getFreePostageAmount())) < 0) {
+				postage= OrderCheckTag.DEFAULT_FREE_POSTAGE_AMOUNT;
+				System.out.println("下单默认运费"+postage);
 			}
 
 			cTotalOrderAmount = DoubleUtil.add(DoubleUtil.add(cTotalProductAmount, 0D), cTotalTaxAmount);
