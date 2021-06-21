@@ -68,24 +68,4 @@ public class ProductDetailTag extends BaseTag {
 	}
 
 	
-	public static String getCategoryName(List<Long> categoryIdList) {
-		try {
-			if(categoryIdList != null && !categoryIdList.isEmpty()) {
-				StringBuilder categoryName = new StringBuilder();
-				for(Long categoryId : categoryIdList) {
-					ProductCategory productCategory = Constants.PRODUCT_CATEGORY_MAP.get(categoryId);
-					if(productCategory != null && productCategory.getCategoryId() != null) {
-						categoryName.append(productCategory.getName());
-						categoryName.append(",");
-					}
-				}
-				String fName = categoryName.toString().substring(0, categoryName.toString().lastIndexOf(","));
-				return fName;
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 } 

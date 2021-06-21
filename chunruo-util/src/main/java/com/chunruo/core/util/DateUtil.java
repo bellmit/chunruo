@@ -1318,45 +1318,45 @@ public class DateUtil {
 	}
 
 	
-	public static void main(String[] a) throws ParseException {
-//    	System.out.println(getNowTime());
-//    	System.out.println(getNearlyDate(0));
-//    	Long time = 1488692553L * 1000;
-//    	System.out.println(formatDate(DateUtil.DATE_FORMAT_YEAR,new Date(time)));
-//    	System.out.println(parseDate(DATE_FORMAT_YEAR,new Date(1488692553 * 1000));
-//    	System.out.println(DateUtil.getDateMinuteBefore(DateUtil.getCurrentDate(), 60));
-//    	Long createTime = DateUtil.getCurrentDate().getTime();
-//		Long startTime = DateUtil.getMillSeconds("2018-11-01", DateUtil.DATE_FORMAT_YEAR);
-//		if(createTime < startTime) {
-//			System.out.println(true);
-//		}
-//		System.out.println(createTime);
-//		System.out.println(startTime);
-//		System.out.println(DateUtil.formatDate(DateUtil.DATE_YYYY_MM_PATTERN, DateUtil.getMonthBeforeByDay(DateUtil.getCurrentDate(), 1)));
-//   
-//        List<String> monthList = DateUtil.getMonthBetween("2019-02-22","2019-02-11");
-//        for(String month : monthList) {
-//        	System.out.println(month);
-//        }
-
-//		String c = "2020-11-29";
-		String b = "2020-11-29";
-//		System.out.println(c.compareTo(b));
-//		DateUtil.parseDate(dateFormat, b);
-//		Date date1 = DateUtil.parseDate(DateUtil.DATE_FORMAT, c);
-//		Date date2 = DateUtil.parseDate(DateUtil.DATE_FORMAT, b);
-//		int days = DateUtil.daysBetween(date1, date2);
-//		int mintues = DateUtil.mintuesBetween(date1, date2);
-//		System.out.println(days);
-//		System.out.println(mintues);
-//		
-//		if(DateUtil.isEffectiveTime(DateUtil.DATE_FORMAT_YEAR, c)) {  //删除
-//			Date parseDate = DateUtil.parseDate(DateUtil.DATE_FORMAT_YEAR, c);  //删除
-//			String aaa = DateUtil.formatDate(dateFormat, parseDate);          //删除
-//			System.out.println("aaa"+aaa);
-//		}
-		System.out.println("当前的时间是："+strToString("2020-10-20",DateUtil.DATE_FORMAT_YEAR_MONTH_DAY));
-		System.out.println(DateUtil.formatDate(DateUtil.DATE_FORMAT_YEAR_MONTH_DAY, new Date()));
-    }
+//	public static void main(String[] a) throws ParseException {
+////    	System.out.println(getNowTime());
+////    	System.out.println(getNearlyDate(0));
+////    	Long time = 1488692553L * 1000;
+////    	System.out.println(formatDate(DateUtil.DATE_FORMAT_YEAR,new Date(time)));
+////    	System.out.println(parseDate(DATE_FORMAT_YEAR,new Date(1488692553 * 1000));
+////    	System.out.println(DateUtil.getDateMinuteBefore(DateUtil.getCurrentDate(), 60));
+////    	Long createTime = DateUtil.getCurrentDate().getTime();
+////		Long startTime = DateUtil.getMillSeconds("2018-11-01", DateUtil.DATE_FORMAT_YEAR);
+////		if(createTime < startTime) {
+////			System.out.println(true);
+////		}
+////		System.out.println(createTime);
+////		System.out.println(startTime);
+////		System.out.println(DateUtil.formatDate(DateUtil.DATE_YYYY_MM_PATTERN, DateUtil.getMonthBeforeByDay(DateUtil.getCurrentDate(), 1)));
+////   
+////        List<String> monthList = DateUtil.getMonthBetween("2019-02-22","2019-02-11");
+////        for(String month : monthList) {
+////        	System.out.println(month);
+////        }
+//
+////		String c = "2020-11-29";
+//		String b = "2020-11-29";
+////		System.out.println(c.compareTo(b));
+////		DateUtil.parseDate(dateFormat, b);
+////		Date date1 = DateUtil.parseDate(DateUtil.DATE_FORMAT, c);
+////		Date date2 = DateUtil.parseDate(DateUtil.DATE_FORMAT, b);
+////		int days = DateUtil.daysBetween(date1, date2);
+////		int mintues = DateUtil.mintuesBetween(date1, date2);
+////		System.out.println(days);
+////		System.out.println(mintues);
+////		
+////		if(DateUtil.isEffectiveTime(DateUtil.DATE_FORMAT_YEAR, c)) {  //删除
+////			Date parseDate = DateUtil.parseDate(DateUtil.DATE_FORMAT_YEAR, c);  //删除
+////			String aaa = DateUtil.formatDate(dateFormat, parseDate);          //删除
+////			System.out.println("aaa"+aaa);
+////		}
+//		System.out.println("当前的时间是："+strToString("2020-10-20",DateUtil.DATE_FORMAT_YEAR_MONTH_DAY));
+//		System.out.println(DateUtil.formatDate(DateUtil.DATE_FORMAT_YEAR_MONTH_DAY, new Date()));
+//    }
 	
 }

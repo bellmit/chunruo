@@ -50,6 +50,7 @@ public class PortalConstants {
 	public static final String X_PLATFORM = "platform";
 	public static final String X_USER_ID = "X-USER-ID";
 	public static final String X_SHARE_USER = "X-SHARE-USER";
+	public static final String X_SHARE_USER_ID = "X-SHARE-USER-ID";
 	public static final String X_REQUEST_TYPE = "X-REQUEST-TYPE";
 
 	public final static String SESSION_ALIPAY_WEB_SUCCESS = "login_alipay_web_success";

@@ -107,6 +107,10 @@ public class RequestUtil {
 		return StringUtil.nullToString(request.getHeader(PortalConstants.X_SHARE_USER));
     }
 	
+	public static Long getShareUserId(HttpServletRequest request) {
+		return StringUtil.nullToLong(request.getHeader(PortalConstants.X_SHARE_USER_ID));
+    }
+	
 	public static Integer getRequestType(HttpServletRequest request) {
 		return StringUtil.nullToInteger(request.getHeader(PortalConstants.X_REQUEST_TYPE));
     }

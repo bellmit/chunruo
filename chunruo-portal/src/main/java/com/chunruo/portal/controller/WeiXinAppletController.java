@@ -176,27 +176,32 @@ public class WeiXinAppletController extends BaseController{
 		String encryptedData = StringUtil.null2Str(request.getParameter("encryptedData"));
 		String codeKey = StringUtil.null2Str(request.getParameter("codeKey"));
 		String iv = StringUtil.null2Str(request.getParameter("iv"));
+		String userData = StringUtil.null2Str(request.getParameter("userData"));
+		String openId = StringUtil.null2Str(request.getParameter("openId"));
+
+
 		log.debug(String.format("Wechat Login[encryptedData=%s, iv=%s, codeKey=%s]", encryptedData, iv, codeKey));
 		try{
-			//缓存授权wechatCode信息
-			String sessionKey = StringUtil.nullToString(request.getSession().getAttribute(WeiXinAppletController.WECHAT_SESSION_KEY));
-			if(StringUtil.isNull(sessionKey)){
-				sessionKey = DesUtil.decrypt(codeKey, WeiXinPayUtil.DES_ENCRYPT_CRYPT_KEY);
-			}
+//			//缓存授权wechatCode信息
+//			String sessionKey = StringUtil.nullToString(request.getSession().getAttribute(WeiXinAppletController.WECHAT_SESSION_KEY));
+//			if(StringUtil.isNull(sessionKey)){
+//				sessionKey = DesUtil.decrypt(codeKey, WeiXinPayUtil.DES_ENCRYPT_CRYPT_KEY);
+//			}
+//
+//			log.debug("sessionId[=====2]"+request.getSession().getId());
+//			System.out.println("encryptedData="+encryptedData);
+//			System.out.println("sessionKey="+sessionKey);
+//			System.out.println("iv="+iv);
+//			//解密微信用户信息
+//			String weChatUserInfo = AESUtil.decrypt(Base64.decodeBase64(encryptedData), Base64.decodeBase64(sessionKey), Base64.decodeBase64(iv));
+//			log.debug(String.format("Wechat Login[sessionKey=%s, weChatUserInfo=%s]", sessionKey, weChatUserInfo));
 
-			log.debug("sessionId[=====2]"+request.getSession().getId());
-			System.out.println("encryptedData="+encryptedData);
-			System.out.println("sessionKey="+sessionKey);
-			System.out.println("iv="+iv);
-			//解密微信用户信息
-			String weChatUserInfo = AESUtil.decrypt(Base64.decodeBase64(encryptedData), Base64.decodeBase64(sessionKey), Base64.decodeBase64(iv));
-			log.debug(String.format("Wechat Login[sessionKey=%s, weChatUserInfo=%s]", sessionKey, weChatUserInfo));
-
+			System.out.println("==========="+userData);
 			// 拉取用户信息
-			Map<String, String> weChatUserMap = StringUtil.jsonToHashMap(weChatUserInfo);
+			Map<String, String> weChatUserMap = StringUtil.jsonToHashMap(userData);
 			if(weChatUserMap == null 
 					|| weChatUserMap.size() <= 0
-					|| !weChatUserMap.containsKey("openId")){
+					|| StringUtil.isNull("openId")){
 				resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
 				resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
 				resultMap.put(PortalConstants.MSG, "授权信息错误");
@@ -208,7 +213,8 @@ public class WeiXinAppletController extends BaseController{
 
 			Long configId = Constants.MINI_PROGRAM_WECHAT_CONFIG_ID;
 
-			String openId = StringUtil.null2Str(weChatUserMap.get("openId"));
+			weChatUserMap.put("openId", openId);
+//			String openId = StringUtil.null2Str(weChatUserMap.get("openId"));
 			UserSociety userSociety = this.userSocietyManager.getUserSocietyByOpenIdAndConfigId(configId, openId);
 			if(userSociety == null || userSociety.getUserSocietyId() == null){
 				// 创建新第三方微信信息绑定到用户表
@@ -424,5 +430,11 @@ public class WeiXinAppletController extends BaseController{
 		resultMap.put(PortalConstants.MSG, "退出失败");
 		resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
 		return resultMap;
+	}
+	public static void main(String[] args) {
+		String json = "{\"openid\":1}";
+		Map<String, String> weChatUserMap = StringUtil.jsonToHashMap(json);
+		System.out.println(weChatUserMap.get("openid"));
+
 	}
 }

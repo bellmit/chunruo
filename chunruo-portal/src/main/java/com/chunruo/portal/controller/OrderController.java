@@ -44,6 +44,7 @@ import com.chunruo.portal.util.OrderUtil;
 import com.chunruo.portal.util.PortalUtil;
 import com.chunruo.portal.util.PostageUtil;
 import com.chunruo.portal.util.ProductCheckUtil;
+import com.chunruo.portal.util.RequestUtil;
 import com.chunruo.portal.util.UserAddressUtil;
 import com.chunruo.portal.vo.PostageVo;
 
@@ -89,15 +90,15 @@ public class OrderController extends BaseController{
 			//获取用户信息
 			UserInfo userInfo = PortalUtil.getCurrentUserInfo(request);
 			
-			if(!StringUtil.compareObject(userInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
-			    Date expireDate = DateUtil.getMonthAfterByDay(userInfo.getCreateTime(), 6);
-				if(expireDate.before(DateUtil.getCurrentDate())) {
-					resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
-					resultMap.put(PortalConstants.MSG, "半年体验期已过，请前往购买会员才可继续下单");
-					resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
-					return resultMap;
-				}
-			}
+//			if(!StringUtil.compareObject(userInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
+//			    Date expireDate = DateUtil.getMonthAfterByDay(userInfo.getCreateTime(), 6);
+//				if(expireDate.before(DateUtil.getCurrentDate())) {
+//					resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
+//					resultMap.put(PortalConstants.MSG, "半年体验期已过，请前往购买会员才可继续下单");
+//					resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
+//					return resultMap;
+//				}
+//			}
 
 			//检查商品
 			MsgModel<Product> msgModel = ProductCheckUtil.checkProduct(productId, StringUtil.nullToLong(productSpecId), groupProductInfo, number, userInfo, false);
@@ -214,15 +215,16 @@ public class OrderController extends BaseController{
 				return resultMap;
 			}
 			
-			if(!StringUtil.compareObject(userInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
-			    Date expireDate = DateUtil.getMonthAfterByDay(userInfo.getCreateTime(), 6);
-				if(expireDate.before(DateUtil.getCurrentDate())) {
-					resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
-					resultMap.put(PortalConstants.MSG, "半年体验期已过，请前往购买会员才可继续下单");
-					resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
-					return resultMap;
-				}
-			}
+//			if(!StringUtil.compareObject(userInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
+//			    Date expireDate = DateUtil.getMonthAfterByDay(userInfo.getCreateTime(), 6);
+//				if(expireDate.before(DateUtil.getCurrentDate())) {
+//					resultMap.put(PortalConstants.CODE, PortalConstants.CODE_ERROR);
+//					resultMap.put(PortalConstants.MSG, "半年体验期已过，请前往购买会员才可继续下单");
+//					resultMap.put(PortalConstants.SYSTEMTIME, DateUtil.getCurrentTime());
+//					return resultMap;
+//				}
+//			}
+			
 
 			// 检查商品信息是否有效
 			MsgModel<List<Product>> productCheckModel = ProductCheckUtil.check(postType, productId, productSpecId, groupProductInfo, number, cartIds, userInfo);
@@ -266,19 +268,24 @@ public class OrderController extends BaseController{
 			
 			
 			//检查上级是否能有返利
-			boolean isHaveTopProfit = false;
-			if(!StringUtil.compareObject(userInfo.getTopUserId(), 0)) {
-				UserInfo topUserInfo = this.userInfoManager.get(StringUtil.nullToLong(userInfo.getTopUserId()));
-				if(topUserInfo != null && topUserInfo.getUserId() != null
-						&& StringUtil.compareObject(topUserInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
-					isHaveTopProfit = true;
-				}
-			}
+//			boolean isHaveTopProfit = false;
+//			if(!StringUtil.compareObject(userInfo.getTopUserId(), 0)) {
+//				UserInfo topUserInfo = this.userInfoManager.get(StringUtil.nullToLong(userInfo.getTopUserId()));
+//				if(topUserInfo != null && topUserInfo.getUserId() != null
+//						&& StringUtil.compareObject(topUserInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
+//					isHaveTopProfit = true;
+//				}
+//			}
 			
 			boolean isHaveSubProfit = false;
-			if(!StringUtil.compareObject(userInfo.getShareUserId(), 0 )) {
-				UserInfo shareUserInfo = this.userInfoManager.get(StringUtil.nullToLong(userInfo.getShareUserId()));
-				if(shareUserInfo != null && shareUserInfo.getUserId() != null) {
+			Long shareUserId = RequestUtil.getShareUserId(request);
+			log.info("---------------------------------shareUserId:"+shareUserId);
+			if(!StringUtil.compareObject(shareUserId, 0 )
+					&& !StringUtil.compareObject(userInfo.getUserId(), shareUserId)) {
+				UserInfo shareUserInfo = this.userInfoManager.get(shareUserId);
+				if(shareUserInfo != null 
+						&& shareUserInfo.getUserId() != null
+						&& StringUtil.compareObject(shareUserInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
 					isHaveSubProfit = true;
 				}
 			}
@@ -317,14 +324,17 @@ public class OrderController extends BaseController{
 
 				//上级返利
 				Double topProfit = new Double(0);
-				if(isHaveTopProfit) {
-					topProfit = DoubleUtil.mul(productAmount, TOP_PROFIT_RATE); 
-				}
+//				if(isHaveTopProfit) {
+//					topProfit = DoubleUtil.mul(productAmount, TOP_PROFIT_RATE); 
+//				}
+				log.info("----------recommednPrice:"+product.getPriceRecommend()+"--price:"+price);
 
 				//分享返利
 				Double subProfit = new Double(0);
-				if(isHaveSubProfit) {
-					topProfit = DoubleUtil.mul(productAmount, TOP_PROFIT_RATE); 
+				if(isHaveSubProfit && !StringUtil.compareObject(userInfo.getLevel(), UserLevel.USER_LEVEL_DEALER)) {
+//					topProfit = DoubleUtil.mul(productAmount, TOP_PROFIT_RATE); 
+					Double everProfit = DoubleUtil.sub(StringUtil.nullToDoubleFormat(product.getPriceRecommend()),StringUtil.nullToDoubleFormat(product.getPriceCost()));
+					subProfit = DoubleUtil.mul(everProfit, doubleProductNumber);
 				}
 
 				// 按模版计算邮费
@@ -478,8 +488,9 @@ public class OrderController extends BaseController{
 			order.setUserId(userInfo.getUserId());					                            //买家用户ID
 			order.setLoginType(StringUtil.nullToInteger(userInfo.getLoginType()));	            //用户登录类型
 			order.setLevel(StringUtil.nullToInteger(userInfo.getLevel()));                      //下单用户等级
+			order.setIsShareBuy(isHaveSubProfit);
 			order.setTopUserId(StringUtil.nullToLong(userInfo.getTopUserId()));			      
-			order.setShareUserId(StringUtil.nullToLong(userInfo.getShareUserId()));             
+			order.setShareUserId(shareUserId);             
 			order.setStoreId(StringUtil.nullToLong(userInfo.getUserId()));                 
 			order.setOrderNo(CoreInitUtil.getRandomNo());     		
 			order.setStatus(OrderStatus.NEW_ORDER_STATUS);  		

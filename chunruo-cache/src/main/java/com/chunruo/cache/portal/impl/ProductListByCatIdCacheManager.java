@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.chunruo.core.Constants;
 import com.chunruo.core.model.ProductCategory;
 import com.chunruo.core.model.Product;
+import com.chunruo.core.service.ProductCategoryManager;
 import com.chunruo.core.service.ProductManager;
 import com.chunruo.core.util.StringUtil;
 
@@ -23,6 +24,8 @@ import com.chunruo.core.util.StringUtil;
 public class ProductListByCatIdCacheManager {
 	@Autowired
 	private ProductManager productManager;
+	@Autowired
+	private ProductCategoryManager productCategoryManager;
 
 	@Cacheable(value="sessionEhRedisCache", cacheManager="sessionEhRedisCacheManager", key="'productListByCatId_'+#categoryId")
 	public List<String> getSession(Long categoryId){
@@ -34,7 +37,7 @@ public class ProductListByCatIdCacheManager {
 				productList = this.productManager.getProductList(true);
 			}else{
 				// 按商品分类
-				ProductCategory productCategory = Constants.PRODUCT_CATEGORY_MAP.get(categoryId);
+				ProductCategory productCategory = this.productCategoryManager.get(categoryId);
 				if(productCategory != null && productCategory.getCategoryId() != null){
 					if(StringUtil.compareObject(productCategory.getParentId(), 0)){
 						productList = this.productManager.getProductListByCategoryFid(categoryId, true);

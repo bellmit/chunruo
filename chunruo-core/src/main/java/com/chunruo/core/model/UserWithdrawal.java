@@ -24,8 +24,10 @@ public class UserWithdrawal implements Serializable {
 	private Long userId; 			// 用户ID
 	private String name;            // 用户名称
 	private Integer status; 		// 状态(1:申请中;3:提现成功;4:提现失败)
-	private Double amount; 			// 提现金额
+	private Double amount; 			// 实际提现金额
 	private String remarks; 		// 备注
+	private Double realAmount;      // 真正提现金额
+	private Double tax;             //体现税费
 	private Date complateTime; 		// 完成时间
 	private Date createTime; 		// 创建时间
 	private Date updateTime; 		// 更新时间
@@ -132,6 +134,24 @@ public class UserWithdrawal implements Serializable {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	@Column(name = "real_amount")
+	public Double getRealAmount() {
+		return realAmount;
+	}
+
+	public void setRealAmount(Double realAmount) {
+		this.realAmount = realAmount;
+	}
+
+	@Column(name = "tax")
+	public Double getTax() {
+		return tax;
+	}
+
+	public void setTax(Double tax) {
+		this.tax = tax;
 	}
 
 

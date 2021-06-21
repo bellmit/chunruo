@@ -25,7 +25,8 @@ public class AutoOrderCompletedScheduler {
 	@Autowired
 	private OrderManager orderManager;
 
-	@Scheduled(cron = "0 0 2 * * ?")
+//	@Scheduled(cron = "0 0 2 * * ?")
+	@Scheduled(cron = "0 */1 * * * ?")
 	protected void autoCompletedOrder() {
 		
 		int size = 0;

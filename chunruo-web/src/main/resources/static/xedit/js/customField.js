@@ -3,7 +3,8 @@ var customField = {
         return [
             { type: "image_ad", val: "图片/广告" },
             { type: "image_nav", val: "图片/导航" },
-            { type: "goods", val: "商品" }
+            { type: "goods", val: "商品" },
+            { type: "image_module", val: "特价专区" }
             
         ];
     },
@@ -158,7 +159,6 @@ var customField = {
             } else {
                 domHtml = dom.find('.control-group');
             }
-            if(wcategoryType == 2){
                 var varHtml = '<div>';
                 varHtml += '<div class="form-horizontal">';
                 varHtml += '<div class="js-meta-region" style="margin-bottom:20px;">';
@@ -176,7 +176,7 @@ var customField = {
                 varHtml += '<label class="radio inline"><input type="radio" name="dir" value="1"   checked/>一排两列</label>';
                 varHtml += '</div></div><div class="control-group"></div></div></div></div></div>';
                 rightHtml = $('<div><form class="form-horizontal"><div class="control-group"><li class="choice" data-id="images"><div class="choice-image"><a class="add-image js-trigger-image" href="javascript: void(0);"><i class="icon-add"></i>  添加图片</a></div><div class="choice-content"><div class="control-group"><label class="control-label">文字：</label><div class="controls"><input class="" type="text" name="title" value="" maxlength="15"/></div></div></div></div><div class="actions"></div></li>'+varHtml+'</div></form></div>');
-            }
+
             var good_data = domHtml.data('image_module');
             var picture = domHtml.data('picture');
             var title = domHtml.data('title');
@@ -517,13 +517,9 @@ var customField = {
                     var liContent = '<li class="choice" data-id="' + num + '">';
                     liContent += '<div class="choice-image">';
                     if (navList[num].image) {
-                    	if(wcategoryType == 2){
                             liContent += '<img src="' + navList[num].image + '" class="thumb-image"/><a class="modify-image js-trigger-image" href="javascript: void(0);">重新上传</a>';
-                    	}
                     } else {
-                    	if(wcategoryType == 2){
                             liContent += '<a class="add-image js-trigger-image" href="javascript:void(0);"><i class="icon-add"></i>添加图片</a>';
-                    	}
                     }
                     liContent += '</div>';
                     if(wcategoryType != 2){

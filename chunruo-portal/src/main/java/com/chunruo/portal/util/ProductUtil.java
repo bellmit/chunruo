@@ -706,7 +706,7 @@ public class ProductUtil {
 				//非分享商品
 				if(userLevelWholesale.contains(userLevel)){
 					// 市场价格等级用户
-					paymentPrice = StringUtil.nullToDoubleFormat(realSellPrice);
+					paymentPrice = StringUtil.nullToDoubleFormat(priceCost);
 					product.setPaymentPriceRegion(StringUtil.null2Str(product.getGroupPriceWholesale()));
 					product.setPaymentGroupPriceRegion(StringUtil.null2Str(product.getGroupPriceWholesale()));
 					product.setPaymentTaxRegion(StringUtil.null2Str(product.getGroupTaxWholesale()));
@@ -719,7 +719,7 @@ public class ProductUtil {
 			product.setV2Price(v2Price);
 			product.setV3Price(v3Price);
 			product.setRealSellPrice(realSellPrice);
-			product.setPaymentPrice(product.getPriceRecommend());
+			product.setPaymentPrice(paymentPrice);
 			product.setPaymentOriginalPrice(product.getPaymentPrice());
 			product.setSeckillPrice(seckillPrice);
 			product.setSeckillProfit(seckillProfit);

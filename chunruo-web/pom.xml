@@ -13,6 +13,7 @@
 		<relativePath>../chunruo-parent/pom.xml</relativePath>
 	</parent>
 	<properties>
+	    <start-class>com.chunruo.webapp.SpringBootWebApplication</start-class>
 		<quartz.version>2.2.1</quartz.version>                          <!-- Quartz的版本 -->
 	</properties>
 	<dependencies>

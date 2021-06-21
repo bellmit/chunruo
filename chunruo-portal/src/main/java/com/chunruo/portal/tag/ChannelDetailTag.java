@@ -292,7 +292,7 @@ public class ChannelDetailTag extends BaseTag {
 		detailMap.put("isSeckillProduct", StringUtil.nullToBoolean(product.getIsSeckillProduct()));
 		detailMap.put("isGroupProduct", StringUtil.booleanToInt(product.getIsGroupProduct()));
 		detailMap.put("salesNumber", StringUtil.nullToInteger(product.getSalesNumber()));
-		detailMap.put("price", StringUtil.nullToDoubleFormatStr(product.getPaymentPrice()));
+		detailMap.put("price", StringUtil.nullToDoubleFormatStr(product.getPriceCost()));
 		detailMap.put("priceRecommend", StringUtil.nullToDoubleFormatStr(product.getPriceRecommend()));
 		detailMap.put("seckillPrice", StringUtil.nullToDoubleFormatStr(product.getSeckillPrice()));
 		detailMap.put("v2Price", StringUtil.nullToDoubleFormatStr(product.getV2Price()));

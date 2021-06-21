@@ -131,26 +131,6 @@ public class UserCartController extends BaseController{
 				e.getMessage();
 			}
 			
-			try {
-				//统计加入购物车事件
-				Map<String, Object> map = new HashMap<String, Object>();
-				String firstCommodity = "";
-				String secondCommodity= ""; 
-				Map<Long, ProductCategory> categoryMap = Constants.PRODUCT_CATEGORY_MAP;
-				if(categoryMap != null && categoryMap.size() > 0) {
-					firstCommodity = StringUtil.null2Str(ProductDetailTag.getCategoryName(product.getCategoryFidList()));
-					secondCommodity = StringUtil.null2Str(ProductDetailTag.getCategoryName(product.getCategoryIdList()));
-				}
-				map.put("commodityID",StringUtil.null2Str(product.getProductId()));
-				map.put("commodityName", StringUtil.null2Str(product.getName()));
-				map.put("firstCommodity", firstCommodity);
-				map.put("secondCommodity", secondCommodity);
-				map.put("pricePerCommodity", StringUtil.null2Str(product.getPaymentPrice()));
-				map.put("commodityNumber", number);
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-		    
 			String tax = "0";
 			String goTax = "0";
 			Double totalPaymentPrice = DoubleUtil.mul(product.getPaymentPrice(), StringUtil.nullToDouble(number));

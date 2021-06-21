@@ -13,6 +13,10 @@
 		<relativePath>../chunruo-parent/pom.xml</relativePath>
 	</parent>
 	
+	<properties>
+  		<spring-security.version>4.2.1.RELEASE</spring-security.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -26,7 +30,5 @@
 		</dependency>
 	</dependencies>
 	
-	<properties>
-  		<spring-security.version>4.2.1.RELEASE</spring-security.version>
-	</properties>
+	
 </project>

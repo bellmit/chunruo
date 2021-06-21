@@ -1,5 +1,6 @@
 package com.chunruo.core.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -173,9 +174,9 @@ public class UserWithdrawalManagerImpl extends GenericManagerImpl<UserWithdrawal
 				}
 
 				// 检查提现金额是否有效
-				Double amount = StringUtil.nullToDoubleFormat(StringUtil.nullToDouble(paramMap.get("amount")));
+				Double realAmount = StringUtil.nullToDoubleFormat(StringUtil.nullToDouble(paramMap.get("amount")));
 				Double balance = StringUtil.nullToDoubleFormat(userInfo.getBalance());
-				if (amount.compareTo(balance) == 1) {
+				if (realAmount.compareTo(balance) == 1) {
 					// 提现金额大于店铺实际金额
 					msgModel.setIsSucc(false);
 					msgModel.setMessage("错误,提现金额不能大于可提现金额");
@@ -183,14 +184,18 @@ public class UserWithdrawalManagerImpl extends GenericManagerImpl<UserWithdrawal
 				}
 
 
-				Double afterAmount = StringUtil.nullToDoubleFormat(DoubleUtil.sub(balance , amount));
+				Double tax = DoubleUtil.mul(realAmount, 0.13D);
+				Double amount = DoubleUtil.sub(realAmount, tax);
+				Double afterAmount = StringUtil.nullToDoubleFormat(DoubleUtil.sub(balance , realAmount));
 				userInfo.setBalance(afterAmount);
-				userInfo.setWithdrawalAmount(StringUtil.nullToDoubleFormat(DoubleUtil.add(StringUtil.nullToDouble(userInfo.getWithdrawalAmount()), amount)));
+				userInfo.setWithdrawalAmount(StringUtil.nullToDoubleFormat(DoubleUtil.add(StringUtil.nullToDouble(userInfo.getWithdrawalAmount()), realAmount)));
 				userInfo.setUpdateTime(DateUtil.getCurrentDate());
 				userInfo = this.userInfoManager.save(userInfo);
 
 				// 提现记录
 				UserWithdrawal userWithdrawal = new UserWithdrawal();
+				userWithdrawal.setRealAmount(realAmount);
+				userWithdrawal.setTax(tax);
 				userWithdrawal.setAmount(amount);
 				userWithdrawal.setRemarks("提现");
 				userWithdrawal.setStatus(Constants.WithdrawalStatus.NEW_STATUS);
@@ -210,7 +215,7 @@ public class UserWithdrawalManagerImpl extends GenericManagerImpl<UserWithdrawal
 					changeRecord.setObjectId(userWithdrawal.getRecordId());
 					changeRecord.setType(UserAmountChangeRecord.AMOUNT_CHANGE_DRAWAL);
 					changeRecord.setBeforeAmount(balance);
-					changeRecord.setChangeAmount(amount);
+					changeRecord.setChangeAmount(realAmount);
 					changeRecord.setAfterAmount(afterAmount);
 					changeRecord.setCreateTime(DateUtil.getCurrentDate());
 					changeRecord.setUpdateTime(changeRecord.getCreateTime());

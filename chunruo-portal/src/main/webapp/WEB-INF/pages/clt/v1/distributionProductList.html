@@ -55,6 +55,7 @@ ${productListTag.setRequest($request)}
 			"isSoldOut": "${StringUtil.booleanToInt($!product.isPaymentSoldout)}",
 			"isAggrProduct":"${StringUtil.booleanToInt($!product.isAggrProduct)}",
 			"seckillPrice": "${StringUtil.nullToDoubleFormatStr($!product.paymentPrice)}",
+		    "priceCost": "${StringUtil.nullToDoubleFormatStr($!product.priceCost)}",
 		    "priceRecommend": "${StringUtil.nullToDoubleFormatStr($!product.priceRecommend)}",
 		    "priceWholesale": "${StringUtil.nullToDoubleFormatStr($!product.priceWholesale)}",
 		    "isRechargeGiftProduct": "${StringUtil.booleanToInt($!product.isRechargeGiftProduct)}",
