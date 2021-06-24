@@ -14,7 +14,7 @@
 	</parent>
 	
 	<properties>
-  		<spring-security.version>4.2.1.RELEASE</spring-security.version>
+  		<spring-security.version>4.2.17.RELEASE</spring-security.version>
 	</properties>
 	
 	<dependencies>
