@@ -14,7 +14,7 @@
 	</parent>
 	<properties>
 	    <start-class>com.chunruo.webapp.SpringBootWebApplication</start-class>
-		<quartz.version>2.2.1</quartz.version>                          <!-- Quartz的版本 -->
+		<quartz.version>2.3.2</quartz.version>                          <!-- Quartz的版本 -->
 	</properties>
 	<dependencies>
 		<dependency>
