@@ -175,7 +175,7 @@
 	<properties>
 		<log4j.version>1.2.16</log4j.version>
 		<jackson-core-asl.version>1.9.13</jackson-core-asl.version>
-		<jackson.version>2.10.2</jackson.version>
+		<jackson.version>2.10.5.1</jackson.version>
 		<gson.version>2.2.4</gson.version>
 		<freemarker.version>2.3.25-incubating</freemarker.version>
 		<commons.io.version>2.4</commons.io.version>
