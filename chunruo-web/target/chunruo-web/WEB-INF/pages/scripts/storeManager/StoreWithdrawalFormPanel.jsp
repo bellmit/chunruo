@@ -126,7 +126,7 @@ Ext.define('MyExt.storeManager.StoreWithdrawalFormPanel', {
 	            if(replyPanel.form.isValid()){
 	            	Ext.MessageBox.confirm('<fmt:message key="ajax.confirm"/>', '<fmt:message key="save.confirm"/>', function(e){
 						if(e == 'yes'){
-							var recordId = this.getForm().findField('recordId').getValue();
+							var recordId = this.record.data.recordId;
 						  	replyPanel.form.submit({
 			                    waitMsg: 'Loading...',
 			                    url: '<c:url value="/storeWithdrawal/withdrawalFail.json"/>',

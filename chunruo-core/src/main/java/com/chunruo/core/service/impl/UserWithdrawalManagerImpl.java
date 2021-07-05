@@ -59,7 +59,7 @@ public class UserWithdrawalManagerImpl extends GenericManagerImpl<UserWithdrawal
 	@Override
 	public Double countUserWithdrawalTotalIncomeByUserId(Long userId) {
 		Double totalInCome = 0.0D;
-		String sql = "select sum(amount) from jkd_user_withdrawal where user_id = ? and status in(1,2,3)";
+		String sql = "select sum(real_amount) from jkd_user_withdrawal where user_id = ? and status in(1,2,3)";
 		List<Object[]> objectList = this.querySql(sql, new Object[]{userId});
 		if(objectList != null && objectList.size() > 0){
 			totalInCome = StringUtil.nullToDoubleFormat(objectList.get(0));
@@ -92,9 +92,9 @@ public class UserWithdrawalManagerImpl extends GenericManagerImpl<UserWithdrawal
 						UserInfo userInfo = this.userInfoManager.get(StringUtil.nullToLong(userWithdrawal.getUserId()));
 					    if(userInfo != null && userInfo.getUserId() != null) {
 							Double balance = StringUtil.nullToDoubleFormat(userInfo.getBalance());
-					    	Double afterAmount = StringUtil.nullToDoubleFormat(DoubleUtil.add(balance,StringUtil.nullToDouble(userWithdrawal.getAmount())));
+					    	Double afterAmount = StringUtil.nullToDoubleFormat(DoubleUtil.add(balance,StringUtil.nullToDouble(userWithdrawal.getRealAmount())));
 
-							Double afterWithdrawAmount = StringUtil.nullToDoubleFormat(DoubleUtil.sub(userInfo.getWithdrawalAmount(), userWithdrawal.getAmount()));
+							Double afterWithdrawAmount = StringUtil.nullToDoubleFormat(DoubleUtil.sub(userInfo.getWithdrawalAmount(), userWithdrawal.getRealAmount()));
 
 					    	userInfo.setBalance(afterAmount);
 					    	userInfo.setWithdrawalAmount(afterWithdrawAmount);
@@ -106,7 +106,7 @@ public class UserWithdrawalManagerImpl extends GenericManagerImpl<UserWithdrawal
 							changeRecord.setObjectId(userWithdrawal.getRecordId());
 							changeRecord.setType(UserAmountChangeRecord.AMOUNT_CHANGE_DRAWAL_FAIL);
 							changeRecord.setBeforeAmount(balance);
-							changeRecord.setChangeAmount(userWithdrawal.getAmount());
+							changeRecord.setChangeAmount(userWithdrawal.getRealAmount());
 							changeRecord.setAfterAmount(afterAmount);
 							changeRecord.setCreateTime(DateUtil.getCurrentDate());
 							changeRecord.setUpdateTime(changeRecord.getCreateTime());
